@@ -1,14 +1,26 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HomePage from "./pages/HomePage";
-import ModulePage from "./pages/ModulePage";
+import DisciplineStartPage from "./pages/DisciplineStartPage";
+import Navbar from "./components/Navbar";
+import "./style.css";
+import DisciplinePage from "./pages/DisciplinePage";
 
 function App() {
   return (
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="module/:moduleId" element={<ModulePage />} />
+          <Route element={<Navbar />}>
+            <Route path="/" element={<HomePage />} />
+            <Route
+              path="/discipline/:curriculumId/:disciplineId/:moduleId"
+              element={<DisciplinePage />}
+            />
+            <Route
+              path="/discipline/:curriculumId/:disciplineId/"
+              element={<DisciplineStartPage />}
+            />
+          </Route>
         </Routes>
       </BrowserRouter>
     </>

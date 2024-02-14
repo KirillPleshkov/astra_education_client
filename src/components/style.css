@@ -1,0 +1,50 @@
+/* Navbar */
+.nav {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #1469c8;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 45px;
+}
+
+.navElement {
+  float: left;
+}
+
+.navElementLink {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.navElementLink:hover {
+  background-color: #0a376b;
+}
+
+.c {
+  margin-top: 45px;
+}
+
+.content {
+  min-height: calc(100vh - 65px);
+}
+
+.footer {
+  height: 20px;
+  width: 100%;
+  background-color: #0a376b;
+}
+
+/* DisciplineLayout */
+
+.layout {
+  width: 250px;
+  min-height: calc(100vh - 121px);
+  background-color: #1469c8;
+}
