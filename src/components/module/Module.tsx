@@ -16,6 +16,8 @@ const Module: React.FunctionComponent<IModuleProps> = () => {
     select: ({ data }) => data,
   });
 
+  console.log(data?.blocks);
+
   return (
     <div className="module">
       {data?.blocks

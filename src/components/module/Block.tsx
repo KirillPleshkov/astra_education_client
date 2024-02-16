@@ -35,6 +35,7 @@ const Block: React.FunctionComponent<IBlockProps> = ({
               href={`http://127.0.0.1:8000/block/file/${elem.id}`}
               download
               key={elem.id}
+              className="fileDownload"
             >
               <div className="fileImg">
                 <FileIcon
@@ -42,13 +43,7 @@ const Block: React.FunctionComponent<IBlockProps> = ({
                   {...defaultStyles[formatFile(elem.file)]}
                 />
               </div>
-            </a>
 
-            <a
-              href={`http://127.0.0.1:8000/block/file/${elem.id}`}
-              download
-              key={elem.id}
-            >
               <div className="fileName">{elem.file.split("/").pop()}</div>
             </a>
           </div>
