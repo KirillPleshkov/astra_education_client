@@ -4,6 +4,7 @@ import "./styles.css";
 import DisciplineLayout from "../components/DisciplineLayout";
 import { fetchDiscipline } from "../api/FetchDiscipline";
 import { useQuery } from "@tanstack/react-query";
+import DescriptionModule from "../components/module/DescriptionModule";
 
 const DisciplineStartPage: React.FunctionComponent = () => {
   const { disciplineId, curriculumId } = useParams();
@@ -27,8 +28,11 @@ const DisciplineStartPage: React.FunctionComponent = () => {
           disciplineId={Number(disciplineId)}
           curriculumId={Number(curriculumId)}
         />
-        <div>Start</div>
-        <div>{disciplineId}</div>
+        <DescriptionModule
+          short_description={data.short_description}
+          products={data.products}
+          skills={data.skills}
+        />
       </div>
     </>
   );

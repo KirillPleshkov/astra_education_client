@@ -41,6 +41,7 @@
   background-color: rgb(177, 177, 177);
   border-radius: 15px;
   width: fit-content;
+  display: inline-flex;
 }
 
 .fileImg {
@@ -58,6 +59,19 @@
 
 .fileDownload {
   color: #000 !important;
-  text-decoration: none; /* no underline */
+  text-decoration: none;
   display: flex;
+}
+
+/* DescriptionModule */
+
+.textBlock {
+  margin-top: 15px;
+  margin-left: 15px;
+  padding: 10px;
+  padding-bottom: 10px;
+  background-color: rgb(177, 177, 177);
+  border-radius: 15px;
+  width: fit-content;
+  display: inline-flex;
 }
