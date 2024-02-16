@@ -44,7 +44,32 @@
 /* DisciplineLayout */
 
 .layout {
+  margin: 0;
+  padding: 0;
   width: 250px;
   min-height: calc(100vh - 121px);
   background-color: #1469c8;
+  list-style-type: none;
+}
+
+.layoutElement {
+  float: left;
+  width: 250px;
+}
+
+.layoutElementLink {
+  display: block;
+  color: white;
+  text-align: center;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-decoration: none;
+}
+
+.layoutElementLink:hover {
+  background-color: #0a376b;
+}
+
+.layoutElementSelected {
+  background-color: #0a376b;
 }

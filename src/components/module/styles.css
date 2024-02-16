@@ -1,0 +1,51 @@
+/* Module */
+
+.module {
+  width: 70%;
+  height: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+}
+
+/* Block */
+
+.block {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.blockTitle {
+  background-color: #1469c8;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 500;
+  color: white;
+}
+
+.blockMainText {
+  margin-top: 20px;
+  white-space: pre-wrap;
+  font-size: 17px;
+}
+
+/* File */
+
+.file {
+  width: 100px;
+  height: 70px;
+}
+
+.fileImg {
+  width: 35px;
+  height: 35px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.fileName {
+  text-align: center;
+  margin-top: 10px;
+}

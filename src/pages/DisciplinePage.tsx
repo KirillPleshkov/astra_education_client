@@ -1,17 +1,35 @@
 import * as React from "react";
-// import { useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import "./styles.css";
 import DisciplineLayout from "../components/DisciplineLayout";
+import { fetchDiscipline } from "../api/FetchDiscipline";
+import { useQuery } from "@tanstack/react-query";
+import Module from "../components/module/Module";
 
 const DisciplinePage: React.FunctionComponent = () => {
-  // const { disciplineId, moduleId } = useParams();
+  const { curriculumId, disciplineId, moduleId } = useParams();
+
+  const { data } = useQuery({
+    queryKey: ["discipline", disciplineId],
+    queryFn: () => fetchDiscipline(disciplineId),
+    select: ({ data }) => data,
+  });
+
+  if (!data) {
+    return <>Loading</>;
+  }
 
   return (
     <>
-      <div className="disciplineName">Название дисциплины</div>
+      <div className="disciplineName">{data.name}</div>
       <div style={{ width: "100%", height: "100%", display: "flex" }}>
-        <DisciplineLayout modules={[{ pk: 1, name: "few" }]} />
-        <div>fergerge</div>
+        <DisciplineLayout
+          modules={data.modules}
+          disciplineId={Number(disciplineId)}
+          curriculumId={Number(curriculumId)}
+          moduleId={Number(moduleId)}
+        />
+        <Module />
       </div>
     </>
   );
