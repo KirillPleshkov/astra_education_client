@@ -21,10 +21,10 @@ const Navbar: React.FunctionComponent = () => {
             Contact
           </a>
         </li>
-        <li className="navElement">
-          <a href="#about" className="navElementLink">
-            About
-          </a>
+        <li className="navElement navElementLast">
+          <Link to={"/login"} className="navElementLink">
+            Войти
+          </Link>
         </li>
       </ul>
 

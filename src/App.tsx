@@ -4,6 +4,7 @@ import DisciplineStartPage from "./pages/DisciplineStartPage";
 import Navbar from "./components/Navbar";
 import "./style.css";
 import DisciplinePage from "./pages/DisciplinePage";
+import LoginPage from "./pages/LoginPage";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Routes>
           <Route element={<Navbar />}>
             <Route path="/" element={<HomePage />} />
+
             <Route
               path="/discipline/:curriculumId/:disciplineId/:moduleId"
               element={<DisciplinePage />}
@@ -20,6 +22,8 @@ function App() {
               path="/discipline/:curriculumId/:disciplineId/"
               element={<DisciplineStartPage />}
             />
+
+            <Route path="/login" element={<LoginPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

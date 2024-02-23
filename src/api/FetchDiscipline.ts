@@ -1,4 +1,33 @@
-import axios from "axios";
+// import axios from "axios";
+
+// type TypeFetchDiscipline = {
+//   name: string;
+//   short_description: string;
+//   skills: {
+//     pk: number;
+//     name: string;
+//   }[];
+//   products: {
+//     pk: number;
+//     name: string;
+//   }[];
+//   modules: {
+//     pk: number;
+//     name: string;
+//   }[];
+// };
+
+// function fetchDiscipline(disciplineId?: string) {
+//   return axios.get<TypeFetchDiscipline>(
+//     `${import.meta.env.VITE_BACKEND_URL}discipline/${disciplineId}`
+//   );
+// }
+
+// export { fetchDiscipline };
+// export type { TypeFetchDiscipline };
+
+// import axios from "axios";
+import api from "../services/api";
 
 type TypeFetchDiscipline = {
   name: string;
@@ -18,7 +47,7 @@ type TypeFetchDiscipline = {
 };
 
 function fetchDiscipline(disciplineId?: string) {
-  return axios.get<TypeFetchDiscipline>(
+  return api.get<TypeFetchDiscipline>(
     `${import.meta.env.VITE_BACKEND_URL}discipline/${disciplineId}`
   );
 }

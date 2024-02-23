@@ -27,18 +27,22 @@
   background-color: #0a376b;
 }
 
-.c {
+/* .c {
   margin-top: 45px;
 }
 
 .content {
   min-height: calc(100vh - 65px);
-}
+} */
 
 .footer {
   height: 20px;
   width: 100%;
   background-color: #0a376b;
+}
+
+.navElementLast {
+  float: right;
 }
 
 /* DisciplineLayout */
