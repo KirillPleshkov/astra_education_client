@@ -1,4 +1,4 @@
-import axios from "axios";
+import { AxiosInstance } from "axios";
 
 type TypeFetchModule = {
   id: string;
@@ -16,8 +16,8 @@ type TypeFetchModule = {
   }[];
 };
 
-function fetchModule(moduleId?: string) {
-  return axios.get<TypeFetchModule>(
+function fetchModule(api: AxiosInstance, moduleId?: string) {
+  return api.get<TypeFetchModule>(
     `${import.meta.env.VITE_BACKEND_URL}module/${moduleId}`
   );
 }

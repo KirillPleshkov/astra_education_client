@@ -5,13 +5,16 @@ import DisciplineLayout from "../components/DisciplineLayout";
 import { fetchDiscipline } from "../api/FetchDiscipline";
 import { useQuery } from "@tanstack/react-query";
 import DescriptionModule from "../components/module/DescriptionModule";
+import useAxios from "../services/api";
 
 const DisciplineStartPage: React.FunctionComponent = () => {
   const { disciplineId, curriculumId } = useParams();
 
+  const { api } = useAxios();
+
   const { data } = useQuery({
     queryKey: ["discipline", disciplineId],
-    queryFn: () => fetchDiscipline(disciplineId),
+    queryFn: () => fetchDiscipline(api, disciplineId),
     select: ({ data }) => data,
   });
 

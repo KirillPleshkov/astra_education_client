@@ -1,14 +1,17 @@
 import * as React from "react";
 import "./styles.css";
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { fetchToken } from "../api/FetchToken";
 import { useNavigate } from "react-router-dom";
+import { TypeUserContext, userContext } from "../contexts/UserContext";
 
 const LoginPage: React.FunctionComponent = () => {
   const inputRefEmail = useRef<HTMLInputElement>(null);
   const inputRefPassword = useRef<HTMLInputElement>(null);
 
   const [error, setError] = useState<string>("");
+
+  const { updateUserInfo } = useContext<TypeUserContext>(userContext);
 
   const navigate = useNavigate();
 
@@ -22,7 +25,8 @@ const LoginPage: React.FunctionComponent = () => {
       .then(({ data }) => {
         localStorage.setItem("accessToken", data.access);
         localStorage.setItem("refreshToken", data.refresh);
-        console.log(1);
+
+        updateUserInfo();
 
         if (window.history?.length !== 1) {
           navigate(-1);

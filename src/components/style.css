@@ -15,25 +15,38 @@
   float: left;
 }
 
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
 .navElementLink {
   display: block;
   color: white;
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
+  cursor: pointer;
+  background-color: #1469c8;
+  border-style: none;
 }
 
 .navElementLink:hover {
   background-color: #0a376b;
 }
 
-/* .c {
-  margin-top: 45px;
+.navElementText {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
 }
-
-.content {
-  min-height: calc(100vh - 65px);
-} */
 
 .footer {
   height: 20px;
@@ -76,4 +89,27 @@
 
 .layoutElementSelected {
   background-color: #0a376b;
+}
+
+/* navModal */
+
+.navModal {
+  position: fixed;
+  top: 45px;
+  left: 276px;
+  width: 176px;
+  min-height: 6px;
+  border: none;
+  background-color: #1469c8;
+}
+
+.navModalWidth {
+  width: 176px;
+}
+
+.modalUl {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }

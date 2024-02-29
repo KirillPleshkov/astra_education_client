@@ -4,15 +4,18 @@ import Block from "./Block";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { fetchModule } from "../../api/FetchModule";
+import useAxios from "../../services/api";
 
 interface IModuleProps {}
 
 const Module: React.FunctionComponent<IModuleProps> = () => {
   const { moduleId } = useParams();
 
+  const { api } = useAxios();
+
   const { data } = useQuery({
     queryKey: ["module", moduleId],
-    queryFn: () => fetchModule(moduleId),
+    queryFn: () => fetchModule(api, moduleId),
     select: ({ data }) => data,
   });
 
