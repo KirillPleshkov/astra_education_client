@@ -57,6 +57,7 @@ const LoginPage: React.FunctionComponent = () => {
             placeholder="alexander@itchief.ru"
             ref={inputRefEmail}
             onChange={clearErrorHandler}
+            autoComplete="email"
           />
           <label className="text-field__label" htmlFor="email">
             Логин
@@ -72,6 +73,7 @@ const LoginPage: React.FunctionComponent = () => {
             placeholder="alexander@itchief.ru"
             ref={inputRefPassword}
             onChange={clearErrorHandler}
+            autoComplete="password"
           />
           <label className="text-field__label" htmlFor="email">
             Пароль

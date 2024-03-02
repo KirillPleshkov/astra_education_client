@@ -6,6 +6,7 @@ import "./style.css";
 import DisciplinePage from "./pages/DisciplinePage";
 import LoginPage from "./pages/LoginPage";
 import UserProvider from "./contexts/UserContext";
+import MainConstructor from "./pages/teacher_pages/MainConstructor";
 import ModuleConstructor from "./pages/teacher_pages/ModuleConstructor";
 
 function App() {
@@ -28,8 +29,10 @@ function App() {
 
               <Route path="/login" element={<LoginPage />} />
 
+              <Route path="/main_constructor" element={<MainConstructor />} />
+
               <Route
-                path="module_constructor"
+                path="/module_constructor/:moduleId"
                 element={<ModuleConstructor />}
               />
             </Route>

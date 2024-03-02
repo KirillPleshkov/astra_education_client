@@ -4,7 +4,7 @@
 
 .disciplineName {
   margin-top: 45px;
-  background-color: rgb(224, 223, 223);
+  background-color: #eee;
   padding-top: 15px;
   padding-bottom: 15px;
   padding-left: 40px;
@@ -23,26 +23,26 @@
   margin-left: auto;
   margin-right: auto;
   margin-top: 210px;
-  background-color: #1469c8;
+  background-color: #eee;
   border-radius: 10px;
 }
 
 .loginName {
-  color: white;
+  color: #6dbad4;
   text-align: center;
-  font-size: 22px;
+  font-size: 26px;
   padding: 20px;
   padding-bottom: 0px;
 }
 
 .loginSubmitButton {
-  background: #5d8f76;
+  background: #9addf4;
   color: #fff;
-  padding: 7px 12px;
+  padding: 10px 15px;
   margin-bottom: 1em;
   border: 1px transparent;
   border-radius: 20px;
-  font-size: 16px;
+  font-size: 18px;
   margin: 0 auto;
   display: block;
   margin-top: 15px;
@@ -57,6 +57,7 @@
   color: red;
   margin: auto;
   text-align: center;
+  height: 8px;
 }
 
 .text-field {
@@ -91,6 +92,11 @@
   appearance: none;
   margin: auto;
   margin-top: 30px;
+}
+
+.text-field__input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
+  -webkit-text-fill-color: black !important;
 }
 
 .text-field__input[type="search"]::-webkit-search-decoration,

@@ -1,0 +1,22 @@
+/* ModulesList */
+
+.modulesListModal {
+  position: fixed;
+  top: 45px;
+  left: 276px;
+  width: 176px;
+  min-height: 6px;
+  border: none;
+  background-color: #1469c8;
+}
+
+.modulesListModalWidth {
+  width: 176px;
+}
+
+.modulesListModalUl {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
