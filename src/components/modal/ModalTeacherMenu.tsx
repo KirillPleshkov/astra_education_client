@@ -33,26 +33,10 @@ const ModalTeacherMenu: React.FunctionComponent<IModalTeacherMenuProps> = ({
           </Link>
         </li>
 
-        {linguist_roles.some((item) => item[1] === "MODULE_CHANGE") && (
+        {linguist_roles.length && (
           <li className="navElement navModalWidth">
-            <Link to={"/module_constructor"} className="navElementLink">
-              Конструирование модулей
-            </Link>
-          </li>
-        )}
-
-        {linguist_roles.some((item) => item[1] === "DISCIPLINE_CHANGE") && (
-          <li className="navElement navModalWidth">
-            <Link to={"/"} className="navElementLink">
-              Конструирование дисциплин
-            </Link>
-          </li>
-        )}
-
-        {linguist_roles.some((item) => item[1] === "CURRICULUM_CHANGE") && (
-          <li className="navElement navModalWidth">
-            <Link to={"/"} className="navElementLink">
-              Конструирование учебных программ
+            <Link to={"/main_constructor"} className="navElementLink">
+              Конструирование
             </Link>
           </li>
         )}

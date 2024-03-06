@@ -6,10 +6,10 @@ import { fetchModuleCreate } from "../../api/FetchModuleCreate";
 
 const MainConstructor: React.FunctionComponent = () => {
   return (
-    <div className="moduleContent">
+    <div className="mainContent">
       <div className="pageName">Конструктор</div>
 
-      <div className="moduleBlocks">
+      <div className="mainBlocks">
         <SearchConstructor
           blockName="модуля"
           blockTitle="Конструирование модулей"
