@@ -4,7 +4,7 @@ type TypeFetchModule = {
   id: string;
   name: string;
   blocks: {
-    id: number;
+    id?: number;
     name: string;
     main_text: string;
     position: number;
