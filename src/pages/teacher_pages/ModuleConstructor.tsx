@@ -1,15 +1,24 @@
 import * as React from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import "./styles.css";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { fetchUpdateModule } from "../../api/FetchUpdateModule";
+import { useQuery } from "@tanstack/react-query";
 import useAxios from "../../services/api";
 import { TypeFetchModule, fetchModule } from "../../api/FetchModule";
 import { useEffect, useState } from "react";
-import { DefaultExtensionType, FileIcon, defaultStyles } from "react-file-icon";
 import Edit from "../../images/Edit.svg";
-import Cross from "../../images/Cross.svg";
-import AutoChangedTextArea from "../../components/UI/AutoChangedTextArea";
+import Module from "../../components/module/Module";
+import ConstructedBlock from "../../components/module/ConstructedBlock";
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { arrayMove, SortableContext } from "@dnd-kit/sortable";
+import { createPortal } from "react-dom";
 
 const ModuleConstructor: React.FunctionComponent = () => {
   const { moduleId } = useParams();
@@ -30,59 +39,37 @@ const ModuleConstructor: React.FunctionComponent = () => {
     select: ({ data }) => data,
   });
 
+  const [activeBlock, setActiveBlock] = useState<
+    TypeFetchModule["blocks"][0] | null
+  >(null);
+
+  const [isDrag, setIsDrag] = useState<boolean>(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    })
+  );
+
   useEffect(() => {
     if (data) {
       setModule(data);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading]);
 
-  const mutation = useMutation({
-    mutationFn: () => {
-      return fetchUpdateModule(api, module, moduleId);
-    },
-  });
+  // const mutation = useMutation({
+  //   mutationFn: () => {
+  //     return fetchUpdateModule(api, module, moduleId);
+  //   },
+  // });
 
-  const formatFile: (fileName: string) => DefaultExtensionType = (fileName) => {
-    const format = fileName.split(".").pop() as DefaultExtensionType;
-
-    return format;
-  };
-
-  const changeBlockNameHandler = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    blockPos: number
-  ) => {
-    setModule((prev) => {
-      const currentBlock = prev.blocks.find((el) => el.position == blockPos);
-
-      if (!currentBlock) return prev;
-
-      currentBlock.name = e.target.value;
-      const newBlocks = [
-        ...prev.blocks.filter((el) => el.position != blockPos),
-        currentBlock,
-      ];
-      return { ...prev, blocks: newBlocks };
-    });
-  };
-
-  const changeBlockMainTextHandler = (
-    e: React.ChangeEvent<HTMLTextAreaElement>,
-    blockPos: number
-  ) => {
-    setModule((prev) => {
-      const currentBlock = prev.blocks.find((el) => el.position == blockPos);
-
-      if (!currentBlock) return prev;
-
-      currentBlock.main_text = e.target.value;
-      const newBlocks = [
-        ...prev.blocks.filter((el) => el.position != blockPos),
-        currentBlock,
-      ];
-      return { ...prev, blocks: newBlocks };
-    });
-  };
+  const blocksId = React.useMemo(
+    () => module.blocks.map((e) => e.position),
+    [module]
+  );
 
   const addBlockHandler = () => {
     setModule((prev) => {
@@ -104,6 +91,58 @@ const ModuleConstructor: React.FunctionComponent = () => {
     });
   };
 
+  const onDragStart = (e: DragStartEvent) => {
+    setIsDrag(true);
+    if (e.active.data.current?.type === "Block") {
+      setActiveBlock(e.active.data.current.block);
+    }
+  };
+
+  const onDragEnd = (e: DragEndEvent) => {
+    setIsDrag(false);
+    const { active, over } = e;
+    if (!over) return;
+
+    const activeBlockPos = active.id;
+    const overBlockPos = over.id;
+
+    if (activeBlockPos === overBlockPos) return;
+
+    setModule((prev) => {
+      const blocks = [...prev.blocks];
+
+      const activeBlockIndex = blocks.findIndex(
+        (e) => e.position === activeBlockPos
+      );
+      const overBlockIndex = blocks.findIndex(
+        (e) => e.position === overBlockPos
+      );
+
+      const updatedBlocks = arrayMove(blocks, activeBlockIndex, overBlockIndex);
+
+      return {
+        ...prev,
+        blocks: updatedBlocks.map((e, index) => {
+          return { ...e, position: index + 1 };
+        }),
+      };
+    });
+
+    const element = document.getElementById(`block_${e.over?.id}`);
+
+    setTimeout(() => {
+      if (element) {
+        const y = element.getBoundingClientRect().top + window.scrollY;
+        window.scroll({
+          top: y - 300,
+          behavior: "smooth",
+        });
+      }
+    }, 10);
+  };
+
+  console.log(module);
+
   return (
     <>
       {searchParams.get("edit") === "true" ? (
@@ -118,75 +157,51 @@ const ModuleConstructor: React.FunctionComponent = () => {
               }
             />
           </div>
-          <div className="moduleCentered">
-            {module &&
-              module.blocks
-                .sort((a, b) => a.position - b.position)
-                .map((elem, index) => (
-                  <div className="moduleBlock" key={index}>
-                    <div className="moduleBlockTitle">
-                      <input
-                        value={elem.name}
-                        type="text"
-                        className="moduleBlockTitleInput"
-                        onChange={(e) =>
-                          changeBlockNameHandler(e, elem.position)
-                        }
+          <DndContext
+            autoScroll={{ acceleration: 1 }}
+            sensors={sensors}
+            onDragStart={onDragStart}
+            onDragEnd={onDragEnd}
+          >
+            <div className="moduleCentered">
+              <SortableContext items={blocksId}>
+                {module &&
+                  module.blocks
+                    .sort((a, b) => a.position - b.position)
+                    .map((elem) => (
+                      <ConstructedBlock
+                        id={`block_${elem.position}`}
+                        isDrag={isDrag}
+                        setModule={setModule}
+                        elem={elem}
+                        key={elem.position}
                       />
-                      <button
-                        className="moduleDeleteBlockButton"
-                        onClick={() =>
-                          setModule((prev) => {
-                            return {
-                              ...prev,
-                              blocks: prev.blocks.filter(
-                                (e) => e.position != elem.position
-                              ),
-                            };
-                          })
-                        }
-                      >
-                        <img src={Cross} alt="" className="moduleCrossImg" />
-                      </button>
-                    </div>
-                    <div className="moduleBlockMainText">
-                      <AutoChangedTextArea
-                        value={elem.main_text}
-                        className="moduleBlockMainTextArea"
-                        onChange={(e) =>
-                          changeBlockMainTextHandler(e, elem.position)
-                        }
-                      />
-                    </div>
+                    ))}
+              </SortableContext>
 
-                    {elem.files
-                      .sort((a, b) => a.position - b.position)
-                      .map((elem, index) => (
-                        <div className="file" key={index}>
-                          <a
-                            href={`http://127.0.0.1:8000/block/file/${elem.id}`}
-                            download
-                            key={elem.id}
-                            className="fileDownload"
-                          >
-                            <div className="fileImg">
-                              <FileIcon
-                                extension={elem.file.split(".").pop()}
-                                {...defaultStyles[formatFile(elem.file)]}
-                              />
-                            </div>
-                          </a>
-                          <div className="fileName">
-                            {elem.file.split("/").pop()}
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                ))}
-            <button className="moduleAddBlockButton" onClick={addBlockHandler}>
-              + Добавить новый Блок
-            </button>
-          </div>
+              <button
+                className="moduleAddBlockButton"
+                onClick={addBlockHandler}
+              >
+                + Добавить новый Блок
+              </button>
+            </div>
+            {/* {createPortal( */}
+            <DragOverlay dropAnimation={null}>
+              {activeBlock && (
+                // <div>Привет</div>
+                <ConstructedBlock
+                  id={`block`}
+                  elem={activeBlock}
+                  setModule={setModule}
+                  isDrag={isDrag}
+                />
+              )}
+            </DragOverlay>
+            ,
+            {/* document.body
+            )} */}
+          </DndContext>
         </div>
       ) : (
         <div className="moduleContent">
@@ -202,42 +217,7 @@ const ModuleConstructor: React.FunctionComponent = () => {
           </button>
 
           <div className="pageName">{module.name}</div>
-
-          <div className="moduleCentered">
-            {module &&
-              module.blocks
-                .sort((a, b) => a.position - b.position)
-                .map((elem, index) => (
-                  <div className="block" key={index}>
-                    <div className="blockTitle">{elem.name}</div>
-                    <div className="blockMainText">{elem.main_text}</div>
-
-                    {elem.files
-                      .sort((a, b) => a.position - b.position)
-                      .map((elem, index) => (
-                        <div className="file" key={index}>
-                          <a
-                            href={`http://127.0.0.1:8000/block/file/${elem.id}`}
-                            download
-                            key={elem.id}
-                            className="fileDownload"
-                          >
-                            <div className="fileImg">
-                              <FileIcon
-                                extension={elem.file.split(".").pop()}
-                                {...defaultStyles[formatFile(elem.file)]}
-                              />
-                            </div>
-
-                            <div className="fileName">
-                              {elem.file.split("/").pop()}
-                            </div>
-                          </a>
-                        </div>
-                      ))}
-                  </div>
-                ))}
-          </div>
+          <Module />
         </div>
       )}
     </>

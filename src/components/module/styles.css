@@ -75,3 +75,14 @@
   width: fit-content;
   display: inline-flex;
 }
+
+/* Constructed Block */
+
+.conblockDraggedBack {
+  margin-top: 30px;
+  margin-bottom: 30px;
+  width: 100%;
+  height: 134px;
+  background-color: #eee;
+  border-radius: 5px;
+}

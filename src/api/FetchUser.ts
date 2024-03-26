@@ -6,6 +6,7 @@ type typeFetchUser = {
   last_name: string;
   role: [string, string];
   linguist_roles: [string, string][];
+  curriculum: number;
 };
 
 function fetchUser(api: AxiosInstance) {

@@ -2,11 +2,13 @@ import * as React from "react";
 import { ChangeEventHandler, TextareaHTMLAttributes, useRef } from "react";
 
 interface IAutoChangedTextAreaProps
-  extends TextareaHTMLAttributes<HTMLTextAreaElement> {}
+  extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+  isDropped: boolean;
+}
 
 const AutoChangedTextArea: React.FunctionComponent<
   IAutoChangedTextAreaProps
-> = ({ ...props }) => {
+> = ({ isDropped, ...props }) => {
   const textARef = useRef<HTMLTextAreaElement>(null);
 
   const handleChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
@@ -30,6 +32,19 @@ const AutoChangedTextArea: React.FunctionComponent<
       textARef.current.scrollHeight > 60 ? textARef.current.scrollHeight : 60;
     textARef.current.style.height = scrollHeight + "px";
   }, [textARef]);
+
+  React.useEffect(() => {
+    if (!textARef || !textARef.current) return;
+
+    if (isDropped) {
+      textARef.current.style.height = "60px";
+    } else {
+      textARef.current.style.height = "0px";
+      const scrollHeight =
+        textARef.current.scrollHeight > 60 ? textARef.current.scrollHeight : 60;
+      textARef.current.style.height = scrollHeight + "px";
+    }
+  }, [isDropped]);
 
   return (
     <textarea

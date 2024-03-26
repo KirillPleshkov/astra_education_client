@@ -185,3 +185,55 @@
   transform: scale(0.85) translateY(-0.75rem) translateX(0.15rem);
   color: #03a9f4;
 }
+
+/* CurriculumPage */
+
+.curriculumSemesters {
+  margin-top: 15px;
+  margin-left: 15px;
+  padding: 7px;
+  background-color: #eee;
+  border-radius: 15px;
+  font-size: 14px;
+  width: fit-content;
+  color: inherit;
+  border: none;
+  cursor: pointer;
+  outline: inherit;
+}
+
+.curriculumSemestersActive {
+  background-color: #c0efff;
+}
+
+.curriculumDisciplineBlock {
+  border: 2px solid #afaeae;
+  width: 90%;
+  height: 100px;
+  margin: auto;
+  margin-top: 10px;
+  padding: 30px;
+}
+
+.curriculumDisciplineName {
+  margin-top: 65px;
+  margin-left: 20px;
+  color: blue;
+  font-size: 22px;
+  text-decoration: none; /* no underline */
+}
+
+.curriculumDisciplineTeacher {
+  margin-top: 15px;
+  margin-left: 15px;
+  padding: 7px;
+  background-color: #eee;
+  border-radius: 15px;
+  font-size: 14px;
+  width: fit-content;
+  color: inherit;
+  border: none;
+  cursor: pointer;
+  outline: inherit;
+  text-decoration: none;
+}

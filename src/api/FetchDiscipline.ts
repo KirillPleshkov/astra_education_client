@@ -12,8 +12,11 @@ type TypeFetchDiscipline = {
     name: string;
   }[];
   modules: {
-    pk: number;
-    name: string;
+    module: {
+      pk: number;
+      name: string;
+    };
+    position: number;
   }[];
 };
 

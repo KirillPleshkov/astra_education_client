@@ -9,6 +9,7 @@
   top: 0;
   width: 100%;
   height: 45px;
+  z-index: 1;
 }
 
 .navElement {
@@ -192,6 +193,7 @@
   padding: 0;
   overflow: hidden;
   margin-top: 2px;
+  position: absolute;
 }
 
 .searchConstructorOverflow {

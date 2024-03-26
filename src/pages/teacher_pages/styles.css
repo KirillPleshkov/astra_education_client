@@ -135,3 +135,50 @@
   overflow: hidden;
   box-sizing: border-box;
 }
+
+/* DisciplineConstructor */
+
+.disciplineAddBlock {
+  margin: 20px;
+  display: flex;
+}
+
+.disciplineBlocks {
+  overflow-x: auto;
+  display: flex;
+}
+
+.disciplineBlock {
+  width: 350px;
+  height: 480px;
+  margin-left: 20px;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+
+  border-radius: 10px;
+  border: 3px solid #5e697b4d;
+}
+
+.disciplineBlockTitle {
+  width: 100%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: #1469c8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  overflow: hidden;
+  border-radius: 8px;
+  text-overflow: ellipsis;
+  color: white;
+}
+
+.disciplineBlockModule {
+  width: 90%;
+  margin: 10px auto 10px auto;
+  height: 40px;
+  background-color: #c0efff;
+  border: 2px solid #6c8186;
+  border-radius: 8px;
+}

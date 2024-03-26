@@ -3,7 +3,6 @@ import "./style.css";
 import { Link, Outlet } from "react-router-dom";
 import { useContext, useState } from "react";
 import { TypeUserContext, userContext } from "../contexts/UserContext";
-import ReactModal from "react-modal";
 import ModalTeacherMenu from "./modal/ModalTeacherMenu";
 
 const Navbar: React.FunctionComponent = () => {
@@ -20,7 +19,7 @@ const Navbar: React.FunctionComponent = () => {
           </Link>
         </li>
         <li className="navElement">
-          <Link to={"/"} className="navElementLink">
+          <Link to={"/curriculum"} className="navElementLink">
             Учебный план
           </Link>
         </li>
