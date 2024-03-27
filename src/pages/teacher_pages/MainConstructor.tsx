@@ -8,7 +8,7 @@ import useAxios from "../../services/api";
 import { fetchModuleCreate } from "../../api/FetchModuleCreate";
 
 const MainConstructor: React.FunctionComponent = () => {
-  const [module, setModule] = useState<{ id?: number; name: string }>();
+  const [module, setModule] = useState<{ id: number; name: string }>();
 
   const navigator = useNavigate();
   const { api } = useAxios();
@@ -16,14 +16,20 @@ const MainConstructor: React.FunctionComponent = () => {
   useEffect(() => {
     if (!module) return;
 
-    if (module.id) {
-      navigator(`/module_constructor/${module.id}`);
-    } else {
-      fetchModuleCreate(api, module.name).then(({ data }) => {
-        navigator(`/module_constructor/${data.id}`);
-      });
-    }
+    navigator(`/module_constructor/${module.id}`);
+
+    // if (module.id) {
+    //   navigator(`/module_constructor/${module.id}`);
+    // } else {
+    //   fetchModuleCreate(api, module.name).then(({ data }) => {
+    //     navigator(`/module_constructor/${data.id}`);
+    //   });
+    // }
   }, [module]);
+
+  const createNewModule = (name: string) => {
+    return fetchModuleCreate(api, name);
+  };
 
   return (
     <div className="mainContent">
@@ -40,6 +46,7 @@ const MainConstructor: React.FunctionComponent = () => {
               blockName="модуля"
               useDataGet={useModuleList}
               setSelectedElement={setModule}
+              createNewF={createNewModule}
             />
           </div>
         </div>
@@ -49,6 +56,3 @@ const MainConstructor: React.FunctionComponent = () => {
 };
 
 export default MainConstructor;
-function fetchCreate(api: any, name: void) {
-  throw new Error("Function not implemented.");
-}

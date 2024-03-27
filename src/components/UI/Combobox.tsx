@@ -18,10 +18,12 @@ const Combobox: React.FunctionComponent<IComboboxProps> = (props) => {
         onBlur={() => {
           setTimeout(() => setIsFocus(false), 100);
         }}
+        style={{ width: 220 }}
+        readOnly={true}
       />
 
       {isFocus && (
-        <ul className="comboboxList">
+        <ul className="comboboxList" style={{ width: 220 }}>
           <li className="comboboxDropDownElem">
             <button
               className="comboboxDropDownButton"
