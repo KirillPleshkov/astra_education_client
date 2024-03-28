@@ -5,7 +5,6 @@
   margin-bottom: 20px;
   flex-shrink: 0;
   border-radius: 10px;
-  /* border: 3px solid #5e697b4d; */
   background-color: #eee;
 }
 
@@ -36,11 +35,58 @@
   color: white;
 }
 
+/* DisciplineBlockModule */
+
 .disciplineBlockModule {
-  width: 90%;
+  width: 320px;
   margin: 10px auto 10px auto;
   height: 40px;
   background-color: #c0efff;
   border: 2px solid #6c8186;
   border-radius: 8px;
+  display: flex;
+}
+
+.disciplineBlockModule:active {
+  cursor: grab;
+}
+
+.disciplineBlockModuleDragging {
+  width: 320px;
+  margin: 10px auto 10px auto;
+  height: 43px;
+  background-color: #eee;
+  border-radius: 8px;
+}
+
+.disciplineBlockModuleTrashIcon {
+  width: 20px;
+  height: 20px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.disciplineBlockModuleTrashButton {
+  width: 30px;
+  height: 30px;
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+  margin-top: 5px;
+}
+
+.disciplineBlockModuleText {
+  width: 90%;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

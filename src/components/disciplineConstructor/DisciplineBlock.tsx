@@ -6,7 +6,7 @@ import DisciplineBlockModule from "./DisciplineBlockModule";
 import { useMemo } from "react";
 
 interface IDisciplineBlockProps {
-  elem: {
+  discipline: {
     id: number;
     name: string;
   };
@@ -21,15 +21,20 @@ interface IDisciplineBlockProps {
     id: number;
     name: string;
     disciplineId: number;
+    dndId: number;
   }[];
+  deleteModule: (dndModuleId: number) => void;
+  disciplineTitleChange: (changedTitle: string) => void;
 }
 
 const DisciplineBlock: React.FunctionComponent<IDisciplineBlockProps> = ({
-  elem,
+  discipline,
   setDisciplineIdToChangeTitle,
   disciplineIdToChangeTitle,
   setDisciplineIdToCreateModule,
   modules,
+  deleteModule,
+  disciplineTitleChange,
 }) => {
   const {
     setNodeRef,
@@ -39,12 +44,12 @@ const DisciplineBlock: React.FunctionComponent<IDisciplineBlockProps> = ({
     transition,
     isDragging,
   } = useSortable({
-    id: elem.id,
+    id: discipline.id,
     data: {
       type: "Discipline",
-      discipline: elem,
+      discipline,
     },
-    disabled: disciplineIdToChangeTitle === elem.id,
+    disabled: disciplineIdToChangeTitle === discipline.id,
   });
 
   const style = {
@@ -52,7 +57,7 @@ const DisciplineBlock: React.FunctionComponent<IDisciplineBlockProps> = ({
     transform: CSS.Transform.toString(transform),
   };
 
-  const modulesId = useMemo(() => modules.map((e) => e.id), [modules]);
+  const modulesId = useMemo(() => modules.map((e) => e.dndId), [modules]);
 
   if (isDragging)
     return (
@@ -67,34 +72,39 @@ const DisciplineBlock: React.FunctionComponent<IDisciplineBlockProps> = ({
     <div className="disciplineBlock" ref={setNodeRef} style={style}>
       <div
         className="disciplineBlockTitle"
-        onClick={() => setDisciplineIdToChangeTitle(elem.id)}
+        onClick={() => setDisciplineIdToChangeTitle(discipline.id)}
         {...attributes}
         {...listeners}
       >
-        {disciplineIdToChangeTitle === elem.id ? (
+        {disciplineIdToChangeTitle === discipline.id ? (
           <input
             type="text"
             onBlur={() => setDisciplineIdToChangeTitle(undefined)}
             autoFocus
-            value={elem.name}
+            value={discipline.name}
             onKeyDown={(e) => {
               if (e.keyCode === 13) {
                 setDisciplineIdToChangeTitle(undefined);
               }
             }}
+            onChange={(e) => disciplineTitleChange(e.target.value)}
           />
         ) : (
-          <>{elem.name}</>
+          <>{discipline.name}</>
         )}
       </div>
 
       <SortableContext items={modulesId}>
         {modules.map((e, index) => (
-          <DisciplineBlockModule module={e} key={index} />
+          <DisciplineBlockModule
+            module={e}
+            key={index}
+            deleteModule={deleteModule}
+          />
         ))}
       </SortableContext>
 
-      <button onClick={() => setDisciplineIdToCreateModule(elem.id)}>
+      <button onClick={() => setDisciplineIdToCreateModule(discipline.id)}>
         + Добавить модуль
       </button>
     </div>

@@ -2,18 +2,22 @@ import * as React from "react";
 import "./styles.css";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import Trash from "../../images/Trash.svg";
+import { useState } from "react";
 
 interface IDisciplineBlockModuleProps {
   module: {
     id: number;
     name: string;
     disciplineId: number;
+    dndId: number;
   };
+  deleteModule: (dndModuleId: number) => void;
 }
 
 const DisciplineBlockModule: React.FunctionComponent<
   IDisciplineBlockModuleProps
-> = ({ module }) => {
+> = ({ module, deleteModule }) => {
   const {
     setNodeRef,
     attributes,
@@ -22,12 +26,14 @@ const DisciplineBlockModule: React.FunctionComponent<
     transition,
     isDragging,
   } = useSortable({
-    id: module.id,
+    id: module.dndId,
     data: {
       type: "Module",
       module: module,
     },
   });
+
+  const [isHideTrashButton, setIsHideTrashButton] = useState<boolean>(true);
 
   const style = {
     transition,
@@ -41,7 +47,7 @@ const DisciplineBlockModule: React.FunctionComponent<
         style={style}
         {...attributes}
         {...listeners}
-        className="disciplineBlockModule"
+        className="disciplineBlockModuleDragging"
       ></div>
     );
 
@@ -52,8 +58,22 @@ const DisciplineBlockModule: React.FunctionComponent<
       {...attributes}
       {...listeners}
       className="disciplineBlockModule"
+      onMouseEnter={() => setIsHideTrashButton(false)}
+      onMouseLeave={() => setIsHideTrashButton(true)}
     >
-      {module.name}
+      <div className="disciplineBlockModuleText">{module.name}</div>
+      {!isHideTrashButton && (
+        <button
+          className="disciplineBlockModuleTrashButton"
+          onClick={() => deleteModule(module.dndId)}
+        >
+          <img
+            src={Trash}
+            alt="Удалить модуль"
+            className="disciplineBlockModuleTrashIcon"
+          />
+        </button>
+      )}
     </div>
   );
 };

@@ -21,7 +21,6 @@ import {
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import DisciplineBlockModule from "../../components/disciplineConstructor/DisciplineBlockModule";
-import { QueryCache } from "@tanstack/react-query";
 
 const DisciplineConstructor: React.FunctionComponent = () => {
   const { api } = useAxios();
@@ -48,7 +47,10 @@ const DisciplineConstructor: React.FunctionComponent = () => {
   const [disciplineIdToChangeTitle, setDisciplineIdToChangeTitle] =
     useState<number>();
 
-  const columnsId = useMemo(() => disciplines.map((e) => e.id), [disciplines]);
+  const disciplinesId = useMemo(
+    () => disciplines.map((e) => e.id),
+    [disciplines]
+  );
 
   const [draggableDiscipline, setDraggableDiscipline] = useState<{
     id: number;
@@ -56,6 +58,7 @@ const DisciplineConstructor: React.FunctionComponent = () => {
   } | null>(null);
 
   const [draggableModule, setDraggableModule] = useState<{
+    dndId: number;
     id: number;
     name: string;
     disciplineId: number;
@@ -66,7 +69,7 @@ const DisciplineConstructor: React.FunctionComponent = () => {
 
     if (!disciplines.some((e) => e.id === addedDiscipline.id)) {
       setDisciplines((prev) => {
-        return [...prev, { ...addedDiscipline, modules: [] }];
+        return [...prev, { ...addedDiscipline }];
       });
     }
 
@@ -75,43 +78,23 @@ const DisciplineConstructor: React.FunctionComponent = () => {
 
   const [modules, setModules] = useState<
     {
+      dndId: number;
       id: number;
       name: string;
       disciplineId: number;
     }[]
   >([]);
 
-  // useEffect(() => {
-  //   if (!addedModule) return;
-
-  //   const noChangedDisciplines = disciplines.filter(
-  //     (e) => e.id !== disciplineIdToCreateModule
-  //   );
-  //   const changedDiscipline = disciplines.find(
-  //     (e) => e.id === disciplineIdToCreateModule
-  //   );
-
-  //   if (!changedDiscipline) return;
-
-  //   const modules = [...changedDiscipline.modules, addedModule];
-
-  //   setDisciplines([
-  //     ...noChangedDisciplines,
-  //     {
-  //       ...changedDiscipline,
-  //       modules,
-  //     },
-  //   ]);
-
-  //   setAddedModule(undefined);
-  // }, [addedModule]);
-
   useEffect(() => {
     if (!addedModule || !disciplineIdToCreateModule) return;
 
     setModules((prev) => [
       ...prev,
-      { ...addedModule, disciplineId: disciplineIdToCreateModule },
+      {
+        ...addedModule,
+        disciplineId: disciplineIdToCreateModule,
+        dndId: new Date().getTime(),
+      },
     ]);
   }, [addedModule]);
 
@@ -141,6 +124,8 @@ const DisciplineConstructor: React.FunctionComponent = () => {
 
     if (!over) return;
 
+    if (active.data.current?.type !== "Discipline") return;
+
     const activeDisciplineId = active.id;
     const overDisciplineId = over.id;
 
@@ -153,7 +138,6 @@ const DisciplineConstructor: React.FunctionComponent = () => {
       const overDisciplineIndex = prev.findIndex(
         (e) => e.id === overDisciplineId
       );
-
       return arrayMove(prev, activeDisciplineIndex, overDisciplineIndex);
     });
   };
@@ -176,9 +160,22 @@ const DisciplineConstructor: React.FunctionComponent = () => {
     if (isActiveModule && isOverModule) {
       setModules((prev) => {
         const activeModuleIndex = prev.findIndex(
-          (e) => e.id === activeModuleId
+          (e) => e.dndId === activeModuleId
         );
-        const overModuleIndex = prev.findIndex((e) => e.id === overModuleId);
+        const overModuleIndex = prev.findIndex((e) => e.dndId === overModuleId);
+
+        if (
+          prev
+            .filter(
+              (e) => e.disciplineId === prev[overModuleIndex].disciplineId
+            )
+            .some(
+              (e) =>
+                e.id === prev[activeModuleIndex].id &&
+                e.dndId !== prev[activeModuleIndex].dndId
+            )
+        )
+          return prev;
 
         prev[activeModuleIndex].disciplineId =
           prev[overModuleIndex].disciplineId;
@@ -192,8 +189,19 @@ const DisciplineConstructor: React.FunctionComponent = () => {
     if (isActiveModule && isOverADiscipline) {
       setModules((prev) => {
         const activeModuleIndex = prev.findIndex(
-          (e) => e.id === activeModuleId
+          (e) => e.dndId === activeModuleId
         );
+
+        if (
+          prev
+            .filter((e) => e.disciplineId === Number(overModuleId))
+            .some(
+              (e) =>
+                e.id === prev[activeModuleIndex].id &&
+                e.dndId !== prev[activeModuleIndex].dndId
+            )
+        )
+          return prev;
 
         prev[activeModuleIndex].disciplineId = Number(overModuleId);
 
@@ -205,6 +213,19 @@ const DisciplineConstructor: React.FunctionComponent = () => {
   const sensor = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 10 } })
   );
+
+  const deleteModule = (dndModuleId: number) => {
+    setModules((prev) => {
+      return prev.filter((e) => e.dndId !== dndModuleId);
+    });
+  };
+
+  const disciplineTitleChange = (changedTitle: string) => {
+    const newTitleDisciplines = disciplines.map((e) =>
+      e.id === disciplineIdToChangeTitle ? { ...e, name: changedTitle } : e
+    );
+    setDisciplines(newTitleDisciplines);
+  };
 
   return (
     <div className="moduleContent">
@@ -273,15 +294,17 @@ const DisciplineConstructor: React.FunctionComponent = () => {
         onDragOver={onDragOver}
       >
         <div className="disciplineBlocks">
-          <SortableContext items={columnsId}>
+          <SortableContext items={disciplinesId}>
             {disciplines.map((elem) => (
               <DisciplineBlock
                 key={elem.id}
-                elem={elem}
+                discipline={elem}
                 disciplineIdToChangeTitle={disciplineIdToChangeTitle}
                 setDisciplineIdToChangeTitle={setDisciplineIdToChangeTitle}
                 setDisciplineIdToCreateModule={setDisciplineIdToCreateModule}
                 modules={modules.filter((e) => e.disciplineId === elem.id)}
+                deleteModule={deleteModule}
+                disciplineTitleChange={disciplineTitleChange}
               />
             ))}
           </SortableContext>
@@ -290,17 +313,22 @@ const DisciplineConstructor: React.FunctionComponent = () => {
           <DragOverlay>
             {draggableDiscipline && (
               <DisciplineBlock
-                elem={draggableDiscipline}
+                discipline={draggableDiscipline}
                 disciplineIdToChangeTitle={disciplineIdToChangeTitle}
                 setDisciplineIdToChangeTitle={setDisciplineIdToChangeTitle}
                 setDisciplineIdToCreateModule={setDisciplineIdToCreateModule}
                 modules={modules.filter(
                   (e) => e.disciplineId === draggableDiscipline.id
                 )}
+                deleteModule={deleteModule}
+                disciplineTitleChange={disciplineTitleChange}
               />
             )}
             {draggableModule && (
-              <DisciplineBlockModule module={draggableModule} />
+              <DisciplineBlockModule
+                module={draggableModule}
+                deleteModule={deleteModule}
+              />
             )}
           </DragOverlay>,
           document.body
