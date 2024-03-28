@@ -27,7 +27,6 @@ const DisciplineBlockModule: React.FunctionComponent<
       type: "Module",
       module: module,
     },
-    // disabled: disciplineIdToChangeTitle === elem.id,
   });
 
   const style = {
