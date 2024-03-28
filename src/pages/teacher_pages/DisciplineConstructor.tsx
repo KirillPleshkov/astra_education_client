@@ -2,11 +2,26 @@ import * as React from "react";
 import "./styles.css";
 import SearchConstructor from "../../components/SearchConstructor";
 import { useDisciplineList } from "../../hooks/UseDisciplineList";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Combobox from "../../components/UI/Combobox";
 import { useModuleList } from "../../hooks/UseModuleList";
 import { fetchDisciplineCreate } from "../../api/FetchDisciplineCreate";
 import useAxios from "../../services/api";
+import DisciplineBlock from "../../components/disciplineConstructor/DisciplineBlock";
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverEvent,
+  DragOverlay,
+  DragStartEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { arrayMove, SortableContext } from "@dnd-kit/sortable";
+import { createPortal } from "react-dom";
+import DisciplineBlockModule from "../../components/disciplineConstructor/DisciplineBlockModule";
+import { QueryCache } from "@tanstack/react-query";
 
 const DisciplineConstructor: React.FunctionComponent = () => {
   const { api } = useAxios();
@@ -24,10 +39,6 @@ const DisciplineConstructor: React.FunctionComponent = () => {
     {
       id: number;
       name: string;
-      modules: {
-        id: number;
-        name: string;
-      }[];
     }[]
   >([]);
 
@@ -36,6 +47,19 @@ const DisciplineConstructor: React.FunctionComponent = () => {
 
   const [disciplineIdToChangeTitle, setDisciplineIdToChangeTitle] =
     useState<number>();
+
+  const columnsId = useMemo(() => disciplines.map((e) => e.id), [disciplines]);
+
+  const [draggableDiscipline, setDraggableDiscipline] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
+
+  const [draggableModule, setDraggableModule] = useState<{
+    id: number;
+    name: string;
+    disciplineId: number;
+  } | null>(null);
 
   useEffect(() => {
     if (!addedDiscipline) return;
@@ -49,36 +73,47 @@ const DisciplineConstructor: React.FunctionComponent = () => {
     setAddedDiscipline(undefined);
   }, [addedDiscipline]);
 
+  const [modules, setModules] = useState<
+    {
+      id: number;
+      name: string;
+      disciplineId: number;
+    }[]
+  >([]);
+
+  // useEffect(() => {
+  //   if (!addedModule) return;
+
+  //   const noChangedDisciplines = disciplines.filter(
+  //     (e) => e.id !== disciplineIdToCreateModule
+  //   );
+  //   const changedDiscipline = disciplines.find(
+  //     (e) => e.id === disciplineIdToCreateModule
+  //   );
+
+  //   if (!changedDiscipline) return;
+
+  //   const modules = [...changedDiscipline.modules, addedModule];
+
+  //   setDisciplines([
+  //     ...noChangedDisciplines,
+  //     {
+  //       ...changedDiscipline,
+  //       modules,
+  //     },
+  //   ]);
+
+  //   setAddedModule(undefined);
+  // }, [addedModule]);
+
   useEffect(() => {
-    if (!addedModule) return;
+    if (!addedModule || !disciplineIdToCreateModule) return;
 
-    const noChangedDisciplines = disciplines.filter(
-      (e) => e.id !== disciplineIdToCreateModule
-    );
-    const changedDiscipline = disciplines.find(
-      (e) => e.id === disciplineIdToCreateModule
-    );
-
-    if (!changedDiscipline) return;
-
-    const modules = [...changedDiscipline.modules, addedModule];
-
-    setDisciplines([
-      ...noChangedDisciplines,
-      {
-        ...changedDiscipline,
-        modules,
-      },
+    setModules((prev) => [
+      ...prev,
+      { ...addedModule, disciplineId: disciplineIdToCreateModule },
     ]);
-
-    setAddedModule(undefined);
   }, [addedModule]);
-
-  useEffect(() => {
-    if (!disciplineIdToCreateModule) return;
-  }, [disciplineIdToCreateModule]);
-
-  console.log(disciplines);
 
   const createNewDiscipline = (name: string) => {
     return fetchDisciplineCreate(api, name);
@@ -87,6 +122,89 @@ const DisciplineConstructor: React.FunctionComponent = () => {
   const onBlurSearch = () => {
     setDisciplineIdToCreateModule(undefined);
   };
+
+  const onDragStart = (e: DragStartEvent) => {
+    if (e.active.data.current?.type === "Discipline") {
+      setDraggableDiscipline(e.active.data.current?.discipline);
+    }
+
+    if (e.active.data.current?.type === "Module") {
+      setDraggableModule(e.active.data.current?.module);
+    }
+  };
+
+  const onDragEnd = (e: DragEndEvent) => {
+    setDraggableDiscipline(null);
+    setDraggableModule(null);
+
+    const { active, over } = e;
+
+    if (!over) return;
+
+    const activeDisciplineId = active.id;
+    const overDisciplineId = over.id;
+
+    if (activeDisciplineId === overDisciplineId) return;
+
+    setDisciplines((prev) => {
+      const activeDisciplineIndex = prev.findIndex(
+        (e) => e.id === activeDisciplineId
+      );
+      const overDisciplineIndex = prev.findIndex(
+        (e) => e.id === overDisciplineId
+      );
+
+      return arrayMove(prev, activeDisciplineIndex, overDisciplineIndex);
+    });
+  };
+
+  const onDragOver = (e: DragOverEvent) => {
+    const { active, over } = e;
+
+    if (!over) return;
+
+    const activeModuleId = active.id;
+    const overModuleId = over.id;
+
+    if (activeModuleId === overModuleId) return;
+
+    const isActiveModule = active.data.current?.type === "Module";
+    const isOverModule = over.data.current?.type === "Module";
+
+    if (!isActiveModule) return;
+
+    if (isActiveModule && isOverModule) {
+      setModules((prev) => {
+        const activeModuleIndex = prev.findIndex(
+          (e) => e.id === activeModuleId
+        );
+        const overModuleIndex = prev.findIndex((e) => e.id === overModuleId);
+
+        prev[activeModuleIndex].disciplineId =
+          prev[overModuleIndex].disciplineId;
+
+        return arrayMove(prev, activeModuleIndex, overModuleIndex);
+      });
+    }
+
+    const isOverADiscipline = over.data.current?.type === "Discipline";
+
+    if (isActiveModule && isOverADiscipline) {
+      setModules((prev) => {
+        const activeModuleIndex = prev.findIndex(
+          (e) => e.id === activeModuleId
+        );
+
+        prev[activeModuleIndex].disciplineId = Number(overModuleId);
+
+        return arrayMove(prev, activeModuleIndex, activeModuleIndex);
+      });
+    }
+  };
+
+  const sensor = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 10 } })
+  );
 
   return (
     <div className="moduleContent">
@@ -145,45 +263,49 @@ const DisciplineConstructor: React.FunctionComponent = () => {
         )}
 
         <div style={{ marginLeft: "30px", marginTop: "24px" }}>
-          <button>Сохранить изменения</button>
+          <button>Сохранить все</button>
         </div>
       </div>
-      <div className="disciplineBlocks">
-        {disciplines.map((elem) => (
-          <div className="disciplineBlock" key={elem.id}>
-            <div
-              className="disciplineBlockTitle"
-              onClick={() => setDisciplineIdToChangeTitle(elem.id)}
-            >
-              {disciplineIdToChangeTitle === elem.id ? (
-                <input
-                  type="text"
-                  onBlur={() => setDisciplineIdToChangeTitle(undefined)}
-                  autoFocus
-                  value={elem.name}
-                  onKeyDown={(e) => {
-                    if (e.keyCode === 13) {
-                      setDisciplineIdToChangeTitle(undefined);
-                    }
-                  }}
-                />
-              ) : (
-                <>{elem.name}</>
-              )}
-            </div>
-
-            {elem.modules.map((e, index) => (
-              <div className="disciplineBlockModule" key={index}>
-                {e.name}
-              </div>
+      <DndContext
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+        sensors={sensor}
+        onDragOver={onDragOver}
+      >
+        <div className="disciplineBlocks">
+          <SortableContext items={columnsId}>
+            {disciplines.map((elem) => (
+              <DisciplineBlock
+                key={elem.id}
+                elem={elem}
+                disciplineIdToChangeTitle={disciplineIdToChangeTitle}
+                setDisciplineIdToChangeTitle={setDisciplineIdToChangeTitle}
+                setDisciplineIdToCreateModule={setDisciplineIdToCreateModule}
+                modules={modules.filter((e) => e.disciplineId === elem.id)}
+              />
             ))}
-
-            <button onClick={() => setDisciplineIdToCreateModule(elem.id)}>
-              + Добавить модуль
-            </button>
-          </div>
-        ))}
-      </div>
+          </SortableContext>
+        </div>
+        {createPortal(
+          <DragOverlay>
+            {draggableDiscipline && (
+              <DisciplineBlock
+                elem={draggableDiscipline}
+                disciplineIdToChangeTitle={disciplineIdToChangeTitle}
+                setDisciplineIdToChangeTitle={setDisciplineIdToChangeTitle}
+                setDisciplineIdToCreateModule={setDisciplineIdToCreateModule}
+                modules={modules.filter(
+                  (e) => e.disciplineId === draggableDiscipline.id
+                )}
+              />
+            )}
+            {draggableModule && (
+              <DisciplineBlockModule module={draggableModule} />
+            )}
+          </DragOverlay>,
+          document.body
+        )}
+      </DndContext>
     </div>
   );
 };
