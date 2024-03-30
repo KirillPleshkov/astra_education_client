@@ -3,21 +3,18 @@ import "./styles.css";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import Trash from "../../images/Trash.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { DisciplineElement } from "../../pages/teacher_pages/DisciplineConstructor";
 
-interface IDisciplineBlockModuleProps {
-  module: {
-    id: number;
-    name: string;
-    disciplineId: number;
-    dndId: number;
-  };
-  deleteModule: (dndModuleId: number) => void;
+interface IDisciplineBlockElementProps {
+  element: DisciplineElement;
+  deleteElement: (dndModuleId: number) => void;
+  isOverlay?: true;
 }
 
-const DisciplineBlockModule: React.FunctionComponent<
-  IDisciplineBlockModuleProps
-> = ({ module, deleteModule }) => {
+const DisciplineBlockElement: React.FunctionComponent<
+  IDisciplineBlockElementProps
+> = ({ element, deleteElement, isOverlay }) => {
   const {
     setNodeRef,
     attributes,
@@ -26,10 +23,10 @@ const DisciplineBlockModule: React.FunctionComponent<
     transition,
     isDragging,
   } = useSortable({
-    id: module.dndId,
+    id: element.dndId,
     data: {
-      type: "Module",
-      module: module,
+      type: "Element",
+      element,
     },
   });
 
@@ -39,6 +36,10 @@ const DisciplineBlockModule: React.FunctionComponent<
     transition,
     transform: CSS.Transform.toString(transform),
   };
+
+  useEffect(() => {
+    setIsHideTrashButton(true);
+  }, [element, isDragging]);
 
   if (isDragging)
     return (
@@ -61,15 +62,15 @@ const DisciplineBlockModule: React.FunctionComponent<
       onMouseEnter={() => setIsHideTrashButton(false)}
       onMouseLeave={() => setIsHideTrashButton(true)}
     >
-      <div className="disciplineBlockModuleText">{module.name}</div>
-      {!isHideTrashButton && (
+      <div className="disciplineBlockModuleText">{element.name}</div>
+      {!isHideTrashButton && !isOverlay && (
         <button
           className="disciplineBlockModuleTrashButton"
-          onClick={() => deleteModule(module.dndId)}
+          onClick={() => deleteElement(element.dndId)}
         >
           <img
             src={Trash}
-            alt="Удалить модуль"
+            alt="Удалить элемент"
             className="disciplineBlockModuleTrashIcon"
           />
         </button>
@@ -78,4 +79,4 @@ const DisciplineBlockModule: React.FunctionComponent<
   );
 };
 
-export default DisciplineBlockModule;
+export default DisciplineBlockElement;

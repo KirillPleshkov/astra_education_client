@@ -2,8 +2,9 @@ import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import * as React from "react";
 import { CSS } from "@dnd-kit/utilities";
 import "./styles.css";
-import DisciplineBlockModule from "./DisciplineBlockModule";
+import DisciplineBlockElement from "./DisciplineBlockElement";
 import { useMemo } from "react";
+import { Mode } from "../UI/Combobox";
 
 interface IDisciplineBlockProps {
   discipline: {
@@ -14,27 +15,29 @@ interface IDisciplineBlockProps {
     React.SetStateAction<number | undefined>
   >;
   disciplineIdToChangeTitle: number | undefined;
-  setDisciplineIdToCreateModule: React.Dispatch<
+  setDisciplineIdToCreateElement: React.Dispatch<
     React.SetStateAction<number | undefined>
   >;
-  modules: {
+  elements: {
     id: number;
     name: string;
     disciplineId: number;
     dndId: number;
   }[];
-  deleteModule: (dndModuleId: number) => void;
+  deleteElement: (dndModuleId: number) => void;
   disciplineTitleChange: (changedTitle: string) => void;
+  mode: Mode;
 }
 
 const DisciplineBlock: React.FunctionComponent<IDisciplineBlockProps> = ({
   discipline,
   setDisciplineIdToChangeTitle,
   disciplineIdToChangeTitle,
-  setDisciplineIdToCreateModule,
-  modules,
-  deleteModule,
+  setDisciplineIdToCreateElement,
+  elements,
+  deleteElement,
   disciplineTitleChange,
+  mode,
 }) => {
   const {
     setNodeRef,
@@ -57,7 +60,7 @@ const DisciplineBlock: React.FunctionComponent<IDisciplineBlockProps> = ({
     transform: CSS.Transform.toString(transform),
   };
 
-  const modulesId = useMemo(() => modules.map((e) => e.dndId), [modules]);
+  const modulesId = useMemo(() => elements.map((e) => e.dndId), [elements]);
 
   if (isDragging)
     return (
@@ -78,8 +81,11 @@ const DisciplineBlock: React.FunctionComponent<IDisciplineBlockProps> = ({
       >
         {disciplineIdToChangeTitle === discipline.id ? (
           <input
+            className="disciplineBlockTitleInput"
             type="text"
-            onBlur={() => setDisciplineIdToChangeTitle(undefined)}
+            onBlur={() =>
+              setTimeout(() => setDisciplineIdToChangeTitle(undefined), 100)
+            }
             autoFocus
             value={discipline.name}
             onKeyDown={(e) => {
@@ -94,18 +100,25 @@ const DisciplineBlock: React.FunctionComponent<IDisciplineBlockProps> = ({
         )}
       </div>
 
-      <SortableContext items={modulesId}>
-        {modules.map((e, index) => (
-          <DisciplineBlockModule
-            module={e}
-            key={index}
-            deleteModule={deleteModule}
-          />
-        ))}
-      </SortableContext>
+      <div className="disciplineBlockModules">
+        <SortableContext items={modulesId}>
+          {elements.map((element, index) => (
+            <DisciplineBlockElement
+              element={element}
+              key={index}
+              deleteElement={deleteElement}
+            />
+          ))}
+        </SortableContext>
+      </div>
 
-      <button onClick={() => setDisciplineIdToCreateModule(discipline.id)}>
-        + Добавить модуль
+      <button
+        onClick={() => setDisciplineIdToCreateElement(discipline.id)}
+        className="disciplineBlockAddModuleButton"
+      >
+        {mode === Mode.Modules && <>+ Добавить модуль</>}
+        {mode === Mode.Skills && <>+ Добавить навык</>}
+        {mode === Mode.Products && <>+ Добавить продукт</>}
       </button>
     </div>
   );

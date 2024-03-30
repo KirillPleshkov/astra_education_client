@@ -9,6 +9,7 @@ interface ISearchConstructor {
   blockName: string;
   useDataGet: (name: string) => { name: string; id: number }[] | undefined;
   setSelectedElement: ({ id, name }: { id: number; name: string }) => void;
+  createText: string;
   width?: number;
   createNewF?: (
     name: string
@@ -25,6 +26,7 @@ const SearchConstructor: React.FunctionComponent<ISearchConstructor> = ({
   createNewF,
   onBlur,
   autoFocus,
+  createText,
 }) => {
   const [inputName, setInputName] = useState<string>("");
   const [isFocusInput, setIsFocusInput] = useState<boolean>(false);
@@ -67,9 +69,10 @@ const SearchConstructor: React.FunctionComponent<ISearchConstructor> = ({
                       createNewF(name).then(({ data }) => {
                         setSelectedElement(data);
                       });
+                      setInputName("");
                     }}
                   >
-                    + Создать новый модуль с введенным названием
+                    {createText}
                   </button>
                 </li>
               )}
@@ -81,7 +84,10 @@ const SearchConstructor: React.FunctionComponent<ISearchConstructor> = ({
                 <li className="searchConstructorDropDownElem" key={el.id}>
                   <button
                     className="searchConstructorDropDownCreate"
-                    onClick={() => setSelectedElement(el)}
+                    onClick={() => {
+                      setSelectedElement(el);
+                      setInputName("");
+                    }}
                   >
                     {el.name}
                   </button>

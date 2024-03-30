@@ -2,8 +2,8 @@ import * as React from "react";
 import "./styles.css";
 import SearchConstructor from "../../components/SearchConstructor";
 import { useDisciplineList } from "../../hooks/UseDisciplineList";
-import { useEffect, useMemo, useState } from "react";
-import Combobox from "../../components/UI/Combobox";
+import { useMemo, useState } from "react";
+import Combobox, { Mode } from "../../components/UI/Combobox";
 import { useModuleList } from "../../hooks/UseModuleList";
 import { fetchDisciplineCreate } from "../../api/FetchDisciplineCreate";
 import useAxios from "../../services/api";
@@ -20,28 +20,42 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
-import DisciplineBlockModule from "../../components/disciplineConstructor/DisciplineBlockModule";
+import DisciplineBlockElement from "../../components/disciplineConstructor/DisciplineBlockElement";
+import { useProductList } from "../../hooks/UseProductList";
+import { useSkillList } from "../../hooks/UseSkillList";
+
+export type Discipline = {
+  id: number;
+  name: string;
+};
+
+export type DisciplineElement = {
+  dndId: number;
+  id: number;
+  name: string;
+  disciplineId: number;
+};
 
 const DisciplineConstructor: React.FunctionComponent = () => {
   const { api } = useAxios();
 
-  const [addedDiscipline, setAddedDiscipline] = useState<{
-    id: number;
-    name: string;
-  }>();
-  const [addedModule, setAddedModule] = useState<{
-    id: number;
-    name: string;
-  }>();
+  const [mode, setMode] = useState<Mode>(Mode.Modules);
 
-  const [disciplines, setDisciplines] = useState<
-    {
-      id: number;
-      name: string;
-    }[]
-  >([]);
+  const [disciplines, setDisciplines] = useState<Discipline[]>([]);
 
-  const [disciplineIdToCreateModule, setDisciplineIdToCreateModule] =
+  const [modules, setModules] = useState<DisciplineElement[]>([]);
+
+  const [skills, setSkills] = useState<DisciplineElement[]>([]);
+
+  const [products, setProducts] = useState<DisciplineElement[]>([]);
+
+  const [draggableDiscipline, setDraggableDiscipline] =
+    useState<Discipline | null>(null);
+
+  const [draggableElement, setDraggableElement] =
+    useState<DisciplineElement | null>(null);
+
+  const [disciplineIdToCreateElement, setDisciplineIdToCreateElement] =
     useState<number>();
 
   const [disciplineIdToChangeTitle, setDisciplineIdToChangeTitle] =
@@ -52,58 +66,37 @@ const DisciplineConstructor: React.FunctionComponent = () => {
     [disciplines]
   );
 
-  const [draggableDiscipline, setDraggableDiscipline] = useState<{
-    id: number;
-    name: string;
-  } | null>(null);
-
-  const [draggableModule, setDraggableModule] = useState<{
-    dndId: number;
-    id: number;
-    name: string;
-    disciplineId: number;
-  } | null>(null);
-
-  useEffect(() => {
-    if (!addedDiscipline) return;
-
-    if (!disciplines.some((e) => e.id === addedDiscipline.id)) {
+  const addDiscipline = ({ id, name }: { id: number; name: string }) => {
+    if (!disciplines.some((e) => e.id === id)) {
       setDisciplines((prev) => {
-        return [...prev, { ...addedDiscipline }];
+        return [...prev, { id, name }];
       });
     }
+  };
 
-    setAddedDiscipline(undefined);
-  }, [addedDiscipline]);
+  const addElement = ({ id, name }: { id: number; name: string }) => {
+    if (!disciplineIdToCreateElement) return;
 
-  const [modules, setModules] = useState<
-    {
-      dndId: number;
-      id: number;
-      name: string;
-      disciplineId: number;
-    }[]
-  >([]);
+    const newElement = {
+      id,
+      name,
+      disciplineId: disciplineIdToCreateElement,
+      dndId: new Date().getTime(),
+    };
 
-  useEffect(() => {
-    if (!addedModule || !disciplineIdToCreateModule) return;
+    if (mode === Mode.Modules) setModules((prev) => [...prev, newElement]);
 
-    setModules((prev) => [
-      ...prev,
-      {
-        ...addedModule,
-        disciplineId: disciplineIdToCreateModule,
-        dndId: new Date().getTime(),
-      },
-    ]);
-  }, [addedModule]);
+    if (mode === Mode.Skills) setSkills((prev) => [...prev, newElement]);
+
+    if (mode === Mode.Products) setProducts((prev) => [...prev, newElement]);
+  };
 
   const createNewDiscipline = (name: string) => {
     return fetchDisciplineCreate(api, name);
   };
 
   const onBlurSearch = () => {
-    setDisciplineIdToCreateModule(undefined);
+    setDisciplineIdToCreateElement(undefined);
   };
 
   const onDragStart = (e: DragStartEvent) => {
@@ -111,14 +104,14 @@ const DisciplineConstructor: React.FunctionComponent = () => {
       setDraggableDiscipline(e.active.data.current?.discipline);
     }
 
-    if (e.active.data.current?.type === "Module") {
-      setDraggableModule(e.active.data.current?.module);
+    if (e.active.data.current?.type === "Element") {
+      setDraggableElement(e.active.data.current?.element);
     }
   };
 
   const onDragEnd = (e: DragEndEvent) => {
     setDraggableDiscipline(null);
-    setDraggableModule(null);
+    setDraggableElement(null);
 
     const { active, over } = e;
 
@@ -152,13 +145,13 @@ const DisciplineConstructor: React.FunctionComponent = () => {
 
     if (activeModuleId === overModuleId) return;
 
-    const isActiveModule = active.data.current?.type === "Module";
-    const isOverModule = over.data.current?.type === "Module";
+    const isActiveModule = active.data.current?.type === "Element";
+    const isOverModule = over.data.current?.type === "Element";
 
     if (!isActiveModule) return;
 
     if (isActiveModule && isOverModule) {
-      setModules((prev) => {
+      const swapElements = (prev: DisciplineElement[]) => {
         const activeModuleIndex = prev.findIndex(
           (e) => e.dndId === activeModuleId
         );
@@ -181,13 +174,17 @@ const DisciplineConstructor: React.FunctionComponent = () => {
           prev[overModuleIndex].disciplineId;
 
         return arrayMove(prev, activeModuleIndex, overModuleIndex);
-      });
+      };
+
+      if (mode === Mode.Modules) setModules(swapElements);
+      if (mode === Mode.Products) setProducts(swapElements);
+      if (mode === Mode.Skills) setSkills(swapElements);
     }
 
     const isOverADiscipline = over.data.current?.type === "Discipline";
 
     if (isActiveModule && isOverADiscipline) {
-      setModules((prev) => {
+      const elementMoveToBlock = (prev: DisciplineElement[]) => {
         const activeModuleIndex = prev.findIndex(
           (e) => e.dndId === activeModuleId
         );
@@ -206,7 +203,11 @@ const DisciplineConstructor: React.FunctionComponent = () => {
         prev[activeModuleIndex].disciplineId = Number(overModuleId);
 
         return arrayMove(prev, activeModuleIndex, activeModuleIndex);
-      });
+      };
+
+      if (mode === Mode.Modules) setModules(elementMoveToBlock);
+      if (mode === Mode.Products) setProducts(elementMoveToBlock);
+      if (mode === Mode.Skills) setSkills(elementMoveToBlock);
     }
   };
 
@@ -214,10 +215,24 @@ const DisciplineConstructor: React.FunctionComponent = () => {
     useSensor(PointerSensor, { activationConstraint: { distance: 10 } })
   );
 
-  const deleteModule = (dndModuleId: number) => {
-    setModules((prev) => {
-      return prev.filter((e) => e.dndId !== dndModuleId);
-    });
+  const deleteElement = (dndElementId: number) => {
+    if (mode === Mode.Modules) {
+      setModules((prev) => {
+        return prev.filter((e) => e.dndId !== dndElementId);
+      });
+    }
+
+    if (mode === Mode.Skills) {
+      setSkills((prev) => {
+        return prev.filter((e) => e.dndId !== dndElementId);
+      });
+    }
+
+    if (mode === Mode.Products) {
+      setProducts((prev) => {
+        return prev.filter((e) => e.dndId !== dndElementId);
+      });
+    }
   };
 
   const disciplineTitleChange = (changedTitle: string) => {
@@ -227,26 +242,93 @@ const DisciplineConstructor: React.FunctionComponent = () => {
     setDisciplines(newTitleDisciplines);
   };
 
+  const removeDiscipline = () => {
+    setModules((prev) => {
+      return prev.filter((e) => e.disciplineId !== disciplineIdToChangeTitle);
+    });
+    setProducts((prev) => {
+      return prev.filter((e) => e.disciplineId !== disciplineIdToChangeTitle);
+    });
+    setSkills((prev) => {
+      return prev.filter((e) => e.disciplineId !== disciplineIdToChangeTitle);
+    });
+
+    setDisciplines((prev) => {
+      return prev.filter((e) => e.id !== disciplineIdToChangeTitle);
+    });
+  };
+
+  const elements =
+    mode === Mode.Modules ? modules : mode === Mode.Skills ? skills : products;
+
+  console.log(modules);
+
   return (
     <div className="moduleContent">
       <div className="pageName">Конструктор дисциплин</div>
       <div className="disciplineAddBlock">
-        {disciplineIdToCreateModule ? (
-          <div>
-            <label className="searchConstructorText-field__label">
-              Введите название модуля
-            </label>
-            <div style={{ width: "500px" }}>
-              <SearchConstructor
-                blockName="модуля"
-                useDataGet={useModuleList}
-                setSelectedElement={setAddedModule}
-                width={500}
-                onBlur={onBlurSearch}
-                autoFocus={true}
-              />
-            </div>
-          </div>
+        {disciplineIdToCreateElement ? (
+          <>
+            {mode === Mode.Modules && (
+              <div>
+                <label className="searchConstructorText-field__label">
+                  Введите название модуля
+                </label>
+                <div style={{ width: "500px" }}>
+                  <SearchConstructor
+                    key={1}
+                    blockName="модуля"
+                    useDataGet={useModuleList}
+                    setSelectedElement={addElement}
+                    width={500}
+                    onBlur={onBlurSearch}
+                    autoFocus={true}
+                    createText=""
+                  />
+                </div>
+              </div>
+            )}
+
+            {mode === Mode.Products && (
+              <div>
+                <label className="searchConstructorText-field__label">
+                  Введите название продукта
+                </label>
+                <div style={{ width: "500px" }}>
+                  <SearchConstructor
+                    key={1}
+                    blockName="продукта"
+                    useDataGet={useProductList}
+                    setSelectedElement={addElement}
+                    width={500}
+                    onBlur={onBlurSearch}
+                    autoFocus={true}
+                    createText=""
+                  />
+                </div>
+              </div>
+            )}
+
+            {mode === Mode.Skills && (
+              <div>
+                <label className="searchConstructorText-field__label">
+                  Введите название навыка
+                </label>
+                <div style={{ width: "500px" }}>
+                  <SearchConstructor
+                    key={1}
+                    blockName="навыка"
+                    useDataGet={useSkillList}
+                    setSelectedElement={addElement}
+                    width={500}
+                    onBlur={onBlurSearch}
+                    autoFocus={true}
+                    createText=""
+                  />
+                </div>
+              </div>
+            )}
+          </>
         ) : (
           <div>
             <label className="searchConstructorText-field__label">
@@ -254,11 +336,13 @@ const DisciplineConstructor: React.FunctionComponent = () => {
             </label>
             <div style={{ width: "500px" }}>
               <SearchConstructor
+                key={2}
                 blockName="дисциплины"
                 useDataGet={useDisciplineList}
-                setSelectedElement={setAddedDiscipline}
+                setSelectedElement={addDiscipline}
                 width={500}
                 createNewF={createNewDiscipline}
+                createText="+ Создать новую дисциплину с введенным названием"
               />
             </div>
           </div>
@@ -268,13 +352,15 @@ const DisciplineConstructor: React.FunctionComponent = () => {
           <label className="searchConstructorText-field__label">
             Вверите режим
           </label>
-          <Combobox />
+          <Combobox mode={mode} setMode={setMode} />
         </div>
 
         {disciplineIdToChangeTitle && (
           <>
             <div style={{ marginLeft: "30px", marginTop: "24px" }}>
-              <button>Убрать дисциплину</button>
+              <button onClick={() => removeDiscipline()}>
+                Убрать дисциплину
+              </button>
             </div>
 
             <div style={{ marginLeft: "30px", marginTop: "24px" }}>
@@ -301,10 +387,11 @@ const DisciplineConstructor: React.FunctionComponent = () => {
                 discipline={elem}
                 disciplineIdToChangeTitle={disciplineIdToChangeTitle}
                 setDisciplineIdToChangeTitle={setDisciplineIdToChangeTitle}
-                setDisciplineIdToCreateModule={setDisciplineIdToCreateModule}
-                modules={modules.filter((e) => e.disciplineId === elem.id)}
-                deleteModule={deleteModule}
+                setDisciplineIdToCreateElement={setDisciplineIdToCreateElement}
+                elements={elements.filter((e) => e.disciplineId === elem.id)}
+                deleteElement={deleteElement}
                 disciplineTitleChange={disciplineTitleChange}
+                mode={mode}
               />
             ))}
           </SortableContext>
@@ -316,18 +403,20 @@ const DisciplineConstructor: React.FunctionComponent = () => {
                 discipline={draggableDiscipline}
                 disciplineIdToChangeTitle={disciplineIdToChangeTitle}
                 setDisciplineIdToChangeTitle={setDisciplineIdToChangeTitle}
-                setDisciplineIdToCreateModule={setDisciplineIdToCreateModule}
-                modules={modules.filter(
+                setDisciplineIdToCreateElement={setDisciplineIdToCreateElement}
+                elements={elements.filter(
                   (e) => e.disciplineId === draggableDiscipline.id
                 )}
-                deleteModule={deleteModule}
+                deleteElement={deleteElement}
                 disciplineTitleChange={disciplineTitleChange}
+                mode={mode}
               />
             )}
-            {draggableModule && (
-              <DisciplineBlockModule
-                module={draggableModule}
-                deleteModule={deleteModule}
+            {draggableElement && (
+              <DisciplineBlockElement
+                element={draggableElement}
+                deleteElement={deleteElement}
+                isOverlay={true}
               />
             )}
           </DragOverlay>,

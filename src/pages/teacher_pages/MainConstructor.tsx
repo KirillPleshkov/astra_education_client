@@ -43,6 +43,7 @@ const MainConstructor: React.FunctionComponent = () => {
               Введите название модуля
             </label>
             <SearchConstructor
+              createText="+ Создать новый модуль с введенным названием"
               blockName="модуля"
               useDataGet={useModuleList}
               setSelectedElement={setModule}

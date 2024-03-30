@@ -2,11 +2,23 @@ import * as React from "react";
 import "./styles.css";
 import { useState } from "react";
 
-interface IComboboxProps {}
+export enum Mode {
+  Modules = "Модули",
+  Skills = "Навыки",
+  Products = "Продукты",
+  Description = "Описание",
+}
 
-const Combobox: React.FunctionComponent<IComboboxProps> = (props) => {
+interface IComboboxProps {
+  setMode: (mode: Mode) => void;
+  mode: Mode;
+}
+
+const Combobox: React.FunctionComponent<IComboboxProps> = ({
+  setMode,
+  mode,
+}) => {
   const [isFocus, setIsFocus] = useState<boolean>(false);
-  const [mode, setMode] = useState<string>("Модули");
 
   return (
     <>
@@ -18,16 +30,16 @@ const Combobox: React.FunctionComponent<IComboboxProps> = (props) => {
         onBlur={() => {
           setTimeout(() => setIsFocus(false), 100);
         }}
-        style={{ width: 220 }}
+        style={{ width: 130 }}
         readOnly={true}
       />
 
       {isFocus && (
-        <ul className="comboboxList" style={{ width: 220 }}>
+        <ul className="comboboxList" style={{ width: 130 }}>
           <li className="comboboxDropDownElem">
             <button
               className="comboboxDropDownButton"
-              onClick={() => setMode("Модули")}
+              onClick={() => setMode(Mode.Modules)}
             >
               Модули
             </button>
@@ -36,7 +48,7 @@ const Combobox: React.FunctionComponent<IComboboxProps> = (props) => {
           <li className="comboboxDropDownElem">
             <button
               className="comboboxDropDownButton"
-              onClick={() => setMode("Навыки")}
+              onClick={() => setMode(Mode.Skills)}
             >
               Навыки
             </button>
@@ -45,16 +57,16 @@ const Combobox: React.FunctionComponent<IComboboxProps> = (props) => {
           <li className="comboboxDropDownElem">
             <button
               className="comboboxDropDownButton"
-              onClick={() => setMode("Продукты группы Астра")}
+              onClick={() => setMode(Mode.Products)}
             >
-              Продукты груммы Астра
+              Продукты
             </button>
           </li>
 
           <li className="comboboxDropDownElem">
             <button
               className="comboboxDropDownButton"
-              onClick={() => setMode("Описание")}
+              onClick={() => setMode(Mode.Description)}
             >
               Описание
             </button>
