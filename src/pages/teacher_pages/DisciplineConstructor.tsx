@@ -5,7 +5,7 @@ import { useDisciplineList } from "../../hooks/UseDisciplineList";
 import { useMemo, useState } from "react";
 import Combobox, { Mode } from "../../components/UI/Combobox";
 import { useModuleList } from "../../hooks/UseModuleList";
-import { fetchDisciplineCreate } from "../../api/FetchDisciplineCreate";
+import { fetchDisciplineCreate } from "../../api/Discipline/FetchDisciplineCreate";
 import useAxios from "../../services/api";
 import DisciplineBlock from "../../components/disciplineConstructor/DisciplineBlock";
 import {
@@ -23,10 +23,19 @@ import { createPortal } from "react-dom";
 import DisciplineBlockElement from "../../components/disciplineConstructor/DisciplineBlockElement";
 import { useProductList } from "../../hooks/UseProductList";
 import { useSkillList } from "../../hooks/UseSkillList";
+import {
+  fetchDiscipline,
+  TypeFetchDiscipline,
+} from "../../api/Discipline/FetchDiscipline";
+import ModalConfirm from "../../components/modal/ModalConfirm";
+import { fetchDisciplineDelete } from "../../api/Discipline/FetchDisciplineDelete";
+import { AxiosError } from "axios";
+import { fetchDisciplineUpdate } from "../../api/Discipline/FetchDisciplineUpdate";
 
 export type Discipline = {
   id: number;
   name: string;
+  short_description: string;
 };
 
 export type DisciplineElement = {
@@ -36,10 +45,17 @@ export type DisciplineElement = {
   disciplineId: number;
 };
 
+export enum Confirm {
+  Delete,
+  Remove,
+}
+
 const DisciplineConstructor: React.FunctionComponent = () => {
   const { api } = useAxios();
 
   const [mode, setMode] = useState<Mode>(Mode.Modules);
+
+  const [isCopyElement, setIsCopyElement] = useState<boolean>(false);
 
   const [disciplines, setDisciplines] = useState<Discipline[]>([]);
 
@@ -55,27 +71,110 @@ const DisciplineConstructor: React.FunctionComponent = () => {
   const [draggableElement, setDraggableElement] =
     useState<DisciplineElement | null>(null);
 
+  const [draggableElementStartParams, setDraggableElementStartParams] =
+    useState<{ disciplineId: number; pos: number } | null>(null);
+
   const [disciplineIdToCreateElement, setDisciplineIdToCreateElement] =
     useState<number>();
 
   const [disciplineIdToChangeTitle, setDisciplineIdToChangeTitle] =
     useState<number>();
 
+  const [modalConfirmMode, setModalConfirmMode] = useState<Confirm>(
+    Confirm.Delete
+  );
+
+  const [disciplineIdToModal, setDisciplineIdToModal] = useState<number>();
+
+  const [deletedError, setDeletedError] = useState<{
+    text: string;
+    curriculums: string[];
+  } | null>(null);
+
   const disciplinesId = useMemo(
     () => disciplines.map((e) => e.id),
     [disciplines]
   );
 
-  const addDiscipline = ({ id, name }: { id: number; name: string }) => {
-    if (!disciplines.some((e) => e.id === id)) {
-      setDisciplines((prev) => {
-        return [...prev, { id, name }];
+  const addDiscipline = async ({ id, name }: { id: number; name: string }) => {
+    if (disciplines.some((e) => e.id === id)) return;
+
+    const { data } = await fetchDiscipline(api, `${id}`);
+
+    setDisciplines((prev) => {
+      return [...prev, { id, name, short_description: data.short_description }];
+    });
+
+    const modules = data.modules
+      .sort((a, b) => a.position - b.position)
+      .map((el, index) => {
+        return {
+          id: el.module.id,
+          name: el.module.name,
+          disciplineId: id,
+          dndId: Math.round(new Date().getTime() * 100 + index),
+        };
       });
-    }
+
+    const products = data.products.map((product, index) => {
+      return {
+        id: product.id,
+        name: product.name,
+        disciplineId: id,
+        dndId: Math.round(new Date().getTime() * 100 + index),
+      };
+    });
+
+    const skills = data.skills.map((skill, index) => {
+      return {
+        id: skill.id,
+        name: skill.name,
+        disciplineId: id,
+        dndId: Math.round(new Date().getTime() * 100 + index),
+      };
+    });
+
+    setModules((prev) => {
+      return [...prev, ...modules];
+    });
+
+    setProducts((prev) => {
+      return [...prev, ...products];
+    });
+
+    setSkills((prev) => {
+      return [...prev, ...skills];
+    });
+
+    console.log(modules);
   };
 
   const addElement = ({ id, name }: { id: number; name: string }) => {
     if (!disciplineIdToCreateElement) return;
+
+    if (
+      mode === Mode.Modules &&
+      modules
+        .filter((e) => e.disciplineId === disciplineIdToCreateElement)
+        .some((e) => e.id === id)
+    )
+      return;
+
+    if (
+      mode === Mode.Skills &&
+      products
+        .filter((e) => e.disciplineId === disciplineIdToCreateElement)
+        .some((e) => e.id === id)
+    )
+      return;
+
+    if (
+      mode === Mode.Products &&
+      skills
+        .filter((e) => e.disciplineId === disciplineIdToCreateElement)
+        .some((e) => e.id === id)
+    )
+      return;
 
     const newElement = {
       id,
@@ -105,7 +204,15 @@ const DisciplineConstructor: React.FunctionComponent = () => {
     }
 
     if (e.active.data.current?.type === "Element") {
-      setDraggableElement(e.active.data.current?.element);
+      const elem = e.active.data.current.element;
+
+      setDraggableElement(elem);
+      setDraggableElementStartParams({
+        disciplineId: elem.disciplineId,
+        pos: elements
+          .filter((e) => e.disciplineId === elem.disciplineId)
+          .findIndex((e) => e.id === elem.id),
+      });
     }
   };
 
@@ -115,24 +222,67 @@ const DisciplineConstructor: React.FunctionComponent = () => {
 
     const { active, over } = e;
 
-    if (!over) return;
+    if (active.data.current?.type === "Discipline") {
+      if (!over) return;
 
-    if (active.data.current?.type !== "Discipline") return;
+      const activeDisciplineId = active.id;
+      const overDisciplineId = over.id;
 
-    const activeDisciplineId = active.id;
-    const overDisciplineId = over.id;
+      if (activeDisciplineId === overDisciplineId) return;
 
-    if (activeDisciplineId === overDisciplineId) return;
+      setDisciplines((prev) => {
+        const activeDisciplineIndex = prev.findIndex(
+          (e) => e.id === activeDisciplineId
+        );
+        const overDisciplineIndex = prev.findIndex(
+          (e) => e.id === overDisciplineId
+        );
+        return arrayMove(prev, activeDisciplineIndex, overDisciplineIndex);
+      });
+    } else {
+      if (
+        !isCopyElement ||
+        !active.data.current ||
+        !draggableElementStartParams
+      )
+        return;
 
-    setDisciplines((prev) => {
-      const activeDisciplineIndex = prev.findIndex(
-        (e) => e.id === activeDisciplineId
-      );
-      const overDisciplineIndex = prev.findIndex(
-        (e) => e.id === overDisciplineId
-      );
-      return arrayMove(prev, activeDisciplineIndex, overDisciplineIndex);
-    });
+      if (
+        draggableElementStartParams.disciplineId ===
+        active.data.current.element.disciplineId
+      )
+        return;
+
+      const newElement = {
+        id: active.data.current.element.id,
+        name: active.data.current.element.name,
+        disciplineId: draggableElementStartParams.disciplineId,
+        dndId: new Date().getTime(),
+      };
+
+      const copyElement = (prev: DisciplineElement[]) => {
+        const newDisciplineElements = prev.filter(
+          (e) => e.disciplineId === draggableElementStartParams.disciplineId
+        );
+
+        newDisciplineElements.splice(
+          draggableElementStartParams.pos,
+          0,
+          newElement
+        );
+
+        return [
+          ...prev.filter(
+            (e) => e.disciplineId !== draggableElementStartParams.disciplineId
+          ),
+          ...newDisciplineElements,
+        ];
+      };
+
+      if (mode === Mode.Modules) setModules(copyElement);
+      if (mode === Mode.Products) setProducts(copyElement);
+      if (mode === Mode.Skills) setSkills(copyElement);
+    }
   };
 
   const onDragOver = (e: DragOverEvent) => {
@@ -242,26 +392,102 @@ const DisciplineConstructor: React.FunctionComponent = () => {
     setDisciplines(newTitleDisciplines);
   };
 
-  const removeDiscipline = () => {
+  const disciplineDescriptionChange = (
+    disciplineId: number,
+    changedDescription: string
+  ) => {
+    const newDescriptionDisciplines = disciplines.map((e) =>
+      e.id === disciplineId
+        ? { ...e, short_description: changedDescription }
+        : e
+    );
+    setDisciplines(newDescriptionDisciplines);
+  };
+
+  const remove = (id?: number) => {
+    const disciplineId = id ? id : disciplineIdToChangeTitle;
+
     setModules((prev) => {
-      return prev.filter((e) => e.disciplineId !== disciplineIdToChangeTitle);
+      return prev.filter((e) => e.disciplineId !== disciplineId);
     });
     setProducts((prev) => {
-      return prev.filter((e) => e.disciplineId !== disciplineIdToChangeTitle);
+      return prev.filter((e) => e.disciplineId !== disciplineId);
     });
     setSkills((prev) => {
-      return prev.filter((e) => e.disciplineId !== disciplineIdToChangeTitle);
+      return prev.filter((e) => e.disciplineId !== disciplineId);
     });
 
     setDisciplines((prev) => {
-      return prev.filter((e) => e.id !== disciplineIdToChangeTitle);
+      return prev.filter((e) => e.id !== disciplineId);
     });
+  };
+
+  const removeDiscipline = () => {
+    if (!disciplineIdToModal) return;
+
+    remove(disciplineIdToModal);
+
+    setDisciplineIdToModal(undefined);
+  };
+
+  const deleteDiscipline = () => {
+    if (!disciplineIdToModal) return;
+
+    fetchDisciplineDelete(api, disciplineIdToModal)
+      .then(() => {
+        remove(disciplineIdToModal);
+        setDisciplineIdToModal(undefined);
+      })
+      .catch((e: AxiosError<{ detail: { linked_curriculums: string[] } }>) => {
+        const error = e.response?.data?.detail.linked_curriculums as string[];
+        setDeletedError({
+          text: "Вы не можете удалить дисциплину когда она привязана к учебным планам",
+          curriculums: error,
+        });
+
+        setDisciplineIdToModal(undefined);
+      });
+  };
+
+  const saveDisciplines = () => {
+    const disciplinesToSave: TypeFetchDiscipline[] = disciplines.map(
+      (discipline) => {
+        return {
+          ...discipline,
+          skills: skills.filter((e) => e.disciplineId == discipline.id),
+          products: products.filter((e) => e.disciplineId == discipline.id),
+          modules: modules
+            .filter((e) => e.disciplineId === discipline.id)
+            .map((e, index) => {
+              return { position: index, module: e };
+            }),
+        };
+      }
+    );
+
+    disciplinesToSave.map((e) =>
+      fetchDisciplineUpdate(api, e).then(() => {
+        console.log("Success");
+      })
+    );
+  };
+
+  const confirmModes = (confirm: Confirm) => {
+    if (confirm === Confirm.Delete) {
+      return {
+        text: "Вы уверены что хотите безвозвратно удалить дисциплину?",
+        confirmFunc: deleteDiscipline,
+      };
+    } else {
+      return {
+        text: "Вы уверены что хотите убрать дисциплину? Несохраненные данные пропадут.",
+        confirmFunc: removeDiscipline,
+      };
+    }
   };
 
   const elements =
     mode === Mode.Modules ? modules : mode === Mode.Skills ? skills : products;
-
-  console.log(modules);
 
   return (
     <div className="moduleContent">
@@ -350,27 +576,62 @@ const DisciplineConstructor: React.FunctionComponent = () => {
 
         <div style={{ marginLeft: "30px" }}>
           <label className="searchConstructorText-field__label">
-            Вверите режим
+            Режим отображения
           </label>
           <Combobox mode={mode} setMode={setMode} />
+        </div>
+
+        <div style={{ marginLeft: "30px" }}>
+          <label className="searchConstructorText-field__label">
+            Копировать при перетаскивании
+          </label>
+          <label className="toggler-wrapper style-21">
+            <input
+              type="checkbox"
+              checked={isCopyElement}
+              onChange={(e) => setIsCopyElement(e.target.checked)}
+            />
+            <div className="toggler-slider">
+              <div className="toggler-knob"></div>
+            </div>
+          </label>
         </div>
 
         {disciplineIdToChangeTitle && (
           <>
             <div style={{ marginLeft: "30px", marginTop: "24px" }}>
-              <button onClick={() => removeDiscipline()}>
+              <button
+                onClick={() => {
+                  setModalConfirmMode(Confirm.Remove);
+                  setDisciplineIdToModal(disciplineIdToChangeTitle);
+                }}
+                className="DisciplineButton"
+              >
                 Убрать дисциплину
               </button>
             </div>
 
             <div style={{ marginLeft: "30px", marginTop: "24px" }}>
-              <button>Удалить дисциплину</button>
+              <button
+                onClick={() => {
+                  setModalConfirmMode(Confirm.Delete);
+                  setDisciplineIdToModal(disciplineIdToChangeTitle);
+                }}
+                className="DisciplineButton"
+              >
+                Удалить дисциплину
+              </button>
             </div>
           </>
         )}
 
         <div style={{ marginLeft: "30px", marginTop: "24px" }}>
-          <button>Сохранить все</button>
+          <button
+            onClick={() => saveDisciplines()}
+            className="DisciplineButton"
+          >
+            Сохранить все
+          </button>
         </div>
       </div>
       <DndContext
@@ -392,6 +653,7 @@ const DisciplineConstructor: React.FunctionComponent = () => {
                 deleteElement={deleteElement}
                 disciplineTitleChange={disciplineTitleChange}
                 mode={mode}
+                disciplineDescriptionChange={disciplineDescriptionChange}
               />
             ))}
           </SortableContext>
@@ -410,6 +672,7 @@ const DisciplineConstructor: React.FunctionComponent = () => {
                 deleteElement={deleteElement}
                 disciplineTitleChange={disciplineTitleChange}
                 mode={mode}
+                disciplineDescriptionChange={disciplineDescriptionChange}
               />
             )}
             {draggableElement && (
@@ -423,6 +686,13 @@ const DisciplineConstructor: React.FunctionComponent = () => {
           document.body
         )}
       </DndContext>
+
+      <ModalConfirm
+        isOpen={disciplineIdToModal !== undefined}
+        setIsOpen={setDisciplineIdToModal}
+        confirmFunc={confirmModes(modalConfirmMode).confirmFunc}
+        text={confirmModes(modalConfirmMode).text}
+      />
     </div>
   );
 };

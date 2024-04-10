@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import * as React from "react";
-import { fetchCurriculum } from "../api/FetchCurriculum";
+import { fetchCurriculum } from "../api/Curriculum/FetchCurriculum";
 import useAxios from "../services/api";
 import { TypeUserContext, userContext } from "../contexts/UserContext";
 import "./styles.css";
@@ -29,6 +29,7 @@ const CurriculumPage: React.FunctionComponent = () => {
       <div style={{ display: "flex" }}>
         {[...Array(data.educational_level.study_period * 2).keys()].map((e) => (
           <button
+            key={e + 1}
             className={
               "curriculumSemesters" +
               (semester === e + 1 ? " curriculumSemestersActive" : "")
@@ -42,8 +43,8 @@ const CurriculumPage: React.FunctionComponent = () => {
 
       {data.disciplines
         .filter((e) => e.semester === semester)
-        .map((e) => (
-          <div className="curriculumDisciplineBlock">
+        .map((e, index) => (
+          <div className="curriculumDisciplineBlock" key={index}>
             <Link
               to={`/discipline/${user?.curriculum}/${e.discipline.id}`}
               className="curriculumDisciplineName"
@@ -51,8 +52,12 @@ const CurriculumPage: React.FunctionComponent = () => {
               {e.discipline.name}
             </Link>
             <div style={{ display: "flex", marginTop: "30px" }}>
-              {e.teachers.map((e) => (
-                <Link to={"/"} className="curriculumDisciplineTeacher">
+              {e.teachers.map((e, index) => (
+                <Link
+                  to={"/"}
+                  className="curriculumDisciplineTeacher"
+                  key={index}
+                >
                   {e.user.last_name} {e.user.first_name}
                 </Link>
               ))}

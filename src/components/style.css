@@ -213,32 +213,28 @@
 }
 
 .searchConstructorDropDownElem {
-  padding: 20px;
-  width: auto;
   border-width: 2px;
   border-bottom-width: 2px;
   border-bottom-color: #6c8186;
   border-bottom-style: solid;
 }
 
-.searchConstructorDropDownLink {
+.searchConstructorDropDownButton {
+  margin: 5px;
   text-decoration: none;
   cursor: pointer;
-  font-size: 17px;
-  color: black;
-  width: auto;
   display: block;
   border: none;
+  background-color: #c0efff;
+  width: 100%;
 }
 
-.searchConstructorDropDownCreate {
-  text-decoration: none;
-  cursor: pointer;
+.searchConstructorDropDownButtonText {
+  width: 100%;
   font-size: 17px;
   color: black;
-  width: auto;
-  display: block;
-  border: none;
-  margin: auto;
-  background-color: #c0efff;
+  margin: 20px auto 20px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

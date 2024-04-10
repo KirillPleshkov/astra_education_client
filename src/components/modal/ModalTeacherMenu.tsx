@@ -20,6 +20,7 @@ const ModalTeacherMenu: React.FunctionComponent<IModalTeacherMenuProps> = ({
       onRequestClose={() => setIsOpen(false)}
       className="navModal"
       shouldFocusAfterRender={false}
+      ariaHideApp={false}
       style={{
         overlay: {
           backgroundColor: "rgba(0, 0, 0, 0)",
@@ -45,6 +46,14 @@ const ModalTeacherMenu: React.FunctionComponent<IModalTeacherMenuProps> = ({
           <li className="navElement navModalWidth">
             <Link to={"/discipline_constructor"} className="navElementLink">
               Конструирование дисциплин
+            </Link>
+          </li>
+        )}
+
+        {linguist_roles.some((e) => e[1] === "CURRICULUM_CHANGE") && (
+          <li className="navElement navModalWidth">
+            <Link to={"/curriculum_constructor"} className="navElementLink">
+              Конструирование учебных планов
             </Link>
           </li>
         )}

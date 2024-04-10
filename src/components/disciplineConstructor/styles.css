@@ -1,3 +1,5 @@
+/* DisciplineBlock */
+
 .disciplineBlockDragging {
   width: 350px;
   height: 480px;
@@ -96,6 +98,26 @@
 
 .disciplineBlockAddModuleButton:active {
   background-color: #c0efff;
+}
+
+.disciplineBlockDescriptionTextarea {
+  height: 100%;
+  resize: none;
+  border-radius: 8px;
+  padding: 4px;
+  margin: 1px;
+}
+
+.disciplineBlockDescriptionTextarea::-webkit-scrollbar {
+  width: 7px;
+  background-color: #6c8186;
+  border-radius: 3px;
+}
+
+.disciplineBlockDescriptionTextarea::-webkit-scrollbar-thumb {
+  background-color: #1469c8;
+  border-radius: 0.25rem;
+  cursor: pointer;
 }
 
 /* DisciplineBlockModule */

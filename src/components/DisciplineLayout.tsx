@@ -1,7 +1,7 @@
 import * as React from "react";
 import "./style.css";
 import { Link } from "react-router-dom";
-import { TypeFetchDiscipline } from "../api/FetchDiscipline";
+import { TypeFetchDiscipline } from "../api/Discipline/FetchDiscipline";
 
 type ModuleType = {
   disciplineId: number;
@@ -35,15 +35,15 @@ const DisciplineLayout: React.FunctionComponent<ModuleType> = ({
         .sort((a, b) => a.position - b.position)
         .map((elem) => (
           <li
-            key={elem.module.pk}
+            key={elem.module.id}
             className={
-              elem.module.pk === moduleId
+              elem.module.id === moduleId
                 ? "layoutElement layoutElementSelected"
                 : "layoutElement"
             }
           >
             <Link
-              to={`/discipline/${curriculumId}/${disciplineId}/${elem.module.pk}`}
+              to={`/discipline/${curriculumId}/${disciplineId}/${elem.module.id}`}
               className="layoutElementLink"
             >
               {elem.module.name}

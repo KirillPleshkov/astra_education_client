@@ -1,0 +1,157 @@
+/* CurriculumBlock */
+
+.block {
+  margin: auto;
+  margin-bottom: 30px;
+  width: 95vw;
+  height: 400px;
+  border-radius: 10px;
+  border: 2px solid #5e697b4d;
+  background-color: #fff;
+}
+
+.blockDraggable {
+  margin: auto;
+  margin-bottom: 30px;
+  width: 95vw;
+  height: 400px;
+  border-radius: 10px;
+  background-color: #eee;
+}
+
+.blockTitle {
+  width: 100%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: #1469c8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  overflow: hidden;
+  border-radius: 8px;
+  text-overflow: ellipsis;
+  color: white;
+}
+
+.blockTitle:active {
+  cursor: grab;
+}
+
+.blockTitleText {
+  width: 100%;
+}
+
+/* CurriculumBlock */
+
+.blockDisciplines {
+  display: flex;
+  overflow-x: auto;
+}
+
+.blockDisciplines::-webkit-scrollbar {
+  height: 9px;
+  background-color: #6c8186;
+  border-radius: 20px;
+}
+
+.blockDisciplines::-webkit-scrollbar-thumb {
+  background-color: #1469c8;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.blockDiscipline {
+  display: block;
+  margin: 5px;
+  width: 169px;
+  border-radius: 10px;
+  border: 2px solid #5e697b4d;
+  height: 322px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.blockDisciplineTitle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: #5e697b4d;
+  padding: 2px;
+  border-radius: 8px;
+}
+
+.blockDisciplineList {
+  overflow-y: auto;
+  height: 100%;
+}
+
+.blockDisciplineAddButton {
+  height: 30px;
+  border-radius: 8px;
+  background: #eee;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+}
+
+/* CurriculumBlockDiscipline */
+
+.discipline {
+  width: 320px;
+  margin: 10px auto 10px auto;
+  height: 40px;
+  background-color: #c0efff;
+  border: 2px solid #6c8186;
+  border-radius: 8px;
+  display: flex;
+}
+
+.discipline:active {
+  cursor: grab;
+}
+
+.disciplineDragging {
+  width: 320px;
+  margin: 10px auto 10px auto;
+  height: 43px;
+  background-color: #eee;
+  border-radius: 8px;
+}
+
+.disciplineTrashIcon {
+  width: 20px;
+  height: 20px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.disciplineTrashButton {
+  width: 30px;
+  height: 30px;
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+  margin-top: 5px;
+}
+
+.disciplineText {
+  width: 90%;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

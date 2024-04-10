@@ -2,7 +2,7 @@ import * as React from "react";
 import { useParams } from "react-router-dom";
 import "./styles.css";
 import DisciplineLayout from "../components/DisciplineLayout";
-import { fetchDiscipline } from "../api/FetchDiscipline";
+import { fetchDiscipline } from "../api/Discipline/FetchDiscipline";
 import { useQuery } from "@tanstack/react-query";
 import DescriptionModule from "../components/module/DescriptionModule";
 import useAxios from "../services/api";

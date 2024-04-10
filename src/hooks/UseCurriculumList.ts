@@ -1,17 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../services/api";
-import { fetchDisciplines } from "../api/Discipline/FetchDisciplines";
+import { fetchCurriculums } from "../api/Curriculum/FetchCurriculums";
 
-const useDisciplineList = (name: string) => {
+const useCurriculumList = (name: string) => {
   const { api } = useAxios();
 
   const { data } = useQuery({
-    queryKey: ["disciplineName", name],
-    queryFn: () => fetchDisciplines(api, name),
+    queryKey: ["curriculumName", name],
+    queryFn: () => fetchCurriculums(api, name),
     select: ({ data }) => data,
   });
 
   return data as { name: string; id: number }[] | undefined;
 };
 
-export { useDisciplineList };
+export { useCurriculumList };

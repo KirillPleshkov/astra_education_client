@@ -131,21 +131,6 @@ const ConstructedBlock: React.FunctionComponent<IConstructedBlockProps> = ({
           // className="moduleBlockTitleInput"
           onChange={(e) => changeBlockNameHandler(e, elem.position)}
         />
-        {/* <button
-                        className="moduleDeleteBlockButton"
-                        onClick={() =>
-                          setModule((prev) => {
-                            return {
-                              ...prev,
-                              blocks: prev.blocks.filter(
-                                (e) => e.position != elem.position
-                              ),
-                            };
-                          })
-                        }
-                      >
-                        <img src={Cross} alt="" className="moduleCrossImg" />
-                      </button> */}
       </div>
       <div className="moduleBlockMainText">
         <AutoChangedTextArea

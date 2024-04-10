@@ -57,41 +57,83 @@ const SearchConstructor: React.FunctionComponent<ISearchConstructor> = ({
         style={{ width }}
       />
 
-      {isFocusInput && (
+      {isFocusInput && (data?.length || createNewF) && (
         <ul className="searchConstructorDropDownList" style={{ width }}>
           {inputName && !data?.filter((el) => el.name === inputName).length && (
             <>
               {createNewF && (
-                <li className="searchConstructorDropDownElem">
-                  <button
-                    className="searchConstructorDropDownCreate"
-                    onClick={() => {
-                      createNewF(name).then(({ data }) => {
-                        setSelectedElement(data);
-                      });
-                      setInputName("");
-                    }}
-                  >
-                    {createText}
-                  </button>
-                </li>
+                <>
+                  {data?.length ? (
+                    <li className="searchConstructorDropDownElem">
+                      <button
+                        className="searchConstructorDropDownButton"
+                        onClick={() => {
+                          createNewF(name).then(({ data }) => {
+                            setSelectedElement(data);
+                          });
+                          setInputName("");
+                        }}
+                      >
+                        <div className="searchConstructorDropDownButtonText">
+                          {createText}
+                        </div>
+                      </button>
+                    </li>
+                  ) : (
+                    <li>
+                      <button
+                        className="searchConstructorDropDownButton"
+                        onClick={() => {
+                          createNewF(name).then(({ data }) => {
+                            setSelectedElement(data);
+                          });
+                          setInputName("");
+                        }}
+                      >
+                        <div className="searchConstructorDropDownButtonText">
+                          {createText}
+                        </div>
+                      </button>
+                    </li>
+                  )}
+                </>
               )}
             </>
           )}
           <div className="searchConstructorOverflow">
             {data &&
-              data.map((el) => (
-                <li className="searchConstructorDropDownElem" key={el.id}>
-                  <button
-                    className="searchConstructorDropDownCreate"
-                    onClick={() => {
-                      setSelectedElement(el);
-                      setInputName("");
-                    }}
-                  >
-                    {el.name}
-                  </button>
-                </li>
+              data.map((el, index) => (
+                <>
+                  {index === data.length - 1 ? (
+                    <li key={el.id}>
+                      <button
+                        className="searchConstructorDropDownButton"
+                        onClick={() => {
+                          setSelectedElement(el);
+                          setInputName("");
+                        }}
+                      >
+                        <div className="searchConstructorDropDownButtonText">
+                          {el.name}
+                        </div>
+                      </button>
+                    </li>
+                  ) : (
+                    <li className="searchConstructorDropDownElem" key={el.id}>
+                      <button
+                        className="searchConstructorDropDownButton"
+                        onClick={() => {
+                          setSelectedElement(el);
+                          setInputName("");
+                        }}
+                      >
+                        <div className="searchConstructorDropDownButtonText">
+                          {el.name}
+                        </div>
+                      </button>
+                    </li>
+                  )}
+                </>
               ))}
           </div>
         </ul>

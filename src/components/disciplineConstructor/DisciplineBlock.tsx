@@ -5,12 +5,13 @@ import "./styles.css";
 import DisciplineBlockElement from "./DisciplineBlockElement";
 import { useMemo } from "react";
 import { Mode } from "../UI/Combobox";
+import {
+  Discipline,
+  DisciplineElement,
+} from "../../pages/teacher_pages/DisciplineConstructor";
 
 interface IDisciplineBlockProps {
-  discipline: {
-    id: number;
-    name: string;
-  };
+  discipline: Discipline;
   setDisciplineIdToChangeTitle: React.Dispatch<
     React.SetStateAction<number | undefined>
   >;
@@ -18,14 +19,13 @@ interface IDisciplineBlockProps {
   setDisciplineIdToCreateElement: React.Dispatch<
     React.SetStateAction<number | undefined>
   >;
-  elements: {
-    id: number;
-    name: string;
-    disciplineId: number;
-    dndId: number;
-  }[];
+  elements: DisciplineElement[];
   deleteElement: (dndModuleId: number) => void;
   disciplineTitleChange: (changedTitle: string) => void;
+  disciplineDescriptionChange: (
+    disciplineId: number,
+    changedDescription: string
+  ) => void;
   mode: Mode;
 }
 
@@ -37,6 +37,7 @@ const DisciplineBlock: React.FunctionComponent<IDisciplineBlockProps> = ({
   elements,
   deleteElement,
   disciplineTitleChange,
+  disciplineDescriptionChange,
   mode,
 }) => {
   const {
@@ -100,26 +101,40 @@ const DisciplineBlock: React.FunctionComponent<IDisciplineBlockProps> = ({
         )}
       </div>
 
-      <div className="disciplineBlockModules">
-        <SortableContext items={modulesId}>
-          {elements.map((element, index) => (
-            <DisciplineBlockElement
-              element={element}
-              key={index}
-              deleteElement={deleteElement}
-            />
-          ))}
-        </SortableContext>
-      </div>
+      {mode === Mode.Description ? (
+        <>
+          <textarea
+            className="disciplineBlockDescriptionTextarea"
+            value={discipline.short_description}
+            onChange={(e) =>
+              disciplineDescriptionChange(discipline.id, e.target.value)
+            }
+          />
+        </>
+      ) : (
+        <>
+          <div className="disciplineBlockModules">
+            <SortableContext items={modulesId}>
+              {elements.map((element, index) => (
+                <DisciplineBlockElement
+                  element={element}
+                  key={index}
+                  deleteElement={deleteElement}
+                />
+              ))}
+            </SortableContext>
+          </div>
 
-      <button
-        onClick={() => setDisciplineIdToCreateElement(discipline.id)}
-        className="disciplineBlockAddModuleButton"
-      >
-        {mode === Mode.Modules && <>+ Добавить модуль</>}
-        {mode === Mode.Skills && <>+ Добавить навык</>}
-        {mode === Mode.Products && <>+ Добавить продукт</>}
-      </button>
+          <button
+            onClick={() => setDisciplineIdToCreateElement(discipline.id)}
+            className="disciplineBlockAddModuleButton"
+          >
+            {mode === Mode.Modules && <>+ Добавить модуль</>}
+            {mode === Mode.Skills && <>+ Добавить навык</>}
+            {mode === Mode.Products && <>+ Добавить продукт</>}
+          </button>
+        </>
+      )}
     </div>
   );
 };

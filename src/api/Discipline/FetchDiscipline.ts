@@ -1,19 +1,20 @@
 import { AxiosInstance } from "axios";
 
 type TypeFetchDiscipline = {
+  id: number;
   name: string;
   short_description: string;
   skills: {
-    pk: number;
+    id: number;
     name: string;
   }[];
   products: {
-    pk: number;
+    id: number;
     name: string;
   }[];
   modules: {
     module: {
-      pk: number;
+      id: number;
       name: string;
     };
     position: number;

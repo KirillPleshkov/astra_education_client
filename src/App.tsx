@@ -10,6 +10,7 @@ import MainConstructor from "./pages/teacher_pages/MainConstructor";
 import ModuleConstructor from "./pages/teacher_pages/ModuleConstructor";
 import CurriculumPage from "./pages/CurriculumPage";
 import DisciplineConstructor from "./pages/teacher_pages/DisciplineConstructor";
+import CurriculumConstructor from "./pages/teacher_pages/CurriculumConstructor";
 
 function App() {
   return (
@@ -43,6 +44,11 @@ function App() {
               <Route
                 path="/discipline_constructor"
                 element={<DisciplineConstructor />}
+              />
+
+              <Route
+                path="/curriculum_constructor"
+                element={<CurriculumConstructor />}
               />
             </Route>
           </Routes>

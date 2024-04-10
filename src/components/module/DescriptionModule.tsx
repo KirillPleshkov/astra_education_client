@@ -4,11 +4,11 @@ import "./styles.css";
 interface IDescriptionModuleProps {
   short_description: string;
   skills: {
-    pk: number;
+    id: number;
     name: string;
   }[];
   products: {
-    pk: number;
+    id: number;
     name: string;
   }[];
 }
@@ -34,7 +34,7 @@ const DescriptionModule: React.FunctionComponent<IDescriptionModuleProps> = ({
         <div className="blockTitle">Компетенци</div>
         <div className="blockMainText">
           {skills.map((elem) => (
-            <div className="textBlock" key={elem.pk}>
+            <div className="textBlock" key={elem.id}>
               {elem.name}
             </div>
           ))}
@@ -45,7 +45,7 @@ const DescriptionModule: React.FunctionComponent<IDescriptionModuleProps> = ({
         <div className="blockTitle">Продукты ПАО Группы Астра</div>
         <div className="blockMainText">
           {products.map((elem) => (
-            <div className="textBlock" key={elem.pk}>
+            <div className="textBlock" key={elem.id}>
               {elem.name}
             </div>
           ))}
