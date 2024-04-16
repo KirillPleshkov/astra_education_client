@@ -2,7 +2,7 @@ import * as React from "react";
 import "./styles.css";
 import SearchConstructor from "../../components/SearchConstructor";
 import { useCurriculumList } from "../../hooks/UseCurriculumList";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { fetchCurriculumCreate } from "../../api/Curriculum/FetchCurriculumCreate";
 import useAxios from "../../services/api";
 import CurriculumBlock from "../../components/curriculumConstructor/CurriculumBlock";
@@ -20,6 +20,17 @@ import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import { useDisciplineList } from "../../hooks/UseDisciplineList";
 import CurriculumBlockDiscipline from "../../components/curriculumConstructor/CurriculumBlockDiscipline";
+import { useTeacherList } from "../../hooks/UseTeacherList";
+import { fetchTeacher } from "../../api/User/FetchTeacher";
+import { useEducationalLevels } from "../../hooks/UseEducationalLevels";
+import {
+  fetchCurriculum,
+  TypeFetchCurriculum,
+} from "../../api/Curriculum/FetchCurriculum";
+import { fetchCurriculumDelete } from "../../api/Curriculum/FetchCurriculumDelete";
+import { AxiosError } from "axios";
+import ModalConfirm from "../../components/modal/ModalConfirm";
+import { fetchCurriculumUpdate } from "../../api/Curriculum/FetchCurriculumUpdate";
 
 export type Curriculum = {
   id: number;
@@ -31,13 +42,25 @@ export type Curriculum = {
   };
 };
 
+export type CurriculumDisciplineTeacher = {
+  id: number;
+  first_name: string;
+  last_name: string;
+};
+
 export type CurriculumDiscipline = {
   dndId: number;
   id: number;
   name: string;
   curriculumId: number;
   semester: number;
+  teachers: CurriculumDisciplineTeacher[];
 };
+
+export enum Confirm {
+  Delete,
+  Remove,
+}
 
 const CurriculumConstructor: React.FunctionComponent = () => {
   const { api } = useAxios();
@@ -52,6 +75,11 @@ const CurriculumConstructor: React.FunctionComponent = () => {
   const [draggableDiscipline, setDraggableDiscipline] =
     useState<CurriculumDiscipline | null>(null);
 
+  const [draggableDisciplineStartParams, setDraggableDisciplineStartParams] =
+    useState<{ curriculumId: number; pos: number; semester: number } | null>(
+      null
+    );
+
   const [curriculumIdToChangeTitle, setCurriculumIdToChangeTitle] =
     useState<number>();
 
@@ -59,6 +87,23 @@ const CurriculumConstructor: React.FunctionComponent = () => {
     curriculumDataToCreateDiscipline,
     setCurriculumDataToCreateDiscipline,
   ] = useState<{ curriculumId: number; semester: number }>();
+
+  const [curriculumDataToAddTeacher, setCurriculumDataToAddTeacher] = useState<{
+    disciplineDndId: number;
+  }>();
+
+  const [isCopyDiscipline, setIsCopyDiscipline] = useState<boolean>(false);
+
+  const [curriculumIdToModal, setCurriculumIdToModal] = useState<number>();
+
+  const [modalConfirmMode, setModalConfirmMode] = useState<Confirm>(
+    Confirm.Delete
+  );
+
+  const [deletedError, setDeletedError] = useState<{
+    text: string;
+    users: string[];
+  } | null>(null);
 
   const curriculumsId = useMemo(
     () => curriculums.map((e) => e.id),
@@ -69,35 +114,43 @@ const CurriculumConstructor: React.FunctionComponent = () => {
     useSensor(PointerSensor, { activationConstraint: { distance: 10 } })
   );
 
+  const { educationalLevels } = useEducationalLevels();
+
   const addCurriculum = (newCurriculum: { name: string; id: number }) => {
     if (curriculums.some((e) => e.id === newCurriculum.id)) return;
 
-    setCurriculums((prev) => {
-      return [
-        ...prev,
-        {
-          ...newCurriculum,
-          educational_level: {
-            id: 1,
-            name: "Бакалавриат",
-            study_period: 4,
-          },
-        },
-      ];
+    fetchCurriculum(api, newCurriculum.id).then(({ data }) => {
+      const disciplines: CurriculumDiscipline[] = data.disciplines.map(
+        (el, index) => {
+          return {
+            id: el.discipline.id,
+            dndId: Math.round(new Date().getTime() * 100 + index),
+            name: el.discipline.name,
+            curriculumId: data.id,
+            semester: el.semester,
+            teachers: el.teachers.map((e) => e.user),
+          };
+        }
+      );
+
+      setDisciplines((prev) => {
+        return [...prev, ...disciplines];
+      });
+
+      setCurriculums((prev) => {
+        return [...prev, data];
+      });
     });
   };
 
   const addDiscipline = (newDiscipline: { name: string; id: number }) => {
     if (!curriculumDataToCreateDiscipline) return;
 
-    const { semester, curriculumId } = curriculumDataToCreateDiscipline;
+    const { curriculumId } = curriculumDataToCreateDiscipline;
 
     if (
       disciplines.some(
-        (e) =>
-          e.id === newDiscipline.id &&
-          e.curriculumId === curriculumId &&
-          e.semester === semester
+        (e) => e.id === newDiscipline.id && e.curriculumId === curriculumId
       )
     )
       return;
@@ -106,10 +159,35 @@ const CurriculumConstructor: React.FunctionComponent = () => {
       ...newDiscipline,
       ...curriculumDataToCreateDiscipline,
       dndId: new Date().getTime(),
+      teachers: [],
     };
 
     setDisciplines((prev) => {
       return [...prev, discipline];
+    });
+  };
+
+  const addTeacher = (newTeacher: { name: string; id: number }) => {
+    console.log(curriculumDataToAddTeacher);
+    if (!curriculumDataToAddTeacher) return;
+
+    if (
+      disciplines
+        .filter(
+          (e) => e.dndId === curriculumDataToAddTeacher.disciplineDndId
+        )[0]
+        .teachers.some((e) => e.id === newTeacher.id)
+    )
+      return;
+
+    fetchTeacher(api, newTeacher.id).then(({ data }) => {
+      setDisciplines((prev) => {
+        return prev.map((e) =>
+          e.dndId === curriculumDataToAddTeacher.disciplineDndId
+            ? { ...e, teachers: [...e.teachers, data] }
+            : e
+        );
+      });
     });
   };
 
@@ -126,12 +204,17 @@ const CurriculumConstructor: React.FunctionComponent = () => {
       const elem = e.active.data.current.discipline;
 
       setDraggableDiscipline(elem);
-      // setDraggableElementStartParams({
-      //   disciplineId: elem.disciplineId,
-      //   pos: elements
-      //     .filter((e) => e.disciplineId === elem.disciplineId)
-      //     .findIndex((e) => e.id === elem.id),
-      // });
+      setDraggableDisciplineStartParams({
+        semester: elem.semester,
+        curriculumId: elem.curriculumId,
+        pos: disciplines
+          .filter(
+            (e) =>
+              e.curriculumId === elem.curriculumId &&
+              e.semester === elem.semester
+          )
+          .findIndex((e) => e.id === elem.id),
+      });
     }
   };
 
@@ -154,6 +237,51 @@ const CurriculumConstructor: React.FunctionComponent = () => {
         const overIndex = prev.findIndex((e) => e.id === overId);
         return arrayMove(prev, activeIndex, overIndex);
       });
+    } else {
+      if (
+        !isCopyDiscipline ||
+        !active.data.current ||
+        !draggableDisciplineStartParams
+      )
+        return;
+
+      if (
+        draggableDisciplineStartParams.curriculumId ===
+        active.data.current.discipline.curriculumId
+      )
+        return;
+
+      const discipline: CurriculumDiscipline = {
+        id: active.data.current.discipline.id,
+        name: active.data.current.discipline.name,
+        semester: draggableDisciplineStartParams.semester,
+        curriculumId: draggableDisciplineStartParams.curriculumId,
+        dndId: new Date().getTime(),
+        teachers: active.data.current.discipline.teachers,
+      };
+
+      setDisciplines((prev) => {
+        const newDisciplineElements = prev.filter(
+          (e) =>
+            e.curriculumId === draggableDisciplineStartParams.curriculumId &&
+            e.semester === draggableDisciplineStartParams.semester
+        );
+
+        newDisciplineElements.splice(
+          draggableDisciplineStartParams.pos,
+          0,
+          discipline
+        );
+
+        return [
+          ...prev.filter(
+            (e) =>
+              e.curriculumId !== draggableDisciplineStartParams.curriculumId ||
+              e.semester !== draggableDisciplineStartParams.semester
+          ),
+          ...newDisciplineElements,
+        ];
+      });
     }
   };
 
@@ -172,6 +300,8 @@ const CurriculumConstructor: React.FunctionComponent = () => {
 
     if (!isActive) return;
 
+    const isOverASemester = over.data.current?.type === "Semester";
+
     if (isActive && isOver) {
       setDisciplines((prev) => {
         const activeIndex = prev.findIndex((e) => e.dndId === activeId);
@@ -179,11 +309,7 @@ const CurriculumConstructor: React.FunctionComponent = () => {
 
         if (
           prev
-            .filter(
-              (e) =>
-                e.curriculumId === prev[overIndex].curriculumId &&
-                e.semester === prev[overIndex].semester
-            )
+            .filter((e) => e.curriculumId === prev[overIndex].curriculumId)
             .some(
               (e) =>
                 e.id === prev[activeIndex].id &&
@@ -199,8 +325,6 @@ const CurriculumConstructor: React.FunctionComponent = () => {
       });
     }
 
-    const isOverASemester = over.data.current?.type === "Semester";
-
     if (isActive && isOverASemester) {
       setDisciplines((prev) => {
         const activeIndex = prev.findIndex((e) => e.dndId === activeId);
@@ -208,9 +332,7 @@ const CurriculumConstructor: React.FunctionComponent = () => {
         if (
           prev
             .filter(
-              (e) =>
-                e.curriculumId === over.data.current?.semester.curriculumId &&
-                e.semester === over.data.current?.semester.semester
+              (e) => e.curriculumId === over.data.current?.semester.curriculumId
             )
             .some(
               (e) =>
@@ -236,7 +358,146 @@ const CurriculumConstructor: React.FunctionComponent = () => {
     setCurriculums(newTitleCurriculums);
   };
 
-  const deleteElement = (dndId: number) => {};
+  const deleteDiscipline = (dndId: number) => {
+    setDisciplines((prev) => {
+      return prev.filter((e) => e.dndId !== dndId);
+    });
+  };
+
+  const deleteTeacher = (dndId: number, teacherId: number) => {
+    setDisciplines((prev) => {
+      return prev.map((e) =>
+        e.dndId === dndId
+          ? {
+              ...e,
+              teachers: e.teachers.filter((elem) => elem.id !== teacherId),
+            }
+          : e
+      );
+    });
+  };
+
+  const setEducationalLevel = (
+    curriculumId: number,
+    educational_level: Curriculum["educational_level"]
+  ) => {
+    setCurriculums((prev) => {
+      return prev.map((e) =>
+        e.id === curriculumId ? { ...e, educational_level } : e
+      );
+    });
+
+    setDisciplines((prev) => {
+      const otherDisciplines = prev.filter(
+        (e) =>
+          e.curriculumId !== curriculumId ||
+          e.semester <= educational_level.study_period * 2
+      );
+
+      const updatedDisciplines = prev
+        .filter(
+          (e) =>
+            e.curriculumId === curriculumId &&
+            e.semester > educational_level.study_period * 2
+        )
+        .map((e) => {
+          return { ...e, semester: educational_level.study_period * 2 };
+        });
+      return [...otherDisciplines, ...updatedDisciplines];
+    });
+  };
+
+  const remove = (id?: number) => {
+    const curriculumId = id ? id : curriculumIdToChangeTitle;
+
+    setDisciplines((prev) => {
+      return prev.filter((e) => e.curriculumId !== curriculumId);
+    });
+
+    setCurriculums((prev) => {
+      return prev.filter((e) => e.id !== curriculumId);
+    });
+  };
+
+  const removeCurriculum = () => {
+    if (!curriculumIdToModal) return;
+
+    remove(curriculumIdToModal);
+
+    setCurriculumIdToModal(undefined);
+  };
+
+  const deleteCurriculum = () => {
+    if (!curriculumIdToModal) return;
+
+    fetchCurriculumDelete(api, curriculumIdToModal)
+      .then(() => {
+        remove(curriculumIdToModal);
+      })
+      .catch(
+        (
+          e: AxiosError<{
+            detail: {
+              linked_students: {
+                first_name: string;
+                last_name: string;
+              }[];
+            };
+          }>
+        ) => {
+          const error = e.response?.data?.detail.linked_students;
+
+          if (!error) return;
+
+          const errorText = error.map((e) => `${e.first_name} ${e.last_name}`);
+          setDeletedError({
+            text: "Вы не можете удалить учебный план, когда данные студенты обучаются на нем",
+            users: errorText,
+          });
+        }
+      );
+
+    setCurriculumIdToModal(undefined);
+  };
+
+  const confirmModes = (confirm: Confirm) => {
+    if (confirm === Confirm.Delete) {
+      return {
+        text: "Вы уверены что хотите безвозвратно удалить учебный план?",
+        confirmFunc: deleteCurriculum,
+      };
+    } else {
+      return {
+        text: "Вы уверены что хотите убрать учебный план? Несохраненные данные пропадут.",
+        confirmFunc: removeCurriculum,
+      };
+    }
+  };
+
+  const saveCurriculums = () => {
+    const curriculumsToSave: TypeFetchCurriculum[] = curriculums.map(
+      (curriculum) => {
+        return {
+          ...curriculum,
+          disciplines: disciplines.map((disc) => {
+            return {
+              discipline: disc,
+              semester: disc.semester,
+              teachers: disc.teachers.map((user) => {
+                return { user };
+              }),
+            };
+          }),
+        };
+      }
+    );
+
+    curriculumsToSave.map((e) =>
+      fetchCurriculumUpdate(api, e).then(() => {
+        console.log("Success");
+      })
+    );
+  };
 
   return (
     <div className="moduleContent">
@@ -245,7 +506,7 @@ const CurriculumConstructor: React.FunctionComponent = () => {
       <div className="disciplineAddBlock">
         <div>
           <div style={{ width: "500px" }}>
-            {curriculumDataToCreateDiscipline ? (
+            {curriculumDataToCreateDiscipline && (
               <>
                 <label className="searchConstructorText-field__label">
                   Введите название дисциплины
@@ -261,7 +522,29 @@ const CurriculumConstructor: React.FunctionComponent = () => {
                   onBlur={() => setCurriculumDataToCreateDiscipline(undefined)}
                 />
               </>
-            ) : (
+            )}
+
+            {curriculumDataToAddTeacher && (
+              <>
+                <label className="searchConstructorText-field__label">
+                  Введите фамилию и имя преподавателя
+                </label>
+                <SearchConstructor
+                  key={3}
+                  blockName="преподавателя"
+                  useDataGet={useTeacherList}
+                  setSelectedElement={addTeacher}
+                  width={500}
+                  autoFocus={true}
+                  createText=""
+                  onBlur={() => setCurriculumDataToAddTeacher(undefined)}
+                />
+              </>
+            )}
+
+            {!(
+              curriculumDataToCreateDiscipline || curriculumDataToAddTeacher
+            ) && (
               <>
                 <label className="searchConstructorText-field__label">
                   Введите название учебного плана
@@ -278,6 +561,59 @@ const CurriculumConstructor: React.FunctionComponent = () => {
               </>
             )}
           </div>
+        </div>
+
+        <div style={{ marginLeft: "30px" }}>
+          <label className="searchConstructorText-field__label">
+            Копировать при перетаскивании
+          </label>
+          <label className="toggler-wrapper style-21">
+            <input
+              type="checkbox"
+              checked={isCopyDiscipline}
+              onChange={(e) => setIsCopyDiscipline(e.target.checked)}
+            />
+            <div className="toggler-slider">
+              <div className="toggler-knob"></div>
+            </div>
+          </label>
+        </div>
+
+        {curriculumIdToChangeTitle && (
+          <>
+            <div style={{ marginLeft: "30px", marginTop: "24px" }}>
+              <button
+                onClick={() => {
+                  setModalConfirmMode(Confirm.Remove);
+                  setCurriculumIdToModal(curriculumIdToChangeTitle);
+                }}
+                className="DisciplineButton"
+              >
+                Убрать дисциплину
+              </button>
+            </div>
+
+            <div style={{ marginLeft: "30px", marginTop: "24px" }}>
+              <button
+                onClick={() => {
+                  setModalConfirmMode(Confirm.Delete);
+                  setCurriculumIdToModal(curriculumIdToChangeTitle);
+                }}
+                className="DisciplineButton"
+              >
+                Удалить дисциплину
+              </button>
+            </div>
+          </>
+        )}
+
+        <div style={{ marginLeft: "30px", marginTop: "24px" }}>
+          <button
+            onClick={() => saveCurriculums()}
+            className="DisciplineButton"
+          >
+            Сохранить все
+          </button>
         </div>
       </div>
 
@@ -301,6 +637,11 @@ const CurriculumConstructor: React.FunctionComponent = () => {
               disciplines={disciplines.filter(
                 (e) => e.curriculumId === elem.id
               )}
+              deleteDiscipline={deleteDiscipline}
+              setCurriculumDataToAddTeacher={setCurriculumDataToAddTeacher}
+              deleteTeacher={deleteTeacher}
+              setEducationalLevel={setEducationalLevel}
+              educationalLevels={educationalLevels}
             />
           ))}
         </SortableContext>
@@ -319,19 +660,33 @@ const CurriculumConstructor: React.FunctionComponent = () => {
                 disciplines={disciplines.filter(
                   (e) => e.curriculumId === draggableCurriculum.id
                 )}
+                deleteDiscipline={deleteDiscipline}
+                setCurriculumDataToAddTeacher={setCurriculumDataToAddTeacher}
+                deleteTeacher={deleteTeacher}
+                setEducationalLevel={setEducationalLevel}
+                educationalLevels={educationalLevels}
               />
             )}
 
             {draggableDiscipline && (
               <CurriculumBlockDiscipline
                 discipline={draggableDiscipline}
-                deleteDiscipline={() => undefined}
+                deleteDiscipline={deleteDiscipline}
+                isOverlay={true}
+                setCurriculumDataToAddTeacher={setCurriculumDataToAddTeacher}
+                deleteTeacher={deleteTeacher}
               />
             )}
           </DragOverlay>,
           document.body
         )}
       </DndContext>
+      <ModalConfirm
+        isOpen={curriculumIdToModal !== undefined}
+        setIsOpen={setCurriculumIdToModal}
+        confirmFunc={confirmModes(modalConfirmMode).confirmFunc}
+        text={confirmModes(modalConfirmMode).text}
+      />
     </div>
   );
 };

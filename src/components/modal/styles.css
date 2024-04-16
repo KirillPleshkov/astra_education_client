@@ -66,3 +66,13 @@
   cursor: pointer;
   margin-left: 112px;
 }
+
+/* TeacherList */
+
+.modalTeacherListModal {
+  width: 340px;
+  height: 180px;
+  background-color: #eee;
+  border: 2px solid #7c7c7c;
+  border-radius: 5px;
+}

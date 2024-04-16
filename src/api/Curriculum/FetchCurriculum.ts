@@ -1,6 +1,7 @@
 import { AxiosInstance } from "axios";
 
 type TypeFetchCurriculum = {
+  id: number;
   name: string;
   disciplines: {
     discipline: {

@@ -16,6 +16,16 @@ interface ICurriculumSemesterProps {
     >
   >;
   disciplines: CurriculumDiscipline[];
+  deleteDiscipline: (dndId: number) => void;
+  setCurriculumDataToAddTeacher: React.Dispatch<
+    React.SetStateAction<
+      | {
+          disciplineDndId: number;
+        }
+      | undefined
+    >
+  >;
+  deleteTeacher: (dndId: number, teacherId: number) => void;
 }
 
 const CurriculumSemester: React.FunctionComponent<ICurriculumSemesterProps> = ({
@@ -23,8 +33,11 @@ const CurriculumSemester: React.FunctionComponent<ICurriculumSemesterProps> = ({
   curriculumId,
   setCurriculumDataToCreateDiscipline,
   disciplines,
+  deleteDiscipline,
+  setCurriculumDataToAddTeacher,
+  deleteTeacher,
 }) => {
-  const { setNodeRef, attributes, listeners } = useSortable({
+  const { setNodeRef, attributes } = useSortable({
     id: curriculumId * 10 + semester - 1,
     data: {
       type: "Semester",
@@ -36,18 +49,15 @@ const CurriculumSemester: React.FunctionComponent<ICurriculumSemesterProps> = ({
   });
 
   return (
-    <div
-      ref={setNodeRef}
-      className="blockDiscipline"
-      {...attributes}
-      {...listeners}
-    >
+    <div ref={setNodeRef} className="blockDiscipline" {...attributes}>
       <div className="blockDisciplineTitle">Семестр {semester}</div>
       <div className="blockDisciplineList">
         {disciplines.map((discipline) => (
           <CurriculumBlockDiscipline
+            deleteTeacher={deleteTeacher}
             discipline={discipline}
-            deleteDiscipline={() => undefined}
+            deleteDiscipline={deleteDiscipline}
+            setCurriculumDataToAddTeacher={setCurriculumDataToAddTeacher}
           />
         ))}
       </div>

@@ -1,7 +1,7 @@
 import * as React from "react";
 import ReactModal from "react-modal";
 import { Link } from "react-router-dom";
-import { typeFetchUser } from "../../api/FetchUser";
+import { typeFetchUser } from "../../api/User/FetchUser";
 
 interface IModalTeacherMenuProps {
   isOpen: boolean;

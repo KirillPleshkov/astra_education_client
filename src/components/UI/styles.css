@@ -55,6 +55,7 @@
   overflow: hidden;
   margin-top: 2px;
   position: absolute;
+  z-index: 2;
 }
 
 .comboboxDropDownElem {

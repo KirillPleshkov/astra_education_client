@@ -66,6 +66,7 @@
 
 .disciplineBlockModules {
   overflow-y: auto;
+  overflow-x: hidden;
   height: 100%;
 }
 
@@ -167,11 +168,11 @@
 }
 
 .disciplineBlockModuleText {
-  width: 90%;
+  padding-left: 30px;
+  width: 100%;
   text-align: center;
   font-size: 18px;
   font-weight: 500;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  word-break: break-word;
+  overflow: hidden;
 }

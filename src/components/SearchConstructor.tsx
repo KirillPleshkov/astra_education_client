@@ -103,9 +103,9 @@ const SearchConstructor: React.FunctionComponent<ISearchConstructor> = ({
           <div className="searchConstructorOverflow">
             {data &&
               data.map((el, index) => (
-                <>
+                <div key={index}>
                   {index === data.length - 1 ? (
-                    <li key={el.id}>
+                    <li>
                       <button
                         className="searchConstructorDropDownButton"
                         onClick={() => {
@@ -119,7 +119,7 @@ const SearchConstructor: React.FunctionComponent<ISearchConstructor> = ({
                       </button>
                     </li>
                   ) : (
-                    <li className="searchConstructorDropDownElem" key={el.id}>
+                    <li className="searchConstructorDropDownElem">
                       <button
                         className="searchConstructorDropDownButton"
                         onClick={() => {
@@ -133,7 +133,7 @@ const SearchConstructor: React.FunctionComponent<ISearchConstructor> = ({
                       </button>
                     </li>
                   )}
-                </>
+                </div>
               ))}
           </div>
         </ul>

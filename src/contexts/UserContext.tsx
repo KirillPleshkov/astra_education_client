@@ -7,7 +7,7 @@ import React, {
 import { fetchRefreshToken } from "../api/FetchRefreshToken";
 // import { useNavigate } from "react-router-dom";
 import useAxios from "../services/api";
-import { fetchUser, typeFetchUser } from "../api/FetchUser";
+import { fetchUser, typeFetchUser } from "../api/User/FetchUser";
 
 type TypeUserContext = {
   user: typeFetchUser | null;

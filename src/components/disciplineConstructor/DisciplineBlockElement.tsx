@@ -63,7 +63,7 @@ const DisciplineBlockElement: React.FunctionComponent<
       onMouseLeave={() => setIsHideTrashButton(true)}
     >
       <div className="disciplineBlockModuleText">{element.name}</div>
-      {!isHideTrashButton && !isOverlay && (
+      {!isHideTrashButton && !isOverlay ? (
         <button
           className="disciplineBlockModuleTrashButton"
           onClick={() => deleteElement(element.dndId)}
@@ -74,6 +74,8 @@ const DisciplineBlockElement: React.FunctionComponent<
             className="disciplineBlockModuleTrashIcon"
           />
         </button>
+      ) : (
+        <div style={{ width: "30px" }}></div>
       )}
     </div>
   );

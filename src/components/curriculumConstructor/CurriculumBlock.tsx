@@ -7,6 +7,7 @@ import "./styles.css";
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
 import CurriculumSemester from "./CurriculumSemester";
+import EducationalLevelCombobox from "../UI/EducationalLevelCombobox";
 
 interface ICurriculumBlockProps {
   curriculum: Curriculum;
@@ -25,6 +26,21 @@ interface ICurriculumBlockProps {
     >
   >;
   disciplines: CurriculumDiscipline[];
+  deleteDiscipline: (dndId: number) => void;
+  setCurriculumDataToAddTeacher: React.Dispatch<
+    React.SetStateAction<
+      | {
+          disciplineDndId: number;
+        }
+      | undefined
+    >
+  >;
+  deleteTeacher: (dndId: number, teacherId: number) => void;
+  setEducationalLevel: (
+    curriculumId: number,
+    educational_level: Curriculum["educational_level"]
+  ) => void;
+  educationalLevels: Curriculum["educational_level"][] | undefined;
 }
 
 const CurriculumBlock: React.FunctionComponent<ICurriculumBlockProps> = ({
@@ -34,6 +50,11 @@ const CurriculumBlock: React.FunctionComponent<ICurriculumBlockProps> = ({
   curriculumTitleChange,
   setCurriculumDataToCreateDiscipline,
   disciplines,
+  deleteDiscipline,
+  setCurriculumDataToAddTeacher,
+  deleteTeacher,
+  setEducationalLevel,
+  educationalLevels,
 }) => {
   const {
     setNodeRef,
@@ -48,6 +69,7 @@ const CurriculumBlock: React.FunctionComponent<ICurriculumBlockProps> = ({
       type: "Curriculum",
       curriculum,
     },
+    disabled: curriculumIdToChangeTitle === curriculum.id,
   });
 
   const style = {
@@ -62,13 +84,11 @@ const CurriculumBlock: React.FunctionComponent<ICurriculumBlockProps> = ({
 
   return (
     <div className="block" ref={setNodeRef} style={style}>
-      <div
-        className="blockTitle"
-        {...attributes}
-        {...listeners}
-        onClick={() => setCurriculumIdToChangeTitle(curriculum.id)}
-      >
-        <div className="blockTitleText">
+      <div className="blockTitle" {...attributes} {...listeners}>
+        <div
+          className="blockTitleText"
+          onClick={() => setCurriculumIdToChangeTitle(curriculum.id)}
+        >
           {curriculumIdToChangeTitle === curriculum.id ? (
             <input
               className="disciplineBlockTitleInput"
@@ -90,6 +110,12 @@ const CurriculumBlock: React.FunctionComponent<ICurriculumBlockProps> = ({
             <>{curriculum.name}</>
           )}
         </div>
+        <EducationalLevelCombobox
+          value={curriculum.educational_level}
+          setValue={setEducationalLevel}
+          values={educationalLevels}
+          curriculumId={curriculum.id}
+        />
       </div>
 
       <div className="blockDisciplines">
@@ -103,6 +129,9 @@ const CurriculumBlock: React.FunctionComponent<ICurriculumBlockProps> = ({
                 setCurriculumDataToCreateDiscipline
               }
               disciplines={disciplines.filter((e) => e.semester === elem + 1)}
+              deleteDiscipline={deleteDiscipline}
+              setCurriculumDataToAddTeacher={setCurriculumDataToAddTeacher}
+              deleteTeacher={deleteTeacher}
             />
           )
         )}

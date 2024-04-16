@@ -4,7 +4,7 @@
   margin: auto;
   margin-bottom: 30px;
   width: 95vw;
-  height: 400px;
+  height: 500px;
   border-radius: 10px;
   border: 2px solid #5e697b4d;
   background-color: #fff;
@@ -14,7 +14,7 @@
   margin: auto;
   margin-bottom: 30px;
   width: 95vw;
-  height: 400px;
+  height: 500px;
   border-radius: 10px;
   background-color: #eee;
 }
@@ -39,7 +39,7 @@
 }
 
 .blockTitleText {
-  width: 100%;
+  width: 80%;
 }
 
 /* CurriculumBlock */
@@ -47,6 +47,7 @@
 .blockDisciplines {
   display: flex;
   overflow-x: auto;
+  padding-inline: 1px;
 }
 
 .blockDisciplines::-webkit-scrollbar {
@@ -64,10 +65,10 @@
 .blockDiscipline {
   display: block;
   margin: 5px;
-  width: 169px;
+  width: 351px;
   border-radius: 10px;
   border: 2px solid #5e697b4d;
-  height: 322px;
+  height: 418px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -85,7 +86,19 @@
 
 .blockDisciplineList {
   overflow-y: auto;
+  overflow-x: hidden;
   height: 100%;
+}
+
+.blockDisciplineList::-webkit-scrollbar {
+  width: 7px;
+  background-color: #6c8186;
+  border-radius: 3px;
+}
+
+.blockDisciplineList::-webkit-scrollbar-thumb {
+  background-color: #1469c8;
+  border-radius: 0.25rem;
 }
 
 .blockDisciplineAddButton {
@@ -103,13 +116,14 @@
 /* CurriculumBlockDiscipline */
 
 .discipline {
-  width: 320px;
+  width: 340px;
   margin: 10px auto 10px auto;
   height: 40px;
   background-color: #c0efff;
   border: 2px solid #6c8186;
   border-radius: 8px;
   display: flex;
+  position: relative;
 }
 
 .discipline:active {
@@ -117,7 +131,7 @@
 }
 
 .disciplineDragging {
-  width: 320px;
+  width: 340px;
   margin: 10px auto 10px auto;
   height: 43px;
   background-color: #eee;
@@ -147,11 +161,65 @@
 }
 
 .disciplineText {
-  width: 90%;
+  padding-left: 30px;
+  width: 100%;
   text-align: center;
   font-size: 18px;
   font-weight: 500;
+  word-break: break-word;
+  overflow: hidden;
+}
+
+.teachersModal {
+  top: 43px;
+  left: -1px;
+  width: 340px;
+  height: 100px;
+  height: 180px;
+  background-color: #eee;
+  border: 2px solid #7c7c7c;
+  border-radius: 5px;
+  flex-shrink: 0;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  position: absolute;
+  z-index: 1;
+}
+
+.teachersModalTitle {
+  text-align: center;
+  width: 330px;
+  font-size: 18px;
+  font-weight: 500;
+  padding: 5px;
+  border-bottom: 2px solid #7c7c7c;
+  border-radius: 8px;
+}
+
+.teachersList {
+  overflow-y: auto;
+  height: 100%;
+}
+
+.teachersAddButton {
+  height: 30px;
+  border-radius: 8px;
+  background: #eee;
+  color: inherit;
+  border: none;
+  border-top: 2px solid #7c7c7c;
+  padding: 5px;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+}
+
+.teacherName {
+  font-size: 18px;
+  font-weight: 500;
+  padding: 10px;
+}
+
+.teacherElement {
+  display: flex;
 }
