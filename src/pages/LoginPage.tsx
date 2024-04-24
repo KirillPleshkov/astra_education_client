@@ -1,7 +1,7 @@
 import * as React from "react";
 import "./styles.css";
 import { useContext, useRef, useState } from "react";
-import { fetchToken } from "../api/FetchToken";
+import { fetchToken } from "../api/Token/FetchToken";
 import { useNavigate } from "react-router-dom";
 import { TypeUserContext, userContext } from "../contexts/UserContext";
 

@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { fetchRefreshToken } from "../api/FetchRefreshToken";
+import { fetchRefreshToken } from "../api/Token/FetchRefreshToken";
 // import { useNavigate } from "react-router-dom";
 import useAxios from "../services/api";
 import { fetchUser, typeFetchUser } from "../api/User/FetchUser";

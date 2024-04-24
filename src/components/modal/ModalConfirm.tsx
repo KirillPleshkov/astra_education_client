@@ -25,8 +25,8 @@ const ModalConfirm: React.FunctionComponent<IModalConfirmProps> = ({
         shouldFocusAfterRender={false}
         style={{
           overlay: {
-            zIndex: 2,
-            backgroundColor: "rgba(0, 0, 0, 0)",
+            zIndex: 20,
+            backgroundColor: "rgba(0, 0, 0, 0.3)",
           },
         }}
       >

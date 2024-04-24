@@ -1,226 +1,256 @@
 import * as React from "react";
-import { useParams, useSearchParams } from "react-router-dom";
 import "./styles.css";
-import { useQuery } from "@tanstack/react-query";
+import SearchConstructor from "../../components/SearchConstructor";
+import { useModuleList } from "../../hooks/UseModuleList";
+import { useState } from "react";
 import useAxios from "../../services/api";
-import { TypeFetchModule, fetchModule } from "../../api/FetchModule";
-import { useEffect, useState } from "react";
-import Edit from "../../images/Edit.svg";
-import Module from "../../components/module/Module";
+import { fetchModuleCreate } from "../../api/Module/FetchModuleCreate";
 import ConstructedBlock from "../../components/module/ConstructedBlock";
-import {
-  DndContext,
-  DragEndEvent,
-  DragOverlay,
-  DragStartEvent,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import { arrayMove, SortableContext } from "@dnd-kit/sortable";
-import { createPortal } from "react-dom";
+import ModuleCombobox, { ModuleMode } from "../../components/UI/ModuleCombobox";
+import { fetchModule } from "../../api/Module/FetchModule";
+import { Confirm } from "./DisciplineConstructor";
+import ModalConfirm from "../../components/modal/ModalConfirm";
+import { fetchModuleDelete } from "../../api/Module/FetchModuleDelete";
+
+type Module = {
+  id: number;
+  name: string;
+};
+
+export type ModuleBlock = {
+  id?: number;
+  dndId: number;
+  name: string;
+  main_text: string;
+};
+
+export type ModuleBlockFile = {
+  id: number;
+  file: string;
+  blockId: number;
+};
 
 const ModuleConstructor: React.FunctionComponent = () => {
-  const { moduleId } = useParams();
+  const [mode, setMode] = useState<ModuleMode>(ModuleMode.Text);
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [module, setModule] = useState<Module | null>(null);
+
+  const [blocks, setBlocks] = useState<ModuleBlock[]>([]);
+
+  const [files, setFiles] = useState<ModuleBlockFile[]>([]);
+
+  const [blockIdToChangeTitle, setBlockIdToChangeTitle] = useState<number>();
+
+  const [isNameChange, setISNameChange] = useState<boolean>(false);
+
+  const [blockIdToModal, setBlockIdToModal] = useState<number>();
+
+  const [modalConfirmMode, setModalConfirmMode] = useState<Confirm>(
+    Confirm.Delete
+  );
 
   const { api } = useAxios();
 
-  const [module, setModule] = useState<TypeFetchModule>({
-    id: "",
-    name: "",
-    blocks: [],
-  });
+  const createNewModule = (name: string) => {
+    return fetchModuleCreate(api, name);
+  };
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["module", moduleId],
-    queryFn: () => fetchModule(api, moduleId),
-    select: ({ data }) => data,
-  });
-
-  const [activeBlock, setActiveBlock] = useState<
-    TypeFetchModule["blocks"][0] | null
-  >(null);
-
-  const [isDrag, setIsDrag] = useState<boolean>(false);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 5,
-      },
-    })
-  );
-
-  useEffect(() => {
-    if (data) {
-      setModule(data);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading]);
-
-  // const mutation = useMutation({
-  //   mutationFn: () => {
-  //     return fetchUpdateModule(api, module, moduleId);
-  //   },
-  // });
-
-  const blocksId = React.useMemo(
-    () => module.blocks.map((e) => e.position),
-    [module]
-  );
-
-  const addBlockHandler = () => {
+  const moduleNameChange = (name: string) => {
     setModule((prev) => {
-      const countNewBlocks = prev.blocks.filter((e) => !e.id).length;
+      if (!prev) return prev;
 
-      return {
-        ...prev,
-        blocks: [
-          ...prev.blocks,
-          {
-            name: `Новый блок ${countNewBlocks ? `(${countNewBlocks})` : ""}`,
-            main_text: "",
-            files: [],
-            module: prev.id,
-            position: prev.blocks.length + 1,
-          },
-        ],
-      };
+      return { ...prev, name };
     });
   };
 
-  const onDragStart = (e: DragStartEvent) => {
-    setIsDrag(true);
-    if (e.active.data.current?.type === "Block") {
-      setActiveBlock(e.active.data.current.block);
-    }
+  const addBlock = () => {
+    const newBlock: ModuleBlock = {
+      dndId: new Date().getTime(),
+      name: "Новый блок модуля",
+      main_text: "",
+    };
+
+    setBlocks((prev) => {
+      return [...prev, newBlock];
+    });
   };
 
-  const onDragEnd = (e: DragEndEvent) => {
-    setIsDrag(false);
-    const { active, over } = e;
-    if (!over) return;
+  const addModule = ({ id }: { id: number; name: string }) => {
+    fetchModule(api, `${id}`).then(({ data }) => {
+      setModule({ id: Number(data.id), name: data.name });
 
-    const activeBlockPos = active.id;
-    const overBlockPos = over.id;
+      const newBlocks = data.blocks.map((e, index) => {
+        return { ...e, dndId: new Date().getTime() * 1000 + index };
+      });
+      setBlocks(newBlocks);
 
-    if (activeBlockPos === overBlockPos) return;
+      const newFiles: ModuleBlockFile[] = [];
 
-    setModule((prev) => {
-      const blocks = [...prev.blocks];
+      newBlocks
+        .sort((a, b) => a.position - b.position)
+        .forEach((block) =>
+          block.files
+            .sort((a, b) => a.position - b.position)
+            .forEach((file) => newFiles.push({ ...file, blockId: block.dndId }))
+        );
 
-      const activeBlockIndex = blocks.findIndex(
-        (e) => e.position === activeBlockPos
-      );
-      const overBlockIndex = blocks.findIndex(
-        (e) => e.position === overBlockPos
-      );
+      setFiles(newFiles);
+    });
+  };
 
-      const updatedBlocks = arrayMove(blocks, activeBlockIndex, overBlockIndex);
+  const changeBlockName = (dndId: number, name: string) => {
+    setBlocks((prev) => {
+      return prev.map((e) => (e.dndId === dndId ? { ...e, name } : e));
+    });
+  };
 
-      return {
-        ...prev,
-        blocks: updatedBlocks.map((e, index) => {
-          return { ...e, position: index + 1 };
-        }),
-      };
+  const changeBlockMainText = (dndId: number, main_text: string) => {
+    setBlocks((prev) => {
+      return prev.map((e) => (e.dndId === dndId ? { ...e, main_text } : e));
+    });
+  };
+
+  const removeBlock = () => {
+    setBlocks((prev) => {
+      return prev.filter((e) => e.dndId !== blockIdToModal);
     });
 
-    const element = document.getElementById(`block_${e.over?.id}`);
-
-    setTimeout(() => {
-      if (element) {
-        const y = element.getBoundingClientRect().top + window.scrollY;
-        window.scroll({
-          top: y - 300,
-          behavior: "smooth",
-        });
-      }
-    }, 10);
+    setBlockIdToModal(undefined);
   };
 
-  console.log(module);
+  const deleteModule = () => {
+    fetchModuleDelete(api, module?.id)
+      .then(() => {
+        setBlocks([]);
+        setModule(null);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+
+    setBlockIdToModal(undefined);
+  };
+
+  const confirmModes = (confirm: Confirm) => {
+    if (confirm === Confirm.Delete) {
+      return {
+        text: "Вы уверены что хотите безвозвратно удалить модуль?",
+        confirmFunc: deleteModule,
+      };
+    } else {
+      return {
+        text: "Вы уверены что хотите убрать блок? Несохраненные данные пропадут.",
+        confirmFunc: removeBlock,
+      };
+    }
+  };
 
   return (
-    <>
-      {searchParams.get("edit") === "true" ? (
-        <div className="moduleContent">
-          <div className="pageName">
-            <input
-              value={module.name}
-              onChange={(e) =>
-                setModule((prev) => {
-                  return { ...prev, name: e.target.value };
-                })
-              }
-            />
-          </div>
-          <DndContext
-            autoScroll={{ acceleration: 1 }}
-            sensors={sensors}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
-          >
-            <div className="moduleCentered">
-              <SortableContext items={blocksId}>
-                {module &&
-                  module.blocks
-                    .sort((a, b) => a.position - b.position)
-                    .map((elem) => (
-                      <ConstructedBlock
-                        id={`block_${elem.position}`}
-                        isDrag={isDrag}
-                        setModule={setModule}
-                        elem={elem}
-                        key={elem.position}
-                      />
-                    ))}
-              </SortableContext>
+    <div className="moduleContent">
+      <div className="pageName">Конструктор модулей</div>
 
-              <button
-                className="moduleAddBlockButton"
-                onClick={addBlockHandler}
-              >
-                + Добавить новый Блок
-              </button>
-            </div>
-            {/* {createPortal( */}
-            <DragOverlay dropAnimation={null}>
-              {activeBlock && (
-                // <div>Привет</div>
-                <ConstructedBlock
-                  id={`block`}
-                  elem={activeBlock}
-                  setModule={setModule}
-                  isDrag={isDrag}
-                />
-              )}
-            </DragOverlay>
-            ,
-            {/* document.body
-            )} */}
-          </DndContext>
+      <div className="disciplineAddBlock">
+        <div>
+          <label className="searchConstructorText-field__label">
+            Введите название модуля
+          </label>
+          <SearchConstructor
+            key={1}
+            createText="+ Создать новый модуль с введенным названием"
+            blockName="модуля"
+            useDataGet={useModuleList}
+            setSelectedElement={addModule}
+            createNewF={createNewModule}
+            width={500}
+          />
         </div>
-      ) : (
-        <div className="moduleContent">
-          <button
-            className="moduleEditButton"
-            onClick={() =>
-              setSearchParams({
-                edit: "true",
-              })
-            }
-          >
-            <img src={Edit} alt="React Logo" className="moduleEditImg" />
-          </button>
 
-          <div className="pageName">{module.name}</div>
-          <Module />
+        <div style={{ marginLeft: "30px" }}>
+          <label className="searchConstructorText-field__label">
+            Режим отображения
+          </label>
+          <ModuleCombobox mode={mode} setMode={setMode} />
+        </div>
+
+        {blockIdToChangeTitle && (
+          <div style={{ marginLeft: "30px", marginTop: "24px" }}>
+            <button
+              onClick={() => {
+                setBlockIdToModal(blockIdToChangeTitle);
+                setModalConfirmMode(Confirm.Remove);
+              }}
+              className="DisciplineButton"
+            >
+              Убрать блок
+            </button>
+          </div>
+        )}
+
+        {module && (
+          <div style={{ marginLeft: "30px", marginTop: "24px" }}>
+            <button
+              onClick={() => {
+                setBlockIdToModal(1);
+                setModalConfirmMode(Confirm.Delete);
+              }}
+              className="DisciplineButton"
+            >
+              Удалить модуль
+            </button>
+          </div>
+        )}
+      </div>
+
+      {module && (
+        <div className="moduleCon">
+          <div className="moduleName" onClick={() => setISNameChange(true)}>
+            {isNameChange ? (
+              <input
+                className="disciplineBlockTitleInput"
+                type="text"
+                onBlur={() => setTimeout(() => setISNameChange(false), 100)}
+                autoFocus
+                value={module.name}
+                onKeyDown={(e) => {
+                  if (e.keyCode === 13) {
+                    setTimeout(() => setISNameChange(false), 100);
+                  }
+                }}
+                onChange={(e) => moduleNameChange(e.target.value)}
+                style={{ margin: "auto" }}
+              />
+            ) : (
+              <>{module.name}</>
+            )}
+          </div>
+
+          {blocks.map((block, index) => (
+            <ConstructedBlock
+              block={block}
+              key={index}
+              blockIdToChangeTitle={blockIdToChangeTitle}
+              setBlockIdToChangeTitle={setBlockIdToChangeTitle}
+              changeBlockName={changeBlockName}
+              changeBlockMainText={changeBlockMainText}
+              mode={mode}
+              files={files.filter((e) => e.blockId === block.dndId)}
+              // files={files.filter((e) => e.blockId === block.dndId)}
+            />
+          ))}
+
+          <button onClick={() => addBlock()} className="addBlockButton">
+            + Добавить блок
+          </button>
         </div>
       )}
-    </>
+
+      <ModalConfirm
+        isOpen={blockIdToModal !== undefined}
+        setIsOpen={setBlockIdToModal}
+        confirmFunc={confirmModes(modalConfirmMode).confirmFunc}
+        text={confirmModes(modalConfirmMode).text}
+      />
+    </div>
   );
 };
 

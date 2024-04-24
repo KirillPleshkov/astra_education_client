@@ -1,5 +1,5 @@
 import axios from "axios";
-import { fetchRefreshToken } from "../api/FetchRefreshToken";
+import { fetchRefreshToken } from "../api/Token/FetchRefreshToken";
 import { useNavigate } from "react-router-dom";
 
 const useAxios = () => {

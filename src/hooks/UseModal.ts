@@ -1,19 +1,21 @@
 import { RefObject, useEffect, useRef, useState } from "react";
 
-const useModal = <T extends HTMLElement, L extends HTMLElement>() => {
+const useModal = <T extends HTMLElement>() => {
   const [isOpen, setIsOpen] = useState(false);
 
   const modalRef = useRef<T>(null);
 
-  const [buttonRefs, setButtonRefs] = useState<RefObject<L>[]>([]);
+  const [excludeRefs, setExcludeRefs] = useState<RefObject<HTMLElement>[]>([]);
 
-  const setButtonRef = (buttonRef: RefObject<L>) => {
-    setButtonRefs((prev) => [...prev, buttonRef]);
-  };
+  // const setExcludeRef = (excludeRef: RefObject<HTMLElement>) => {
+  //   if (!excludeRefs.some((e) => e === excludeRef)) {
+  //     setExcludeRefs((prev) => [...prev, excludeRef]);
+  //   }
+  // };
 
   useEffect(() => {
-    const checkIfClickedOutside = (e: any) => {
-      const isButtonClick = buttonRefs?.reduce(
+    const checkIfClickedOutside = (e: unknown) => {
+      const isButtonClick = excludeRefs?.reduce(
         (prev, curr) => (!curr?.current?.contains(e.target) ? prev : true),
         false
       );
@@ -27,9 +29,9 @@ const useModal = <T extends HTMLElement, L extends HTMLElement>() => {
     return () => {
       document.removeEventListener("mousedown", checkIfClickedOutside);
     };
-  }, [isOpen]);
+  }, [isOpen, excludeRefs]);
 
-  return { isOpen, setIsOpen, modalRef, setButtonRef };
+  return { isOpen, setIsOpen, modalRef, setExcludeRefs };
 };
 
 export { useModal };

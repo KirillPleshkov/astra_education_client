@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchModules } from "../api/FetchModules";
+import { fetchModules } from "../api/Module/FetchModules";
 import useAxios from "../services/api";
 
 const useModuleList = (name: string) => {

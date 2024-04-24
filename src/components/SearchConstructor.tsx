@@ -1,9 +1,10 @@
 import * as React from "react";
 import "./style.css";
 import { useDebounce } from "use-debounce";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AxiosResponse } from "axios";
-import { TypeFetchCreated } from "../api/FetchModuleCreate";
+import { TypeFetchCreated } from "../api/Module/FetchModuleCreate";
+import { useRect } from "@dnd-kit/core/dist/hooks/utilities";
 
 interface ISearchConstructor {
   blockName: string;
@@ -16,6 +17,9 @@ interface ISearchConstructor {
   ) => Promise<AxiosResponse<TypeFetchCreated, unknown>>;
   onBlur?: () => void;
   autoFocus?: boolean;
+  setExcludedSearchClick?: React.Dispatch<
+    React.SetStateAction<React.RefObject<HTMLElement>[]>
+  >;
 }
 
 const SearchConstructor: React.FunctionComponent<ISearchConstructor> = ({
@@ -27,6 +31,7 @@ const SearchConstructor: React.FunctionComponent<ISearchConstructor> = ({
   onBlur,
   autoFocus,
   createText,
+  setExcludedSearchClick,
 }) => {
   const [inputName, setInputName] = useState<string>("");
   const [isFocusInput, setIsFocusInput] = useState<boolean>(false);
@@ -35,9 +40,20 @@ const SearchConstructor: React.FunctionComponent<ISearchConstructor> = ({
 
   const data = useDataGet(name);
 
+  const refInput = useRef(null);
+
+  const refHints = useRef(null);
+
+  useEffect(() => {
+    if (refHints && refInput && setExcludedSearchClick) {
+      setExcludedSearchClick([refHints, refInput]);
+    }
+  }, [refHints, refInput, setExcludedSearchClick]);
+
   return (
     <>
       <input
+        ref={refInput}
         className="searchConstructorText-field__input"
         type="text"
         name="search"
@@ -58,7 +74,11 @@ const SearchConstructor: React.FunctionComponent<ISearchConstructor> = ({
       />
 
       {isFocusInput && (data?.length || createNewF) && (
-        <ul className="searchConstructorDropDownList" style={{ width }}>
+        <ul
+          className="searchConstructorDropDownList"
+          style={{ width }}
+          ref={refHints}
+        >
           {inputName && !data?.filter((el) => el.name === inputName).length && (
             <>
               {createNewF && (

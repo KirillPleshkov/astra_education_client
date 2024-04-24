@@ -23,9 +23,9 @@ const Block: React.FunctionComponent<IBlockProps> = ({
   };
 
   return (
-    <div className="block">
-      <div className="blockTitle">{name}</div>
-      <div className="blockMainText">{main_text}</div>
+    <div className="moduleBlock">
+      <div className="moduleBlockTitle">{name}</div>
+      <div className="moduleBlockMainText">{main_text}</div>
 
       {files
         .sort((a, b) => a.position - b.position)

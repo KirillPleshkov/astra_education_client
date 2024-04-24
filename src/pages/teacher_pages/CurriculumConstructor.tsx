@@ -2,7 +2,7 @@ import * as React from "react";
 import "./styles.css";
 import SearchConstructor from "../../components/SearchConstructor";
 import { useCurriculumList } from "../../hooks/UseCurriculumList";
-import { useMemo, useState } from "react";
+import { RefObject, useMemo, useRef, useState } from "react";
 import { fetchCurriculumCreate } from "../../api/Curriculum/FetchCurriculumCreate";
 import useAxios from "../../services/api";
 import CurriculumBlock from "../../components/curriculumConstructor/CurriculumBlock";
@@ -104,6 +104,10 @@ const CurriculumConstructor: React.FunctionComponent = () => {
     text: string;
     users: string[];
   } | null>(null);
+
+  const [excludedSearchClick, setExcludedSearchClick] = useState<
+    RefObject<HTMLElement>[]
+  >([]);
 
   const curriculumsId = useMemo(
     () => curriculums.map((e) => e.id),
@@ -538,6 +542,7 @@ const CurriculumConstructor: React.FunctionComponent = () => {
                   autoFocus={true}
                   createText=""
                   onBlur={() => setCurriculumDataToAddTeacher(undefined)}
+                  setExcludedSearchClick={setExcludedSearchClick}
                 />
               </>
             )}
@@ -642,6 +647,7 @@ const CurriculumConstructor: React.FunctionComponent = () => {
               deleteTeacher={deleteTeacher}
               setEducationalLevel={setEducationalLevel}
               educationalLevels={educationalLevels}
+              excludedSearchClick={excludedSearchClick}
             />
           ))}
         </SortableContext>
@@ -665,6 +671,7 @@ const CurriculumConstructor: React.FunctionComponent = () => {
                 deleteTeacher={deleteTeacher}
                 setEducationalLevel={setEducationalLevel}
                 educationalLevels={educationalLevels}
+                excludedSearchClick={excludedSearchClick}
               />
             )}
 
@@ -675,6 +682,7 @@ const CurriculumConstructor: React.FunctionComponent = () => {
                 isOverlay={true}
                 setCurriculumDataToAddTeacher={setCurriculumDataToAddTeacher}
                 deleteTeacher={deleteTeacher}
+                excludedSearchClick={excludedSearchClick}
               />
             )}
           </DragOverlay>,

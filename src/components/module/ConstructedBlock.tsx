@@ -1,15 +1,22 @@
 import * as React from "react";
-import { TypeFetchModule } from "../../api/FetchModule";
-import AutoChangedTextArea from "../UI/AutoChangedTextArea";
+import "./styles.css";
+import {
+  ModuleBlock,
+  ModuleBlockFile,
+} from "../../pages/teacher_pages/ModuleConstructor";
+import { ModuleMode } from "../UI/ModuleCombobox";
 import { DefaultExtensionType, defaultStyles, FileIcon } from "react-file-icon";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 
 interface IConstructedBlockProps {
-  setModule: (value: React.SetStateAction<TypeFetchModule>) => void;
-  elem: TypeFetchModule["blocks"][0];
-  isDrag: boolean;
-  id: string;
+  block: ModuleBlock;
+  blockIdToChangeTitle: number | undefined;
+  setBlockIdToChangeTitle: React.Dispatch<
+    React.SetStateAction<number | undefined>
+  >;
+  changeBlockName: (dndId: number, name: string) => void;
+  changeBlockMainText: (dndId: number, main_text: string) => void;
+  mode: ModuleMode;
+  files: ModuleBlockFile[];
 }
 
 const formatFile: (fileName: string) => DefaultExtensionType = (fileName) => {
@@ -19,148 +26,84 @@ const formatFile: (fileName: string) => DefaultExtensionType = (fileName) => {
 };
 
 const ConstructedBlock: React.FunctionComponent<IConstructedBlockProps> = ({
-  setModule,
-  elem,
-  isDrag,
-  id,
+  block,
+  blockIdToChangeTitle,
+  setBlockIdToChangeTitle,
+  changeBlockName,
+  changeBlockMainText,
+  mode,
+  files,
 }) => {
-  const {
-    setNodeRef,
-    attributes,
-    listeners,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: elem.position,
-    data: {
-      type: "Block",
-      block: elem,
-    },
-  });
-
-  const style = {
-    transition,
-    transform: CSS.Transform.toString(transform),
-  };
-
-  const changeBlockNameHandler = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    blockPos: number
-  ) => {
-    setModule((prev) => {
-      const currentBlock = prev.blocks.find((el) => el.position == blockPos);
-
-      if (!currentBlock) return prev;
-
-      currentBlock.name = e.target.value;
-      const newBlocks = [
-        ...prev.blocks.filter((el) => el.position != blockPos),
-        currentBlock,
-      ];
-      return { ...prev, blocks: newBlocks };
-    });
-  };
-
-  const changeBlockMainTextHandler = (
-    e: React.ChangeEvent<HTMLTextAreaElement>,
-    blockPos: number
-  ) => {
-    setModule((prev) => {
-      const currentBlock = prev.blocks.find((el) => el.position == blockPos);
-
-      if (!currentBlock) return prev;
-
-      currentBlock.main_text = e.target.value;
-      const newBlocks = [
-        ...prev.blocks.filter((el) => el.position != blockPos),
-        currentBlock,
-      ];
-      return { ...prev, blocks: newBlocks };
-    });
-  };
-
-  if (isDragging)
-    return (
-      <div ref={setNodeRef} style={style} className="conblockDraggedBack"></div>
-    );
-
-  if (isDrag)
-    return (
-      <div
-        id={id}
-        className="moduleBlock"
-        key={elem.position}
-        ref={setNodeRef}
-        style={{
-          ...style,
-          marginTop: "30px",
-          marginBottom: "30px",
-        }}
-      >
-        <div className="moduleBlockTitle" {...attributes} {...listeners}>
-          <input
-            value={elem.name}
-            type="text"
-            // className="moduleBlockTitleInput"
-            onChange={(e) => changeBlockNameHandler(e, elem.position)}
-          />
-        </div>
-        <div className="moduleBlockMainText">
-          <AutoChangedTextArea
-            isDropped={true}
-            value={elem.main_text}
-            className="moduleBlockMainTextArea"
-            onChange={(e) => changeBlockMainTextHandler(e, elem.position)}
-          />
-        </div>
-      </div>
-    );
+  const addFile = (e: FormEventHandler<HTMLFormElement>) => {};
 
   return (
-    <div
-      className="moduleBlock"
-      key={elem.position}
-      ref={setNodeRef}
-      style={style}
-    >
-      <div className="moduleBlockTitle" {...attributes} {...listeners}>
-        <input
-          value={elem.name}
-          type="text"
-          // className="moduleBlockTitleInput"
-          onChange={(e) => changeBlockNameHandler(e, elem.position)}
-        />
-      </div>
-      <div className="moduleBlockMainText">
-        <AutoChangedTextArea
-          isDropped={false}
-          value={elem.main_text}
-          className="moduleBlockMainTextArea"
-          onChange={(e) => changeBlockMainTextHandler(e, elem.position)}
-        />
+    <div className="constructedModuleBlock1">
+      <div
+        className="constructedModuleBlockTitle"
+        onClick={() => setBlockIdToChangeTitle(block.dndId)}
+      >
+        {blockIdToChangeTitle === block.dndId ? (
+          <input
+            className="constructedModuleBlockTitleInput"
+            type="text"
+            onBlur={() =>
+              setTimeout(() => setBlockIdToChangeTitle(undefined), 100)
+            }
+            autoFocus
+            value={block.name}
+            onKeyDown={(e) => {
+              if (e.keyCode === 13) {
+                setBlockIdToChangeTitle(undefined);
+              }
+            }}
+            onChange={(e) => changeBlockName(block.dndId, e.target.value)}
+          />
+        ) : (
+          <>{block.name}</>
+        )}
       </div>
 
-      {elem.files
-        .sort((a, b) => a.position - b.position)
-        .map((elem, index) => (
-          <div className="file" key={index}>
-            <a
-              href={`http://127.0.0.1:8000/block/file/${elem.id}`}
-              download
-              key={elem.id}
-              className="fileDownload"
-            >
-              <div className="fileImg">
-                <FileIcon
-                  extension={elem.file.split(".").pop()}
-                  {...defaultStyles[formatFile(elem.file)]}
-                />
+      {mode === ModuleMode.Text && (
+        <textarea
+          className="constructedModuleBlockTextarea"
+          value={block.main_text}
+          onChange={(e) => changeBlockMainText(block.dndId, e.target.value)}
+        />
+      )}
+
+      {mode === ModuleMode.Files && (
+        <>
+          <div>
+            {files.map((e, index) => (
+              <div className="file" key={index}>
+                <a
+                  href={`http://127.0.0.1:8000/block/file/${e.id}`}
+                  download
+                  key={e.id}
+                  className="fileDownload"
+                >
+                  <div className="fileImg">
+                    <FileIcon
+                      extension={e.file.split(".").pop()}
+                      {...defaultStyles[formatFile(e.file)]}
+                    />
+                  </div>
+                </a>
+
+                <div className="fileName">{e.file.split("/").pop()}</div>
               </div>
-            </a>
-            <div className="fileName">{elem.file.split("/").pop()}</div>
+            ))}
           </div>
-        ))}
+          <form onSubmit={addFile}>
+            <div className="input_container">
+              <input type="file" id="fileUpload" className="input_file" />
+              <button className="addFileButton" type="submit">
+                Добавить выбранный файл
+              </button>
+            </div>
+          </form>
+        </>
+      )}
     </div>
   );
 };

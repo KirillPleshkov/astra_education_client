@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../services/api";
-import { fetchProducts } from "../api/FetchProducts";
+import { fetchProducts } from "../api/Skills_products/FetchProducts";
 
 const useProductList = (name: string) => {
   const { api } = useAxios();

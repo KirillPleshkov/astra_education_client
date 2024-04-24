@@ -20,19 +20,19 @@ const DescriptionModule: React.FunctionComponent<IDescriptionModuleProps> = ({
 }) => {
   return (
     <div className="module">
-      <div className="block">
-        <div className="blockTitle">Описание</div>
-        <div className="blockMainText">{short_description}</div>
+      <div className="moduleBlock">
+        <div className="moduleBlockTitle">Описание</div>
+        <div className="moduleBlockMainText">{short_description}</div>
       </div>
 
-      <div className="block">
-        <div className="blockTitle">Преподаватели</div>
-        <div className="blockMainText"></div>
+      <div className="moduleBlock">
+        <div className="moduleBlockTitle">Преподаватели</div>
+        <div className="moduleBlockMainText"></div>
       </div>
 
-      <div className="block">
-        <div className="blockTitle">Компетенци</div>
-        <div className="blockMainText">
+      <div className="moduleBlock">
+        <div className="moduleBlockTitle">Компетенци</div>
+        <div className="moduleBlockMainText">
           {skills.map((elem) => (
             <div className="textBlock" key={elem.id}>
               {elem.name}
@@ -41,9 +41,9 @@ const DescriptionModule: React.FunctionComponent<IDescriptionModuleProps> = ({
         </div>
       </div>
 
-      <div className="block">
-        <div className="blockTitle">Продукты ПАО Группы Астра</div>
-        <div className="blockMainText">
+      <div className="moduleBlock">
+        <div className="moduleBlockTitle">Продукты ПАО Группы Астра</div>
+        <div className="moduleBlockMainText">
           {products.map((elem) => (
             <div className="textBlock" key={elem.id}>
               {elem.name}

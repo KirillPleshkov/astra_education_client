@@ -3,7 +3,7 @@ import "./styles.css";
 import Block from "./Block";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { fetchModule } from "../../api/FetchModule";
+import { fetchModule } from "../../api/Module/FetchModule";
 import useAxios from "../../services/api";
 
 interface IModuleProps {}

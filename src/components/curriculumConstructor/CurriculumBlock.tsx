@@ -41,6 +41,7 @@ interface ICurriculumBlockProps {
     educational_level: Curriculum["educational_level"]
   ) => void;
   educationalLevels: Curriculum["educational_level"][] | undefined;
+  excludedSearchClick: React.RefObject<HTMLElement>[];
 }
 
 const CurriculumBlock: React.FunctionComponent<ICurriculumBlockProps> = ({
@@ -55,6 +56,7 @@ const CurriculumBlock: React.FunctionComponent<ICurriculumBlockProps> = ({
   deleteTeacher,
   setEducationalLevel,
   educationalLevels,
+  excludedSearchClick,
 }) => {
   const {
     setNodeRef,
@@ -132,6 +134,7 @@ const CurriculumBlock: React.FunctionComponent<ICurriculumBlockProps> = ({
               deleteDiscipline={deleteDiscipline}
               setCurriculumDataToAddTeacher={setCurriculumDataToAddTeacher}
               deleteTeacher={deleteTeacher}
+              excludedSearchClick={excludedSearchClick}
             />
           )
         )}

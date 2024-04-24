@@ -31,6 +31,8 @@ import ModalConfirm from "../../components/modal/ModalConfirm";
 import { fetchDisciplineDelete } from "../../api/Discipline/FetchDisciplineDelete";
 import { AxiosError } from "axios";
 import { fetchDisciplineUpdate } from "../../api/Discipline/FetchDisciplineUpdate";
+import { fetchSkillCreate } from "../../api/Skills_products/FetchCreateSkill";
+import { fetchProductCreate } from "../../api/Skills_products/FetchCreateProduct";
 
 export type Discipline = {
   id: number;
@@ -192,6 +194,14 @@ const DisciplineConstructor: React.FunctionComponent = () => {
 
   const createNewDiscipline = (name: string) => {
     return fetchDisciplineCreate(api, name);
+  };
+
+  const createNewSkill = (name: string) => {
+    return fetchSkillCreate(api, name);
+  };
+
+  const createNewProduct = (name: string) => {
+    return fetchProductCreate(api, name);
   };
 
   const onBlurSearch = () => {
@@ -529,7 +539,8 @@ const DisciplineConstructor: React.FunctionComponent = () => {
                     width={500}
                     onBlur={onBlurSearch}
                     autoFocus={true}
-                    createText=""
+                    createNewF={createNewProduct}
+                    createText="+ Создать новый продукт с введенным названием"
                   />
                 </div>
               </div>
@@ -549,7 +560,8 @@ const DisciplineConstructor: React.FunctionComponent = () => {
                     width={500}
                     onBlur={onBlurSearch}
                     autoFocus={true}
-                    createText=""
+                    createNewF={createNewSkill}
+                    createText="+ Создать новый навык с введенным названием"
                   />
                 </div>
               </div>

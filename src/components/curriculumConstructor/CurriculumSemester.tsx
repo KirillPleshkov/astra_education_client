@@ -26,6 +26,7 @@ interface ICurriculumSemesterProps {
     >
   >;
   deleteTeacher: (dndId: number, teacherId: number) => void;
+  excludedSearchClick: React.RefObject<HTMLElement>[];
 }
 
 const CurriculumSemester: React.FunctionComponent<ICurriculumSemesterProps> = ({
@@ -36,6 +37,7 @@ const CurriculumSemester: React.FunctionComponent<ICurriculumSemesterProps> = ({
   deleteDiscipline,
   setCurriculumDataToAddTeacher,
   deleteTeacher,
+  excludedSearchClick,
 }) => {
   const { setNodeRef, attributes } = useSortable({
     id: curriculumId * 10 + semester - 1,
@@ -58,6 +60,7 @@ const CurriculumSemester: React.FunctionComponent<ICurriculumSemesterProps> = ({
             discipline={discipline}
             deleteDiscipline={deleteDiscipline}
             setCurriculumDataToAddTeacher={setCurriculumDataToAddTeacher}
+            excludedSearchClick={excludedSearchClick}
           />
         ))}
       </div>

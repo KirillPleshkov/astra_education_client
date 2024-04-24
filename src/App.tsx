@@ -6,11 +6,10 @@ import "./style.css";
 import DisciplinePage from "./pages/DisciplinePage";
 import LoginPage from "./pages/LoginPage";
 import UserProvider from "./contexts/UserContext";
-import MainConstructor from "./pages/teacher_pages/MainConstructor";
-import ModuleConstructor from "./pages/teacher_pages/ModuleConstructor";
 import CurriculumPage from "./pages/CurriculumPage";
 import DisciplineConstructor from "./pages/teacher_pages/DisciplineConstructor";
 import CurriculumConstructor from "./pages/teacher_pages/CurriculumConstructor";
+import ModuleConstructor from "./pages/teacher_pages/ModuleConstructor";
 
 function App() {
   return (
@@ -34,10 +33,8 @@ function App() {
 
               <Route path="/login" element={<LoginPage />} />
 
-              <Route path="/main_constructor" element={<MainConstructor />} />
-
               <Route
-                path="/module_constructor/:moduleId"
+                path="/module_constructor"
                 element={<ModuleConstructor />}
               />
 

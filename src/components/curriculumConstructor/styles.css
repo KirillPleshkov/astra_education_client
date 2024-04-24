@@ -40,6 +40,9 @@
 
 .blockTitleText {
   width: 80%;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 500;
 }
 
 /* CurriculumBlock */
@@ -123,7 +126,7 @@
   border: 2px solid #6c8186;
   border-radius: 8px;
   display: flex;
-  position: relative;
+  /* position: relative; */
 }
 
 .discipline:active {
@@ -171,8 +174,8 @@
 }
 
 .teachersModal {
-  top: 43px;
-  left: -1px;
+  margin-left: 4px;
+  margin-top: -10px;
   width: 340px;
   height: 100px;
   height: 180px;

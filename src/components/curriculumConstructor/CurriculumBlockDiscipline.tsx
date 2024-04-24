@@ -20,6 +20,7 @@ interface ICurriculumBlockDisciplineProps {
     >
   >;
   deleteTeacher: (dndId: number, teacherId: number) => void;
+  excludedSearchClick: React.RefObject<HTMLElement>[];
 }
 
 const CurriculumBlockDiscipline: React.FunctionComponent<
@@ -30,6 +31,7 @@ const CurriculumBlockDiscipline: React.FunctionComponent<
   isOverlay,
   setCurriculumDataToAddTeacher,
   deleteTeacher,
+  excludedSearchClick,
 }) => {
   const {
     setNodeRef,
@@ -50,16 +52,14 @@ const CurriculumBlockDiscipline: React.FunctionComponent<
 
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const { isOpen, setIsOpen, modalRef, setButtonRef } = useModal<
-    HTMLDivElement,
-    HTMLButtonElement
-  >();
+  const { isOpen, setIsOpen, modalRef, setExcludeRefs } =
+    useModal<HTMLDivElement>();
 
   useEffect(() => {
-    if (buttonRef) {
-      setButtonRef(buttonRef);
+    if (buttonRef && excludedSearchClick) {
+      setExcludeRefs([buttonRef, ...excludedSearchClick]);
     }
-  }, [buttonRef]);
+  }, [buttonRef, excludedSearchClick]);
 
   const style = {
     transition,
@@ -82,7 +82,7 @@ const CurriculumBlockDiscipline: React.FunctionComponent<
     );
 
   return (
-    <>
+    <div>
       <div
         ref={setNodeRef}
         style={style}
@@ -90,7 +90,7 @@ const CurriculumBlockDiscipline: React.FunctionComponent<
         {...listeners}
         className="discipline"
         onMouseEnter={() => setIsHideTrashButton(false)}
-        onMouseLeave={() => setIsHideTrashButton(true)}
+        onMouseLeave={() => setTimeout(() => setIsHideTrashButton(true), 30)}
         id={`teacherList-${discipline.dndId}`}
       >
         <div className="disciplineText">{discipline.name}</div>
@@ -98,7 +98,7 @@ const CurriculumBlockDiscipline: React.FunctionComponent<
           <>
             <button
               className="disciplineTrashButton"
-              onClick={() => setIsOpen(true)}
+              onClick={() => setIsOpen((prev) => !prev)}
               ref={buttonRef}
             >
               <img
@@ -121,44 +121,44 @@ const CurriculumBlockDiscipline: React.FunctionComponent<
         ) : (
           <div style={{ width: "60px" }}></div>
         )}
-        {isOpen && (
-          <div className="teachersModal" ref={modalRef}>
-            <div className="teachersModalTitle">Преподаватели</div>
-            <div className="teachersList">
-              {discipline.teachers.map((e, index) => (
-                <div className="teacherElement">
-                  <div
-                    key={index}
-                    className="teacherName"
-                  >{`${e.first_name} ${e.last_name}`}</div>
-                  <button
-                    className="disciplineTrashButton"
-                    onClick={() => deleteTeacher(discipline.dndId, e.id)}
-                  >
-                    <img
-                      src={Trash}
-                      alt="Удалить дисциплину"
-                      className="disciplineTrashIcon"
-                    />
-                  </button>
-                </div>
-              ))}
-            </div>
-
-            <button
-              className="teachersAddButton"
-              onClick={() =>
-                setCurriculumDataToAddTeacher({
-                  disciplineDndId: discipline.dndId,
-                })
-              }
-            >
-              Добавить преподавателя
-            </button>
-          </div>
-        )}
       </div>
-    </>
+      {isOpen && (
+        <div className="teachersModal" ref={modalRef}>
+          <div className="teachersModalTitle">Преподаватели</div>
+          <div className="teachersList">
+            {discipline.teachers.map((e, index) => (
+              <div className="teacherElement">
+                <div
+                  key={index}
+                  className="teacherName"
+                >{`${e.first_name} ${e.last_name}`}</div>
+                <button
+                  className="disciplineTrashButton"
+                  onClick={() => deleteTeacher(discipline.dndId, e.id)}
+                >
+                  <img
+                    src={Trash}
+                    alt="Удалить дисциплину"
+                    className="disciplineTrashIcon"
+                  />
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <button
+            className="teachersAddButton"
+            onClick={() =>
+              setCurriculumDataToAddTeacher({
+                disciplineDndId: discipline.dndId,
+              })
+            }
+          >
+            Добавить преподавателя
+          </button>
+        </div>
+      )}
+    </div>
   );
 };
 

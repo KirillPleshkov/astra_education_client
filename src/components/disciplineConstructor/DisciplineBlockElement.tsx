@@ -60,7 +60,7 @@ const DisciplineBlockElement: React.FunctionComponent<
       {...listeners}
       className="disciplineBlockModule"
       onMouseEnter={() => setIsHideTrashButton(false)}
-      onMouseLeave={() => setIsHideTrashButton(true)}
+      onMouseLeave={() => setTimeout(() => setIsHideTrashButton(true), 30)}
     >
       <div className="disciplineBlockModuleText">{element.name}</div>
       {!isHideTrashButton && !isOverlay ? (
