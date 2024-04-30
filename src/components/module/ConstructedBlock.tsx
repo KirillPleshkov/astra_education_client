@@ -6,6 +6,18 @@ import {
 } from "../../pages/teacher_pages/ModuleConstructor";
 import { ModuleMode } from "../UI/ModuleCombobox";
 import { DefaultExtensionType, defaultStyles, FileIcon } from "react-file-icon";
+import {
+  ChangeEvent,
+  ChangeEventHandler,
+  FormEventHandler,
+  useMemo,
+  useState,
+} from "react";
+import { fetchFileUpload } from "../../api/File/FetchFileUpload";
+import useAxios from "../../services/api";
+import ConstructedFile from "./ConstructedFile";
+import { SortableContext, useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface IConstructedBlockProps {
   block: ModuleBlock;
@@ -17,13 +29,9 @@ interface IConstructedBlockProps {
   changeBlockMainText: (dndId: number, main_text: string) => void;
   mode: ModuleMode;
   files: ModuleBlockFile[];
+  addFile: (newFile: ModuleBlockFile) => void;
+  deleteFile: (id: number) => void;
 }
-
-const formatFile: (fileName: string) => DefaultExtensionType = (fileName) => {
-  const format = fileName.split(".").pop() as DefaultExtensionType;
-
-  return format;
-};
 
 const ConstructedBlock: React.FunctionComponent<IConstructedBlockProps> = ({
   block,
@@ -33,14 +41,75 @@ const ConstructedBlock: React.FunctionComponent<IConstructedBlockProps> = ({
   changeBlockMainText,
   mode,
   files,
+  addFile,
+  deleteFile,
 }) => {
-  const addFile = (e: FormEventHandler<HTMLFormElement>) => {};
+  const { api } = useAxios();
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const {
+    setNodeRef,
+    attributes,
+    listeners,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: block.dndId,
+    data: {
+      type: "Block",
+      block,
+    },
+    disabled: blockIdToChangeTitle === block.dndId,
+  });
+
+  const style = {
+    transition,
+    transform: CSS.Transform.toString(transform),
+  };
+
+  const fetchFile: FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
+
+    e.currentTarget.elements[0].value = null;
+
+    if (!selectedFile) return;
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    formData.append("position", "0");
+
+    fetchFileUpload(api, formData).then(({ data }) => {
+      addFile({ id: data.id, file: data.file, blockId: block.dndId });
+      setSelectedFile(null);
+    });
+  };
+
+  const addFileObject = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+
+  const filesId = useMemo(() => files.map((e) => e.id), [files]);
+
+  if (isDragging)
+    return (
+      <div
+        className="constructedModuleBlockDraggableBackground"
+        ref={setNodeRef}
+        style={style}
+      ></div>
+    );
 
   return (
-    <div className="constructedModuleBlock1">
+    <div className="constructedModuleBlock1" ref={setNodeRef} style={style}>
       <div
         className="constructedModuleBlockTitle"
         onClick={() => setBlockIdToChangeTitle(block.dndId)}
+        {...attributes}
+        {...listeners}
       >
         {blockIdToChangeTitle === block.dndId ? (
           <input
@@ -73,30 +142,21 @@ const ConstructedBlock: React.FunctionComponent<IConstructedBlockProps> = ({
 
       {mode === ModuleMode.Files && (
         <>
-          <div>
-            {files.map((e, index) => (
-              <div className="file" key={index}>
-                <a
-                  href={`http://127.0.0.1:8000/block/file/${e.id}`}
-                  download
-                  key={e.id}
-                  className="fileDownload"
-                >
-                  <div className="fileImg">
-                    <FileIcon
-                      extension={e.file.split(".").pop()}
-                      {...defaultStyles[formatFile(e.file)]}
-                    />
-                  </div>
-                </a>
-
-                <div className="fileName">{e.file.split("/").pop()}</div>
-              </div>
-            ))}
+          <div className="filesArea">
+            <SortableContext items={filesId}>
+              {files.map((e, index) => (
+                <ConstructedFile file={e} key={index} deleteFile={deleteFile} />
+              ))}
+            </SortableContext>
           </div>
-          <form onSubmit={addFile}>
+          <form onSubmit={fetchFile}>
             <div className="input_container">
-              <input type="file" id="fileUpload" className="input_file" />
+              <input
+                type="file"
+                id="fileUpload"
+                className="input_file"
+                onChange={addFileObject}
+              />
               <button className="addFileButton" type="submit">
                 Добавить выбранный файл
               </button>

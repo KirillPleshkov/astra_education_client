@@ -78,3 +78,41 @@
   margin: auto;
   background-color: #c0efff;
 }
+
+/* InfoMessage */
+
+.infoMessageCard {
+  width: 300px;
+  min-height: 100px;
+  position: fixed;
+  right: 30px;
+  bottom: 50px;
+  border: 2px solid;
+  border-radius: 10px;
+}
+
+.infoMessageSuccess {
+  background-color: #d9ecda;
+  border-color: #98c79b;
+}
+
+.infoMessageError {
+  background-color: #faecec;
+  border-color: #de5f5f;
+}
+
+.infoMessageCrossButton {
+  padding-top: 5px;
+  margin-left: 92%;
+
+  background: none;
+  color: inherit;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+}
+
+.infoMessageText {
+  padding-inline: 10px;
+}

@@ -245,6 +245,7 @@
 .input_container {
   border: 1px solid #e5e5e5;
   display: flex;
+  border-radius: 0 0 8px 8px;
 }
 
 .input_file::file-selector-button {
@@ -255,6 +256,8 @@
   padding: 10px 15px;
   margin-right: 20px;
   transition: 0.5s;
+  border-radius: 0 0 0 8px;
+  cursor: pointer;
 }
 
 .input_file::file-selector-button:hover {

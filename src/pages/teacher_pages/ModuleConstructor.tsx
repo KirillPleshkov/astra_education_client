@@ -2,15 +2,30 @@ import * as React from "react";
 import "./styles.css";
 import SearchConstructor from "../../components/SearchConstructor";
 import { useModuleList } from "../../hooks/UseModuleList";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import useAxios from "../../services/api";
 import { fetchModuleCreate } from "../../api/Module/FetchModuleCreate";
 import ConstructedBlock from "../../components/module/ConstructedBlock";
 import ModuleCombobox, { ModuleMode } from "../../components/UI/ModuleCombobox";
-import { fetchModule } from "../../api/Module/FetchModule";
+import { fetchModule, TypeFetchModule } from "../../api/Module/FetchModule";
 import { Confirm } from "./DisciplineConstructor";
 import ModalConfirm from "../../components/modal/ModalConfirm";
 import { fetchModuleDelete } from "../../api/Module/FetchModuleDelete";
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverEvent,
+  DragOverlay,
+  DragStartEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { arrayMove, SortableContext } from "@dnd-kit/sortable";
+import { createPortal } from "react-dom";
+import ConstructedFile from "../../components/module/ConstructedFile";
+import { fetchUpdateModule } from "../../api/Module/FetchUpdateModule";
+import InfoMessage from "../../components/UI/InfoMessage";
 
 type Module = {
   id: number;
@@ -48,6 +63,21 @@ const ModuleConstructor: React.FunctionComponent = () => {
   const [modalConfirmMode, setModalConfirmMode] = useState<Confirm>(
     Confirm.Delete
   );
+
+  const [draggableBlock, setDraggableBlock] = useState<ModuleBlock | null>(
+    null
+  );
+
+  const [draggableFile, setDraggableFile] = useState<ModuleBlockFile | null>(
+    null
+  );
+
+  const blocksId = useMemo(() => blocks.map((e) => e.dndId), [blocks]);
+
+  const [message, setMessage] = useState<{
+    message: string;
+    success: boolean;
+  } | null>(null);
 
   const { api } = useAxios();
 
@@ -123,6 +153,7 @@ const ModuleConstructor: React.FunctionComponent = () => {
       .then(() => {
         setBlocks([]);
         setModule(null);
+        addMessage("Модуль успешно удален", true);
       })
       .catch((e) => {
         console.log(e);
@@ -143,6 +174,135 @@ const ModuleConstructor: React.FunctionComponent = () => {
         confirmFunc: removeBlock,
       };
     }
+  };
+
+  const addFile = (newFile: ModuleBlockFile) => {
+    setFiles((prev) => {
+      return [...prev, newFile];
+    });
+  };
+
+  const deleteFile = (id: number) => {
+    setFiles((prev) => prev.filter((e) => e.id !== id));
+  };
+
+  const sensor = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 10 } })
+  );
+
+  const onDragStart = (e: DragStartEvent) => {
+    if (e.active.data.current?.type === "Block") {
+      setDraggableBlock(e.active.data.current?.block);
+    }
+
+    if (e.active.data.current?.type === "File") {
+      setDraggableFile(e.active.data.current?.file);
+    }
+  };
+
+  const onDragEnd = (e: DragEndEvent) => {
+    setDraggableBlock(null);
+    setDraggableFile(null);
+
+    const { active, over } = e;
+
+    if (active.data.current?.type === "Block") {
+      if (!over) return;
+
+      const activeDisciplineId = active.id;
+      const overDisciplineId = over.id;
+
+      if (activeDisciplineId === overDisciplineId) return;
+
+      setBlocks((prev) => {
+        const activeDisciplineIndex = prev.findIndex(
+          (e) => e.dndId === activeDisciplineId
+        );
+        const overDisciplineIndex = prev.findIndex(
+          (e) => e.dndId === overDisciplineId
+        );
+        return arrayMove(prev, activeDisciplineIndex, overDisciplineIndex);
+      });
+    }
+  };
+
+  const onDragOver = (e: DragOverEvent) => {
+    const { active, over } = e;
+
+    if (!over) return;
+
+    const activeModuleId = active.id;
+    const overModuleId = over.id;
+
+    if (activeModuleId === overModuleId) return;
+
+    const isActiveModule = active.data.current?.type === "File";
+    const isOverModule = over.data.current?.type === "File";
+
+    if (!isActiveModule) return;
+
+    if (isActiveModule && isOverModule) {
+      setFiles((prev) => {
+        const activeModuleIndex = prev.findIndex(
+          (e) => e.id === activeModuleId
+        );
+        const overModuleIndex = prev.findIndex((e) => e.id === overModuleId);
+
+        prev[activeModuleIndex].blockId = prev[overModuleIndex].blockId;
+
+        return arrayMove(prev, activeModuleIndex, overModuleIndex);
+      });
+    }
+
+    const isOverADiscipline = over.data.current?.type === "Block";
+
+    if (isActiveModule && isOverADiscipline) {
+      setFiles((prev) => {
+        const activeModuleIndex = prev.findIndex(
+          (e) => e.id === activeModuleId
+        );
+
+        prev[activeModuleIndex].blockId = Number(overModuleId);
+
+        return arrayMove(prev, activeModuleIndex, activeModuleIndex);
+      });
+    }
+  };
+
+  const saveModule = () => {
+    if (!module) return;
+
+    const moduleToSave: TypeFetchModule = {
+      ...module,
+      id: `${module?.id}`,
+      blocks: blocks.map((block, blockIndex) => {
+        return {
+          ...block,
+          module: module?.id,
+          position: blockIndex + 1,
+          files: files
+            .filter((e) => e.blockId === block.dndId)
+            .map((file, fileIndex) => {
+              return { ...file, position: fileIndex + 1 };
+            }),
+        };
+      }),
+    };
+
+    fetchUpdateModule(api, moduleToSave, moduleToSave.id).then(() => {
+      console.log("Saved");
+    });
+  };
+
+  const addMessage = (message: string, success: boolean) => {
+    setMessage({ message, success });
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
+  };
+
+  const clearMessage = () => {
+    setMessage(null);
   };
 
   return (
@@ -199,50 +359,96 @@ const ModuleConstructor: React.FunctionComponent = () => {
             </button>
           </div>
         )}
-      </div>
-
-      {module && (
-        <div className="moduleCon">
-          <div className="moduleName" onClick={() => setISNameChange(true)}>
-            {isNameChange ? (
-              <input
-                className="disciplineBlockTitleInput"
-                type="text"
-                onBlur={() => setTimeout(() => setISNameChange(false), 100)}
-                autoFocus
-                value={module.name}
-                onKeyDown={(e) => {
-                  if (e.keyCode === 13) {
-                    setTimeout(() => setISNameChange(false), 100);
-                  }
-                }}
-                onChange={(e) => moduleNameChange(e.target.value)}
-                style={{ margin: "auto" }}
-              />
-            ) : (
-              <>{module.name}</>
-            )}
+        {module && (
+          <div style={{ marginLeft: "30px", marginTop: "24px" }}>
+            <button
+              onClick={() => {
+                saveModule();
+              }}
+              className="DisciplineButton"
+            >
+              Сохранить модуль
+            </button>
           </div>
+        )}
+      </div>
+      <DndContext
+        sensors={sensor}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+        onDragOver={onDragOver}
+      >
+        <SortableContext items={blocksId}>
+          {module && (
+            <div className="moduleCon">
+              <div className="moduleName" onClick={() => setISNameChange(true)}>
+                {isNameChange ? (
+                  <input
+                    className="disciplineBlockTitleInput"
+                    type="text"
+                    onBlur={() => setTimeout(() => setISNameChange(false), 100)}
+                    autoFocus
+                    value={module.name}
+                    onKeyDown={(e) => {
+                      if (e.keyCode === 13) {
+                        setTimeout(() => setISNameChange(false), 100);
+                      }
+                    }}
+                    onChange={(e) => moduleNameChange(e.target.value)}
+                    style={{ margin: "auto" }}
+                  />
+                ) : (
+                  <>{module.name}</>
+                )}
+              </div>
 
-          {blocks.map((block, index) => (
-            <ConstructedBlock
-              block={block}
-              key={index}
-              blockIdToChangeTitle={blockIdToChangeTitle}
-              setBlockIdToChangeTitle={setBlockIdToChangeTitle}
-              changeBlockName={changeBlockName}
-              changeBlockMainText={changeBlockMainText}
-              mode={mode}
-              files={files.filter((e) => e.blockId === block.dndId)}
-              // files={files.filter((e) => e.blockId === block.dndId)}
-            />
-          ))}
+              {blocks.map((block, index) => (
+                <ConstructedBlock
+                  block={block}
+                  key={index}
+                  blockIdToChangeTitle={blockIdToChangeTitle}
+                  setBlockIdToChangeTitle={setBlockIdToChangeTitle}
+                  changeBlockName={changeBlockName}
+                  changeBlockMainText={changeBlockMainText}
+                  mode={mode}
+                  files={files.filter((e) => e.blockId === block.dndId)}
+                  addFile={addFile}
+                  deleteFile={deleteFile}
+                />
+              ))}
 
-          <button onClick={() => addBlock()} className="addBlockButton">
-            + Добавить блок
-          </button>
-        </div>
-      )}
+              <button onClick={() => addBlock()} className="addBlockButton">
+                + Добавить блок
+              </button>
+            </div>
+          )}
+        </SortableContext>
+        {createPortal(
+          <DragOverlay>
+            {draggableBlock && (
+              <ConstructedBlock
+                block={draggableBlock}
+                blockIdToChangeTitle={blockIdToChangeTitle}
+                setBlockIdToChangeTitle={setBlockIdToChangeTitle}
+                changeBlockName={changeBlockName}
+                changeBlockMainText={changeBlockMainText}
+                mode={mode}
+                files={files.filter((e) => e.blockId === draggableBlock.dndId)}
+                addFile={addFile}
+                deleteFile={deleteFile}
+              />
+            )}
+            {draggableFile && (
+              <ConstructedFile
+                file={draggableFile}
+                deleteFile={deleteFile}
+                isOverlay={true}
+              />
+            )}
+          </DragOverlay>,
+          document.body
+        )}
+      </DndContext>
 
       <ModalConfirm
         isOpen={blockIdToModal !== undefined}
@@ -250,6 +456,13 @@ const ModuleConstructor: React.FunctionComponent = () => {
         confirmFunc={confirmModes(modalConfirmMode).confirmFunc}
         text={confirmModes(modalConfirmMode).text}
       />
+      {message && (
+        <InfoMessage
+          message={message.message}
+          clear={clearMessage}
+          success={message.success}
+        />
+      )}
     </div>
   );
 };

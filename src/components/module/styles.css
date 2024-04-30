@@ -80,7 +80,7 @@
 
 .constructedModuleBlock1 {
   margin: auto;
-  width: 100%;
+  max-width: 1020px;
   height: 480px;
   margin-block: 20px;
   flex-shrink: 0;
@@ -106,6 +106,10 @@
   border-radius: 8px;
   text-overflow: ellipsis;
   color: white;
+}
+
+.constructedModuleBlockTitle:active {
+  cursor: grab;
 }
 
 .constructedModuleBlockTitleInput {
@@ -146,4 +150,45 @@
   background-color: #1469c8;
   border-radius: 0.25rem;
   cursor: pointer;
+}
+
+.filesArea {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+}
+
+.constructedModuleBlockDraggableBackground {
+  margin: auto;
+  max-width: 1020px;
+  height: 480px;
+  margin-block: 20px;
+  background-color: #eee;
+  border-radius: 10px;
+}
+
+.constructedFile {
+  margin-top: 15px;
+  margin-left: 15px;
+  padding: 10px;
+  padding-bottom: 12px;
+  background-color: #eee;
+  border-radius: 15px;
+  width: 300px;
+  height: 30px;
+  display: inline-flex;
+  word-break: break-word;
+  overflow: hidden;
+}
+
+.constructedFile:active {
+  cursor: grab;
+}
+
+.constructedFileName {
+  text-align: center;
+  margin-left: 15px;
+  margin-top: 4px;
+  font-size: 16px;
+  width: 100%;
 }
