@@ -6,15 +6,15 @@ import { TypeFetchDiscipline } from "../api/Discipline/FetchDiscipline";
 type ModuleType = {
   disciplineId: number;
   moduleId?: number;
-  curriculumId: number;
+  curriculumId?: number;
   modules: TypeFetchDiscipline["modules"];
 };
 
 const DisciplineLayout: React.FunctionComponent<ModuleType> = ({
   modules,
   disciplineId,
-  curriculumId,
   moduleId,
+  curriculumId,
 }) => {
   return (
     <ul className="layout">
@@ -24,7 +24,10 @@ const DisciplineLayout: React.FunctionComponent<ModuleType> = ({
         }
       >
         <Link
-          to={`/discipline/${curriculumId}/${disciplineId}`}
+          to={{
+            pathname: `/discipline/${disciplineId}`,
+            search: curriculumId ? `?curriculum=${curriculumId}` : undefined,
+          }}
           className="layoutElementLink"
         >
           Описание
@@ -43,7 +46,12 @@ const DisciplineLayout: React.FunctionComponent<ModuleType> = ({
             }
           >
             <Link
-              to={`/discipline/${curriculumId}/${disciplineId}/${elem.module.id}`}
+              to={{
+                pathname: `/discipline/${disciplineId}/${elem.module.id}`,
+                search: curriculumId
+                  ? `?curriculum=${curriculumId}`
+                  : undefined,
+              }}
               className="layoutElementLink"
             >
               {elem.module.name}

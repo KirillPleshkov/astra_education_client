@@ -5,7 +5,10 @@ import { useDisciplineList } from "../../hooks/UseDisciplineList";
 import { useMemo, useState } from "react";
 import Combobox, { Mode } from "../../components/UI/Combobox";
 import { useModuleList } from "../../hooks/UseModuleList";
-import { fetchDisciplineCreate } from "../../api/Discipline/FetchDisciplineCreate";
+import {
+  fetchDisciplineCreate,
+  TypeFetchCreated,
+} from "../../api/Discipline/FetchDisciplineCreate";
 import useAxios from "../../services/api";
 import DisciplineBlock from "../../components/disciplineConstructor/DisciplineBlock";
 import {
@@ -33,6 +36,7 @@ import { AxiosError } from "axios";
 import { fetchDisciplineUpdate } from "../../api/Discipline/FetchDisciplineUpdate";
 import { fetchSkillCreate } from "../../api/Skills_products/FetchCreateSkill";
 import { fetchProductCreate } from "../../api/Skills_products/FetchCreateProduct";
+import InfoMessage from "../../components/UI/InfoMessage";
 
 export type Discipline = {
   id: number;
@@ -88,18 +92,20 @@ const DisciplineConstructor: React.FunctionComponent = () => {
 
   const [disciplineIdToModal, setDisciplineIdToModal] = useState<number>();
 
-  const [deletedError, setDeletedError] = useState<{
+  const [message, setMessage] = useState<{
     text: string;
-    curriculums: string[];
+    success: boolean;
   } | null>(null);
-
   const disciplinesId = useMemo(
     () => disciplines.map((e) => e.id),
     [disciplines]
   );
 
   const addDiscipline = async ({ id, name }: { id: number; name: string }) => {
-    if (disciplines.some((e) => e.id === id)) return;
+    if (disciplines.some((e) => e.id === id)) {
+      addMessage("Дисциплина с таким названием уже добавлена", false);
+      return;
+    }
 
     const { data } = await fetchDiscipline(api, `${id}`);
 
@@ -147,8 +153,6 @@ const DisciplineConstructor: React.FunctionComponent = () => {
     setSkills((prev) => {
       return [...prev, ...skills];
     });
-
-    console.log(modules);
   };
 
   const addElement = ({ id, name }: { id: number; name: string }) => {
@@ -159,24 +163,30 @@ const DisciplineConstructor: React.FunctionComponent = () => {
       modules
         .filter((e) => e.disciplineId === disciplineIdToCreateElement)
         .some((e) => e.id === id)
-    )
+    ) {
+      addMessage("Модуль с таким названием уже добавлен", false);
       return;
+    }
 
     if (
       mode === Mode.Skills &&
-      products
-        .filter((e) => e.disciplineId === disciplineIdToCreateElement)
-        .some((e) => e.id === id)
-    )
-      return;
-
-    if (
-      mode === Mode.Products &&
       skills
         .filter((e) => e.disciplineId === disciplineIdToCreateElement)
         .some((e) => e.id === id)
-    )
+    ) {
+      addMessage("Навык с таким названием уже добавлен", false);
       return;
+    }
+
+    if (
+      mode === Mode.Products &&
+      products
+        .filter((e) => e.disciplineId === disciplineIdToCreateElement)
+        .some((e) => e.id === id)
+    ) {
+      addMessage("Продукт с таким названием уже добавлен", false);
+      return;
+    }
 
     const newElement = {
       id,
@@ -192,16 +202,46 @@ const DisciplineConstructor: React.FunctionComponent = () => {
     if (mode === Mode.Products) setProducts((prev) => [...prev, newElement]);
   };
 
-  const createNewDiscipline = (name: string) => {
-    return fetchDisciplineCreate(api, name);
+  const createNewDiscipline = async (name: string) => {
+    let result: TypeFetchCreated | undefined;
+    await fetchDisciplineCreate(api, name)
+      .then(({ data }) => (result = data))
+      .then(() => {
+        addMessage("Дисциплина успешно создана.", true);
+      })
+      .catch(() => {
+        addMessage("Произошла ошибка. Дисциплину создать не удалось", false);
+      });
+
+    return result;
   };
 
-  const createNewSkill = (name: string) => {
-    return fetchSkillCreate(api, name);
+  const createNewSkill = async (name: string) => {
+    let result: TypeFetchCreated | undefined;
+    await fetchSkillCreate(api, name)
+      .then(({ data }) => (result = data))
+      .then(() => {
+        addMessage("Навык успешно создан.", true);
+      })
+      .catch(() => {
+        addMessage("Произошла ошибка. Навык создать не удалось", false);
+      });
+
+    return result;
   };
 
-  const createNewProduct = (name: string) => {
-    return fetchProductCreate(api, name);
+  const createNewProduct = async (name: string) => {
+    let result: TypeFetchCreated | undefined;
+    await fetchProductCreate(api, name)
+      .then(({ data }) => (result = data))
+      .then(() => {
+        addMessage("Продукт успешно создан.", true);
+      })
+      .catch(() => {
+        addMessage("Произошла ошибка. Продукт создать не удалось", false);
+      });
+
+    return result;
   };
 
   const onBlurSearch = () => {
@@ -447,13 +487,15 @@ const DisciplineConstructor: React.FunctionComponent = () => {
       .then(() => {
         remove(disciplineIdToModal);
         setDisciplineIdToModal(undefined);
+        addMessage("Дисциплина успешно удалена.", true);
       })
       .catch((e: AxiosError<{ detail: { linked_curriculums: string[] } }>) => {
         const error = e.response?.data?.detail.linked_curriculums as string[];
-        setDeletedError({
-          text: "Вы не можете удалить дисциплину когда она привязана к учебным планам",
-          curriculums: error,
-        });
+        addMessage(
+          "Дисциплина не может быть удалена, так как она связана с учебными планами: " +
+            error.join(", "),
+          false
+        );
 
         setDisciplineIdToModal(undefined);
       });
@@ -475,9 +517,11 @@ const DisciplineConstructor: React.FunctionComponent = () => {
       }
     );
 
+    addMessage("Изменения успешно сохранены", true);
+
     disciplinesToSave.map((e) =>
-      fetchDisciplineUpdate(api, e).then(() => {
-        console.log("Success");
+      fetchDisciplineUpdate(api, e).catch(() => {
+        addMessage("При сохранении проихошла ошибка", false);
       })
     );
   };
@@ -494,6 +538,14 @@ const DisciplineConstructor: React.FunctionComponent = () => {
         confirmFunc: removeDiscipline,
       };
     }
+  };
+
+  const addMessage = (text: string, success: boolean) => {
+    setMessage({ text, success });
+  };
+
+  const clearMessage = () => {
+    setMessage(null);
   };
 
   const elements =
@@ -705,6 +757,7 @@ const DisciplineConstructor: React.FunctionComponent = () => {
         confirmFunc={confirmModes(modalConfirmMode).confirmFunc}
         text={confirmModes(modalConfirmMode).text}
       />
+      {message && <InfoMessage message={message} clear={clearMessage} />}
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { CurriculumDiscipline } from "../../pages/teacher_pages/CurriculumConstr
 import Trash from "../../images/Trash.svg";
 import Teacher from "../../images/Teacher.svg";
 import { useModal } from "../../hooks/UseModal";
+import { useNavigate } from "react-router-dom";
 
 interface ICurriculumBlockDisciplineProps {
   discipline: CurriculumDiscipline;
@@ -47,6 +48,8 @@ const CurriculumBlockDiscipline: React.FunctionComponent<
       discipline,
     },
   });
+
+  const navigate = useNavigate();
 
   const [isHideTrashButton, setIsHideTrashButton] = useState<boolean>(true);
 
@@ -91,6 +94,7 @@ const CurriculumBlockDiscipline: React.FunctionComponent<
         className="discipline"
         onMouseEnter={() => setIsHideTrashButton(false)}
         onMouseLeave={() => setTimeout(() => setIsHideTrashButton(true), 30)}
+        onDoubleClick={() => navigate(`/discipline/${discipline.id}`)}
         id={`teacherList-${discipline.dndId}`}
       >
         <div className="disciplineText">{discipline.name}</div>

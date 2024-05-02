@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import "./styles.css";
 import DisciplineLayout from "../components/DisciplineLayout";
 import { fetchDiscipline } from "../api/Discipline/FetchDiscipline";
@@ -8,7 +8,9 @@ import DescriptionModule from "../components/module/DescriptionModule";
 import useAxios from "../services/api";
 
 const DisciplineStartPage: React.FunctionComponent = () => {
-  const { disciplineId, curriculumId } = useParams();
+  const { disciplineId } = useParams();
+
+  const [searchParams] = useSearchParams();
 
   const { api } = useAxios();
 
@@ -29,7 +31,7 @@ const DisciplineStartPage: React.FunctionComponent = () => {
         <DisciplineLayout
           modules={data.modules}
           disciplineId={Number(disciplineId)}
-          curriculumId={Number(curriculumId)}
+          curriculumId={Number(searchParams.get("curriculum"))}
         />
         <DescriptionModule
           short_description={data.short_description}

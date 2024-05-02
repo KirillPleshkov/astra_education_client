@@ -12,9 +12,7 @@ interface ISearchConstructor {
   setSelectedElement: ({ id, name }: { id: number; name: string }) => void;
   createText: string;
   width?: number;
-  createNewF?: (
-    name: string
-  ) => Promise<AxiosResponse<TypeFetchCreated, unknown>>;
+  createNewF?: (name: string) => Promise<TypeFetchCreated | undefined>;
   onBlur?: () => void;
   autoFocus?: boolean;
   setExcludedSearchClick?: React.Dispatch<
@@ -61,7 +59,7 @@ const SearchConstructor: React.FunctionComponent<ISearchConstructor> = ({
         autoFocus={autoFocus}
         placeholder={`Название ${blockName}`}
         value={inputName}
-        autoComplete="new-password"
+        autoComplete="off"
         onChange={(e) => setInputName(e.target.value)}
         onFocus={() => setIsFocusInput(true)}
         onBlur={() => {
@@ -88,7 +86,8 @@ const SearchConstructor: React.FunctionComponent<ISearchConstructor> = ({
                       <button
                         className="searchConstructorDropDownButton"
                         onClick={() => {
-                          createNewF(name).then(({ data }) => {
+                          createNewF(name).then((data) => {
+                            if (!data) return;
                             setSelectedElement(data);
                           });
                           setInputName("");
@@ -104,7 +103,8 @@ const SearchConstructor: React.FunctionComponent<ISearchConstructor> = ({
                       <button
                         className="searchConstructorDropDownButton"
                         onClick={() => {
-                          createNewF(name).then(({ data }) => {
+                          createNewF(name).then((data) => {
+                            if (!data) return;
                             setSelectedElement(data);
                           });
                           setInputName("");

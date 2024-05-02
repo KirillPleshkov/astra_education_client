@@ -46,7 +46,11 @@ const CurriculumPage: React.FunctionComponent = () => {
         .map((e, index) => (
           <div className="curriculumDisciplineBlock" key={index}>
             <Link
-              to={`/discipline/${user?.curriculum}/${e.discipline.id}`}
+              // to={`/discipline/${e.discipline.id}`}
+              to={{
+                pathname: `/discipline/${e.discipline.id}`,
+                search: `?curriculum=${data.id}`,
+              }}
               className="curriculumDisciplineName"
             >
               {e.discipline.name}

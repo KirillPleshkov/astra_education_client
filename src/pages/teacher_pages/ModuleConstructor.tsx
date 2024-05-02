@@ -4,7 +4,10 @@ import SearchConstructor from "../../components/SearchConstructor";
 import { useModuleList } from "../../hooks/UseModuleList";
 import { useMemo, useState } from "react";
 import useAxios from "../../services/api";
-import { fetchModuleCreate } from "../../api/Module/FetchModuleCreate";
+import {
+  fetchModuleCreate,
+  TypeFetchCreated,
+} from "../../api/Module/FetchModuleCreate";
 import ConstructedBlock from "../../components/module/ConstructedBlock";
 import ModuleCombobox, { ModuleMode } from "../../components/UI/ModuleCombobox";
 import { fetchModule, TypeFetchModule } from "../../api/Module/FetchModule";
@@ -26,6 +29,7 @@ import { createPortal } from "react-dom";
 import ConstructedFile from "../../components/module/ConstructedFile";
 import { fetchUpdateModule } from "../../api/Module/FetchUpdateModule";
 import InfoMessage from "../../components/UI/InfoMessage";
+import { AxiosError } from "axios";
 
 type Module = {
   id: number;
@@ -75,14 +79,24 @@ const ModuleConstructor: React.FunctionComponent = () => {
   const blocksId = useMemo(() => blocks.map((e) => e.dndId), [blocks]);
 
   const [message, setMessage] = useState<{
-    message: string;
+    text: string;
     success: boolean;
   } | null>(null);
 
   const { api } = useAxios();
 
-  const createNewModule = (name: string) => {
-    return fetchModuleCreate(api, name);
+  const createNewModule = async (name: string) => {
+    let result: TypeFetchCreated | undefined;
+    await fetchModuleCreate(api, name)
+      .then(({ data }) => (result = data))
+      .then(() => {
+        addMessage("Модуль успешно создан.", true);
+      })
+      .catch(() => {
+        addMessage("Произошла ошибка. Модуль создать не удалось", false);
+      });
+
+    return result;
   };
 
   const moduleNameChange = (name: string) => {
@@ -155,8 +169,13 @@ const ModuleConstructor: React.FunctionComponent = () => {
         setModule(null);
         addMessage("Модуль успешно удален", true);
       })
-      .catch((e) => {
-        console.log(e);
+      .catch((e: AxiosError<{ detail: { linked_disciplines: string[] } }>) => {
+        const error = e.response?.data?.detail.linked_disciplines as string[];
+        addMessage(
+          "Модуль не может быть удален, так как свзязан с дисциплинами: " +
+            error.join(", "),
+          false
+        );
       });
 
     setBlockIdToModal(undefined);
@@ -290,15 +309,12 @@ const ModuleConstructor: React.FunctionComponent = () => {
     };
 
     fetchUpdateModule(api, moduleToSave, moduleToSave.id).then(() => {
-      console.log("Saved");
+      addMessage("Изменения в модуле успешно сохранены.", true);
     });
   };
 
-  const addMessage = (message: string, success: boolean) => {
-    setMessage({ message, success });
-    setTimeout(() => {
-      setMessage(null);
-    }, 5000);
+  const addMessage = (text: string, success: boolean) => {
+    setMessage({ text, success });
   };
 
   const clearMessage = () => {
@@ -315,7 +331,6 @@ const ModuleConstructor: React.FunctionComponent = () => {
             Введите название модуля
           </label>
           <SearchConstructor
-            key={1}
             createText="+ Создать новый модуль с введенным названием"
             blockName="модуля"
             useDataGet={useModuleList}
@@ -456,13 +471,7 @@ const ModuleConstructor: React.FunctionComponent = () => {
         confirmFunc={confirmModes(modalConfirmMode).confirmFunc}
         text={confirmModes(modalConfirmMode).text}
       />
-      {message && (
-        <InfoMessage
-          message={message.message}
-          clear={clearMessage}
-          success={message.success}
-        />
-      )}
+      {message && <InfoMessage message={message} clear={clearMessage} />}
     </div>
   );
 };

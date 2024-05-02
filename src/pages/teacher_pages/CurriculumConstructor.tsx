@@ -31,6 +31,8 @@ import { fetchCurriculumDelete } from "../../api/Curriculum/FetchCurriculumDelet
 import { AxiosError } from "axios";
 import ModalConfirm from "../../components/modal/ModalConfirm";
 import { fetchCurriculumUpdate } from "../../api/Curriculum/FetchCurriculumUpdate";
+import InfoMessage from "../../components/UI/InfoMessage";
+import { TypeFetchCreated } from "../../api/Module/FetchModuleCreate";
 
 export type Curriculum = {
   id: number;
@@ -100,9 +102,9 @@ const CurriculumConstructor: React.FunctionComponent = () => {
     Confirm.Delete
   );
 
-  const [deletedError, setDeletedError] = useState<{
+  const [message, setMessage] = useState<{
     text: string;
-    users: string[];
+    success: boolean;
   } | null>(null);
 
   const [excludedSearchClick, setExcludedSearchClick] = useState<
@@ -121,7 +123,10 @@ const CurriculumConstructor: React.FunctionComponent = () => {
   const { educationalLevels } = useEducationalLevels();
 
   const addCurriculum = (newCurriculum: { name: string; id: number }) => {
-    if (curriculums.some((e) => e.id === newCurriculum.id)) return;
+    if (curriculums.some((e) => e.id === newCurriculum.id)) {
+      addMessage("Учебный план с таким названием уже добавлен", false);
+      return;
+    }
 
     fetchCurriculum(api, newCurriculum.id).then(({ data }) => {
       const disciplines: CurriculumDiscipline[] = data.disciplines.map(
@@ -156,8 +161,10 @@ const CurriculumConstructor: React.FunctionComponent = () => {
       disciplines.some(
         (e) => e.id === newDiscipline.id && e.curriculumId === curriculumId
       )
-    )
+    ) {
+      addMessage("Дисциплина с таким названием уже добавлена", false);
       return;
+    }
 
     const discipline: CurriculumDiscipline = {
       ...newDiscipline,
@@ -172,7 +179,6 @@ const CurriculumConstructor: React.FunctionComponent = () => {
   };
 
   const addTeacher = (newTeacher: { name: string; id: number }) => {
-    console.log(curriculumDataToAddTeacher);
     if (!curriculumDataToAddTeacher) return;
 
     if (
@@ -181,8 +187,10 @@ const CurriculumConstructor: React.FunctionComponent = () => {
           (e) => e.dndId === curriculumDataToAddTeacher.disciplineDndId
         )[0]
         .teachers.some((e) => e.id === newTeacher.id)
-    )
+    ) {
+      addMessage("Данный преподаватель уже связан с данной дисциплиной", false);
       return;
+    }
 
     fetchTeacher(api, newTeacher.id).then(({ data }) => {
       setDisciplines((prev) => {
@@ -195,8 +203,18 @@ const CurriculumConstructor: React.FunctionComponent = () => {
     });
   };
 
-  const createNewCurriculum = (name: string) => {
-    return fetchCurriculumCreate(api, name);
+  const createNewCurriculum = async (name: string) => {
+    let result: TypeFetchCreated | undefined;
+    await fetchCurriculumCreate(api, name)
+      .then(({ data }) => (result = data))
+      .then(() => {
+        addMessage("Учебный план успешно создан.", true);
+      })
+      .catch(() => {
+        addMessage("Произошла ошибка. Учебный план создать не удалось", false);
+      });
+
+    return result;
   };
 
   const onDragStart = (e: DragStartEvent) => {
@@ -437,6 +455,7 @@ const CurriculumConstructor: React.FunctionComponent = () => {
     fetchCurriculumDelete(api, curriculumIdToModal)
       .then(() => {
         remove(curriculumIdToModal);
+        addMessage("Дисциплина успешно удалена.", true);
       })
       .catch(
         (
@@ -453,11 +472,11 @@ const CurriculumConstructor: React.FunctionComponent = () => {
 
           if (!error) return;
 
-          const errorText = error.map((e) => `${e.first_name} ${e.last_name}`);
-          setDeletedError({
-            text: "Вы не можете удалить учебный план, когда данные студенты обучаются на нем",
-            users: errorText,
-          });
+          // const errorText = error.map((e) => `${e.first_name} ${e.last_name}`);
+          addMessage(
+            "Вы не можете удалить учебный план, на котором обучаются студенты.",
+            false
+          );
         }
       );
 
@@ -496,11 +515,21 @@ const CurriculumConstructor: React.FunctionComponent = () => {
       }
     );
 
+    addMessage("Изменения успешно сохранены", true);
+
     curriculumsToSave.map((e) =>
-      fetchCurriculumUpdate(api, e).then(() => {
-        console.log("Success");
+      fetchCurriculumUpdate(api, e).catch(() => {
+        addMessage("При сохранении проихошла ошибка", false);
       })
     );
+  };
+
+  const addMessage = (text: string, success: boolean) => {
+    setMessage({ text, success });
+  };
+
+  const clearMessage = () => {
+    setMessage(null);
   };
 
   return (
@@ -594,7 +623,7 @@ const CurriculumConstructor: React.FunctionComponent = () => {
                 }}
                 className="DisciplineButton"
               >
-                Убрать дисциплину
+                Убрать учебный план
               </button>
             </div>
 
@@ -606,7 +635,7 @@ const CurriculumConstructor: React.FunctionComponent = () => {
                 }}
                 className="DisciplineButton"
               >
-                Удалить дисциплину
+                Удалить учебный план
               </button>
             </div>
           </>
@@ -695,6 +724,7 @@ const CurriculumConstructor: React.FunctionComponent = () => {
         confirmFunc={confirmModes(modalConfirmMode).confirmFunc}
         text={confirmModes(modalConfirmMode).text}
       />
+      {message && <InfoMessage message={message} clear={clearMessage} />}
     </div>
   );
 };

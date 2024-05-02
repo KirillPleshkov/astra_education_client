@@ -1,5 +1,9 @@
 import * as React from "react";
 import "./styles.css";
+import { useParams, useSearchParams } from "react-router-dom";
+import useAxios from "../../services/api";
+import { useQuery } from "@tanstack/react-query";
+import { fetchDisciplineTeachers } from "../../api/User/FetchDisciplineTeachers";
 
 interface IDescriptionModuleProps {
   short_description: string;
@@ -18,6 +22,29 @@ const DescriptionModule: React.FunctionComponent<IDescriptionModuleProps> = ({
   skills,
   products,
 }) => {
+  const [searchParams] = useSearchParams();
+  const { disciplineId } = useParams();
+
+  const { api } = useAxios();
+
+  const { data } = useQuery({
+    queryKey: [
+      "teachers_discipline",
+      disciplineId,
+      searchParams.get("curriculum"),
+    ],
+    queryFn: () =>
+      fetchDisciplineTeachers(
+        api,
+        searchParams.get("curriculum"),
+        disciplineId
+      ),
+    select: ({ data }) => data,
+    enabled: !!disciplineId && !!searchParams.get("curriculum"),
+  });
+
+  console.log(data);
+
   return (
     <div className="module">
       <div className="moduleBlock">
@@ -25,10 +52,19 @@ const DescriptionModule: React.FunctionComponent<IDescriptionModuleProps> = ({
         <div className="moduleBlockMainText">{short_description}</div>
       </div>
 
-      <div className="moduleBlock">
-        <div className="moduleBlockTitle">Преподаватели</div>
-        <div className="moduleBlockMainText"></div>
-      </div>
+      {searchParams.get("curriculum") && (
+        <div className="moduleBlock">
+          <div className="moduleBlockTitle">Преподаватели</div>
+          <div className="moduleBlockMainText">
+            {data &&
+              data.map((elem) => (
+                <div className="textBlock" key={elem.id}>
+                  {elem.last_name} {elem.first_name}
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
 
       <div className="moduleBlock">
         <div className="moduleBlockTitle">Компетенци</div>

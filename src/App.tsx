@@ -10,6 +10,7 @@ import CurriculumPage from "./pages/CurriculumPage";
 import DisciplineConstructor from "./pages/teacher_pages/DisciplineConstructor";
 import CurriculumConstructor from "./pages/teacher_pages/CurriculumConstructor";
 import ModuleConstructor from "./pages/teacher_pages/ModuleConstructor";
+import ModulePage from "./pages/ModulePage";
 
 function App() {
   return (
@@ -21,11 +22,11 @@ function App() {
               <Route path="/" element={<HomePage />} />
 
               <Route
-                path="/discipline/:curriculumId/:disciplineId/:moduleId"
+                path="/discipline/:disciplineId/:moduleId"
                 element={<DisciplinePage />}
               />
               <Route
-                path="/discipline/:curriculumId/:disciplineId/"
+                path="/discipline/:disciplineId/"
                 element={<DisciplineStartPage />}
               />
 
@@ -47,6 +48,8 @@ function App() {
                 path="/curriculum_constructor"
                 element={<CurriculumConstructor />}
               />
+
+              <Route path="/module/:moduleId" element={<ModulePage />} />
             </Route>
           </Routes>
         </UserProvider>

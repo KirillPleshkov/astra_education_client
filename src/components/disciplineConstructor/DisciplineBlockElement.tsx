@@ -5,6 +5,7 @@ import { CSS } from "@dnd-kit/utilities";
 import Trash from "../../images/Trash.svg";
 import { useEffect, useState } from "react";
 import { DisciplineElement } from "../../pages/teacher_pages/DisciplineConstructor";
+import { useNavigate } from "react-router-dom";
 
 interface IDisciplineBlockElementProps {
   element: DisciplineElement;
@@ -29,6 +30,8 @@ const DisciplineBlockElement: React.FunctionComponent<
       element,
     },
   });
+
+  const navigate = useNavigate();
 
   const [isHideTrashButton, setIsHideTrashButton] = useState<boolean>(true);
 
@@ -61,6 +64,7 @@ const DisciplineBlockElement: React.FunctionComponent<
       className="disciplineBlockModule"
       onMouseEnter={() => setIsHideTrashButton(false)}
       onMouseLeave={() => setTimeout(() => setIsHideTrashButton(true), 30)}
+      onDoubleClick={() => navigate(`/module/${element.id}`)}
     >
       <div className="disciplineBlockModuleText">{element.name}</div>
       {!isHideTrashButton && !isOverlay ? (
