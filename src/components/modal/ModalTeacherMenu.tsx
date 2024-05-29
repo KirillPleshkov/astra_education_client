@@ -29,7 +29,7 @@ const ModalTeacherMenu: React.FunctionComponent<IModalTeacherMenuProps> = ({
     >
       <ul className="modalUl" onClick={() => setIsOpen(false)}>
         <li className="navElement navModalWidth">
-          <Link to={"/"} className="navElementLink">
+          <Link to={"/teacher_disciplines"} className="navElementLink">
             Мои дисциплины
           </Link>
         </li>

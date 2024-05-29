@@ -1,6 +1,6 @@
 import * as React from "react";
 import "./styles.css";
-import { useParams, useSearchParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import useAxios from "../../services/api";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDisciplineTeachers } from "../../api/User/FetchDisciplineTeachers";
@@ -43,13 +43,13 @@ const DescriptionModule: React.FunctionComponent<IDescriptionModuleProps> = ({
     enabled: !!disciplineId && !!searchParams.get("curriculum"),
   });
 
-  console.log(data);
-
   return (
     <div className="module">
       <div className="moduleBlock">
         <div className="moduleBlockTitle">Описание</div>
-        <div className="moduleBlockMainText">{short_description}</div>
+        <div className="moduleBlockMainText">
+          {short_description ? short_description : "Нет описания"}
+        </div>
       </div>
 
       {searchParams.get("curriculum") && (
@@ -58,10 +58,13 @@ const DescriptionModule: React.FunctionComponent<IDescriptionModuleProps> = ({
           <div className="moduleBlockMainText">
             {data &&
               data.map((elem) => (
-                <div className="textBlock" key={elem.id}>
-                  {elem.last_name} {elem.first_name}
-                </div>
+                <Link to={`/teacher/${elem.id}`}>
+                  <div className="textBlock" key={elem.id}>
+                    {elem.last_name} {elem.first_name}
+                  </div>
+                </Link>
               ))}
+            {!data?.length && <>Преподавателей нет</>}
           </div>
         </div>
       )}
@@ -74,6 +77,7 @@ const DescriptionModule: React.FunctionComponent<IDescriptionModuleProps> = ({
               {elem.name}
             </div>
           ))}
+          {!skills.length && <>Навыков нет</>}
         </div>
       </div>
 
@@ -85,6 +89,7 @@ const DescriptionModule: React.FunctionComponent<IDescriptionModuleProps> = ({
               {elem.name}
             </div>
           ))}
+          {!products.length && <>Продуктов нет</>}
         </div>
       </div>
     </div>

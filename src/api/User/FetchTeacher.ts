@@ -4,9 +4,10 @@ type TypeFetchTeacher = {
   id: number;
   first_name: string;
   last_name: string;
+  email: string;
 };
 
-function fetchTeacher(api: AxiosInstance, id: number) {
+function fetchTeacher(api: AxiosInstance, id?: number) {
   return api.get<TypeFetchTeacher>(
     `${import.meta.env.VITE_BACKEND_URL}user/teacher/${id}`
   );

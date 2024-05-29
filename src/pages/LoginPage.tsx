@@ -28,11 +28,7 @@ const LoginPage: React.FunctionComponent = () => {
 
         updateUserInfo();
 
-        if (window.history?.length !== 1) {
-          navigate(-1);
-        } else {
-          navigate("/");
-        }
+        navigate("/");
       })
       .catch(() => {
         setError("Неверный логин или пароль");

@@ -518,7 +518,8 @@ const CurriculumConstructor: React.FunctionComponent = () => {
     addMessage("Изменения успешно сохранены", true);
 
     curriculumsToSave.map((e) =>
-      fetchCurriculumUpdate(api, e).catch(() => {
+      fetchCurriculumUpdate(api, e).catch((e) => {
+        console.error(e);
         addMessage("При сохранении проихошла ошибка", false);
       })
     );

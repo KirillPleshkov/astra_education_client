@@ -46,7 +46,6 @@ const CurriculumPage: React.FunctionComponent = () => {
         .map((e, index) => (
           <div className="curriculumDisciplineBlock" key={index}>
             <Link
-              // to={`/discipline/${e.discipline.id}`}
               to={{
                 pathname: `/discipline/${e.discipline.id}`,
                 search: `?curriculum=${data.id}`,
@@ -58,7 +57,7 @@ const CurriculumPage: React.FunctionComponent = () => {
             <div style={{ display: "flex", marginTop: "30px" }}>
               {e.teachers.map((e, index) => (
                 <Link
-                  to={"/"}
+                  to={`/teacher/${e.user.id}`}
                   className="curriculumDisciplineTeacher"
                   key={index}
                 >
@@ -68,6 +67,7 @@ const CurriculumPage: React.FunctionComponent = () => {
             </div>
           </div>
         ))}
+      <div style={{ height: "40px" }}></div>
     </div>
   );
 };

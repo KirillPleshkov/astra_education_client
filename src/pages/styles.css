@@ -216,8 +216,6 @@
 }
 
 .curriculumDisciplineName {
-  margin-top: 65px;
-  margin-left: 20px;
   color: blue;
   font-size: 22px;
   text-decoration: none; /* no underline */
@@ -236,4 +234,83 @@
   cursor: pointer;
   outline: inherit;
   text-decoration: none;
+}
+
+/* ProfilePage */
+
+.profileContent {
+  display: flex;
+}
+.profileImageContainer {
+  width: 210px;
+  padding: 80px;
+}
+.profileInfo {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.profileLabel {
+  font-size: 13px;
+  color: #1469c8;
+}
+
+.profileText {
+  font-size: 20px;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.profileLogoutButton {
+  padding: 8px;
+  padding-inline: 14px;
+  font-size: 14px;
+  width: fit-content;
+  color: #d1242f;
+  background-color: #f6f8fa;
+  border: 1px solid #d3dae0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.profileLogoutButton:hover {
+  background-color: #a40e26;
+  color: #f6f8fa;
+}
+
+/* TeacherDiscipline */
+
+.teacherDisciplineCurriculumName {
+  padding: 20px;
+}
+
+/* Home */
+
+.homeCards {
+  padding-inline: 80px;
+  padding-block: 40px;
+  display: flex;
+  gap: 60px;
+}
+
+.homeCard {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.h {
+  font-size: 19px;
+}
+
+.homeCardLink {
+  font-size: 17px;
+  text-decoration: none;
+  color: #036bc0 !important;
 }

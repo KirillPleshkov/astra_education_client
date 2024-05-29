@@ -11,6 +11,9 @@ import DisciplineConstructor from "./pages/teacher_pages/DisciplineConstructor";
 import CurriculumConstructor from "./pages/teacher_pages/CurriculumConstructor";
 import ModuleConstructor from "./pages/teacher_pages/ModuleConstructor";
 import ModulePage from "./pages/ModulePage";
+import ProfilePage from "./pages/ProfilePage";
+import TeacherProfilePage from "./pages/TeacherProfilePage";
+import TeacherDisciplinePage from "./pages/TeacherDisciplinePage";
 
 function App() {
   return (
@@ -50,6 +53,18 @@ function App() {
               />
 
               <Route path="/module/:moduleId" element={<ModulePage />} />
+
+              <Route path="/me" element={<ProfilePage />} />
+
+              <Route
+                path="/teacher/:teacherId"
+                element={<TeacherProfilePage />}
+              />
+
+              <Route
+                path="/teacher_disciplines"
+                element={<TeacherDisciplinePage />}
+              />
             </Route>
           </Routes>
         </UserProvider>

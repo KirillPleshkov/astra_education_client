@@ -15,7 +15,7 @@ const Navbar: React.FunctionComponent = () => {
       <ul className="nav">
         <li className="navElement">
           <Link to={"/"} className="navElementLink">
-            Главня страница
+            Astra Education
           </Link>
         </li>
         <li className="navElement">

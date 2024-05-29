@@ -39,7 +39,7 @@ const useAxios = () => {
           originalRequest.headers.Authorization = `Bearer ${access}`;
           return axios(originalRequest);
         } catch (error) {
-          navigate("/login");
+          navigate("/login", { replace: true });
         }
       }
 
