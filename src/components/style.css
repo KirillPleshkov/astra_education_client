@@ -1,15 +1,23 @@
+#root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 /* Navbar */
 .nav {
+  top: 0;
   list-style-type: none;
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #1469c8;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  height: 45px;
-  z-index: 10;
+  position: sticky;
+  height: 110px;
+  display: flex;
+  gap: 70px;
+  align-items: center;
+  padding-inline: 40px;
+  background-color: white;
 }
 
 .navElement {
@@ -27,18 +35,46 @@
 }
 
 .navElementLink {
+  border-radius: 20px;
   display: block;
-  color: white;
+  color: #080808;
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
   cursor: pointer;
-  background-color: #1469c8;
   border-style: none;
+  transition: background-color 0.1s ease-in-out;
+
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 136%;
 }
 
-.navElementLink:hover {
-  background-color: #0a376b;
+.loginBtn {
+  background: #4568ff;
+  padding: 7px 30px;
+  width: auto;
+  height: auto;
+  color: white;
+
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 136%;
+
+  box-shadow: 0px 4px 4px 0px #00000040;
+}
+
+.logoutBtn {
+  background: #211f20;
+
+  padding: 7px 30px;
+  width: auto;
+  height: auto;
+  color: white;
+
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 136%;
 }
 
 .navElementText {
@@ -56,7 +92,7 @@
 }
 
 .navElementLast {
-  float: right;
+  margin-left: auto;
 }
 
 /* DisciplineLayout */

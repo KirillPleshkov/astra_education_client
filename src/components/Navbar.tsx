@@ -2,11 +2,14 @@ import * as React from "react";
 import "./style.css";
 import { Link, Outlet } from "react-router-dom";
 import { useContext, useState } from "react";
-import { TypeUserContext, userContext } from "../contexts/UserContext";
+import { userContext } from "../contexts/UserContext";
 import ModalTeacherMenu from "./modal/ModalTeacherMenu";
+import { useNavigate } from "react-router-dom";
 
 const Navbar: React.FunctionComponent = () => {
-  const { user } = useContext<TypeUserContext>(userContext);
+  const { user, logout } = useContext(userContext);
+
+  const navigate = useNavigate();
 
   const [isTeacherMenuOpen, setIsTeacherMenuOpen] = useState<boolean>(false);
 
@@ -15,7 +18,7 @@ const Navbar: React.FunctionComponent = () => {
       <ul className="nav">
         <li className="navElement">
           <Link to={"/"} className="navElementLink">
-            Astra Education
+            Astra Linux
           </Link>
         </li>
         <li className="navElement">
@@ -36,19 +39,20 @@ const Navbar: React.FunctionComponent = () => {
         )}
 
         {user ? (
-          <>
-            <li className="navElement navElementLast">
-              <Link className="navElementLink" to={"/me"}>
-                {user.email}
-              </Link>
-            </li>
-            <li className="navElement navElementLast">
-              <div className="navElementText">{user.role[0]}</div>
-            </li>
-          </>
+          <li className="navElement navElementLast">
+            <button
+              className="navElementLink logoutBtn"
+              onClick={() => {
+                logout();
+                navigate("/");
+              }}
+            >
+              Выйти
+            </button>
+          </li>
         ) : (
           <li className="navElement navElementLast">
-            <Link to={"/login"} className="navElementLink">
+            <Link to={"/login"} className="navElementLink loginBtn">
               Войти
             </Link>
           </li>
@@ -63,13 +67,9 @@ const Navbar: React.FunctionComponent = () => {
         />
       )}
 
-      <div className="c"></div>
-
       <main className="content">
         <Outlet />
       </main>
-
-      <div className="footer"></div>
     </>
   );
 };
