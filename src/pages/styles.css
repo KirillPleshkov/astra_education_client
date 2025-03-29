@@ -193,52 +193,92 @@
 
 /* CurriculumPage */
 
+.curriculumSemestersList {
+  padding-block: 30px;
+  padding-left: 30px;
+  display: flex;
+}
+
 .curriculumSemesters {
   margin-top: 15px;
   margin-left: 15px;
-  padding: 7px;
-  background-color: #eee;
-  border-radius: 15px;
-  font-size: 14px;
-  width: fit-content;
-  color: inherit;
+
   border: none;
   cursor: pointer;
   outline: inherit;
+
+  width: 163px;
+  height: 46px;
+  border-radius: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 500;
+  font-size: 28px;
+  line-height: 136%;
+  text-align: center;
+  vertical-align: middle;
+
+  border: 2px solid #000000;
+  color: #000000;
+
+  background-color: white;
 }
 
 .curriculumSemestersActive {
-  background-color: #c0efff;
+  background-color: #211f20;
+  color: white;
 }
 
 .curriculumDisciplineBlock {
-  border: 2px solid #afaeae;
-  width: 90%;
+  border-bottom: 1px solid #a9a9a9;
+  width: 95%;
   height: 100px;
   margin: auto;
-  margin-top: 10px;
-  padding: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .curriculumDisciplineName {
-  color: blue;
-  font-size: 22px;
   text-decoration: none; /* no underline */
+
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 136%;
+  color: #000000;
+}
+
+.curriculumDisciplineTitle {
+  text-decoration: none; /* no underline */
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 136%;
+  color: #5e5e5e;
+}
+
+.curriculumDisciplineTeacherList {
+  display: flex;
+  gap: 10px;
 }
 
 .curriculumDisciplineTeacher {
-  margin-top: 15px;
-  margin-left: 15px;
-  padding: 7px;
-  background-color: #eee;
-  border-radius: 15px;
-  font-size: 14px;
-  width: fit-content;
-  color: inherit;
-  border: none;
   cursor: pointer;
   outline: inherit;
+
   text-decoration: none;
+
+  border-radius: 20px;
+  padding: 9px 14px;
+  border: 3px solid #5e5e5e;
+
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 136%;
+  color: #5e5e5e;
 }
 
 /* ProfilePage */

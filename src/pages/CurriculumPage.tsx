@@ -26,7 +26,7 @@ const CurriculumPage: React.FunctionComponent = () => {
   return (
     <div className="mainContent">
       <div className="disciplineName">{data.name}</div>
-      <div style={{ display: "flex" }}>
+      <div className="curriculumSemestersList">
         {[...Array(data.educational_level.study_period * 2).keys()].map((e) => (
           <button
             key={e + 1}
@@ -39,6 +39,10 @@ const CurriculumPage: React.FunctionComponent = () => {
             {e + 1} семестр
           </button>
         ))}
+      </div>
+
+      <div className="curriculumDisciplineBlock">
+        <div className="curriculumDisciplineTitle">Название</div>
       </div>
 
       {data.disciplines
@@ -54,7 +58,7 @@ const CurriculumPage: React.FunctionComponent = () => {
             >
               {e.discipline.name}
             </Link>
-            <div style={{ display: "flex", marginTop: "30px" }}>
+            <div className="curriculumDisciplineTeacherList">
               {e.teachers.map((e, index) => (
                 <Link
                   to={`/teacher/${e.user.id}`}
