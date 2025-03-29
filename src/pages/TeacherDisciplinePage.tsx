@@ -31,14 +31,14 @@ const TeacherDisciplinePage: React.FunctionComponent = () => {
       <div>
         {curriculumIds.map((curriculumId, index) => (
           <>
-            <div style={{ display: "flex" }}>
+            <div className="teacherDisciplineCurriculumNameBlock">
               <h2 className="teacherDisciplineCurriculumName" key={index}>
                 {
                   data?.filter((e) => e.curriculum.id === curriculumId)[0]
                     .curriculum.name
                 }
               </h2>
-              <a
+              {/* <a
                 href={`http://127.0.0.1:8000/curriculum/pdf_download/${curriculumId}/`}
                 download
                 style={{ display: "flex" }}
@@ -48,13 +48,20 @@ const TeacherDisciplinePage: React.FunctionComponent = () => {
                   alt="Скачать"
                   className="disciplineBlockModuleTrashIcon"
                 />
-              </a>
+              </a> */}
+            </div>
+
+            <div className="curriculumDisciplineBlock">
+              <div className="curriculumDisciplineTitle">Название</div>
             </div>
 
             {data
               ?.filter((e) => e.curriculum.id === curriculumId)
               .map((e, index) => (
-                <div className="curriculumDisciplineBlock" key={index}>
+                <div
+                  className="curriculumDisciplineBlock teacherDisciplineBlock"
+                  key={index}
+                >
                   <div style={{ display: "flex", minHeight: "1px" }}>
                     <Link
                       to={{
@@ -65,20 +72,17 @@ const TeacherDisciplinePage: React.FunctionComponent = () => {
                     >
                       {e.discipline.name}. Семестр {e.semester}.
                     </Link>
-                    <a
-                      href={`http://127.0.0.1:8000/discipline/pdf_download/${e.discipline.id}/`}
-                      download
-                      style={{ display: "flex", marginLeft: "15px" }}
-                    >
-                      <img
-                        src={Download}
-                        alt="Скачать"
-                        className="disciplineBlockModuleTrashIcon"
-                      />
-                    </a>
                   </div>
 
-                  <div style={{ display: "flex", marginTop: "30px" }}>
+                  <a
+                    href={`http://127.0.0.1:8000/discipline/pdf_download/${e.discipline.id}/`}
+                    download
+                    className="download-btn"
+                  >
+                    Скачать
+                  </a>
+
+                  <div className="curriculumDisciplineTeacherList">
                     {e.users.map((user, index) => (
                       <Link
                         to={`/teacher/${user.id}`}
