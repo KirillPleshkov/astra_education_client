@@ -562,13 +562,13 @@ const DisciplineConstructor: React.FunctionComponent = () => {
                 <label className="searchConstructorText-field__label">
                   Введите название модуля
                 </label>
-                <div style={{ width: "500px" }}>
+                <div style={{ width: "600px" }}>
                   <SearchConstructor
                     key={1}
                     blockName="модуля"
                     useDataGet={useModuleList}
                     setSelectedElement={addElement}
-                    width={500}
+                    width={600}
                     onBlur={onBlurSearch}
                     autoFocus={true}
                     createText=""
@@ -582,13 +582,13 @@ const DisciplineConstructor: React.FunctionComponent = () => {
                 <label className="searchConstructorText-field__label">
                   Введите название продукта
                 </label>
-                <div style={{ width: "500px" }}>
+                <div style={{ width: "600px" }}>
                   <SearchConstructor
                     key={1}
                     blockName="продукта"
                     useDataGet={useProductList}
                     setSelectedElement={addElement}
-                    width={500}
+                    width={600}
                     onBlur={onBlurSearch}
                     autoFocus={true}
                     createNewF={createNewProduct}
@@ -603,13 +603,13 @@ const DisciplineConstructor: React.FunctionComponent = () => {
                 <label className="searchConstructorText-field__label">
                   Введите название навыка
                 </label>
-                <div style={{ width: "500px" }}>
+                <div style={{ width: "600px" }}>
                   <SearchConstructor
                     key={1}
                     blockName="навыка"
                     useDataGet={useSkillList}
                     setSelectedElement={addElement}
-                    width={500}
+                    width={600}
                     onBlur={onBlurSearch}
                     autoFocus={true}
                     createNewF={createNewSkill}
@@ -624,13 +624,13 @@ const DisciplineConstructor: React.FunctionComponent = () => {
             <label className="searchConstructorText-field__label">
               Введите название дисциплины
             </label>
-            <div style={{ width: "500px" }}>
+            <div style={{ width: "600px" }}>
               <SearchConstructor
                 key={2}
                 blockName="дисциплины"
                 useDataGet={useDisciplineList}
                 setSelectedElement={addDiscipline}
-                width={500}
+                width={600}
                 createNewF={createNewDiscipline}
                 createText="+ Создать новую дисциплину с введенным названием"
               />

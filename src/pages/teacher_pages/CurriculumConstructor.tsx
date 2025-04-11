@@ -539,7 +539,7 @@ const CurriculumConstructor: React.FunctionComponent = () => {
 
       <div className="disciplineAddBlock">
         <div>
-          <div style={{ width: "500px" }}>
+          <div style={{ width: "600px" }}>
             {curriculumDataToCreateDiscipline && (
               <>
                 <label className="searchConstructorText-field__label">
@@ -550,7 +550,7 @@ const CurriculumConstructor: React.FunctionComponent = () => {
                   blockName="дисциплины"
                   useDataGet={useDisciplineList}
                   setSelectedElement={addDiscipline}
-                  width={500}
+                  width={600}
                   autoFocus={true}
                   createText=""
                   onBlur={() => setCurriculumDataToCreateDiscipline(undefined)}
@@ -568,7 +568,7 @@ const CurriculumConstructor: React.FunctionComponent = () => {
                   blockName="преподавателя"
                   useDataGet={useTeacherList}
                   setSelectedElement={addTeacher}
-                  width={500}
+                  width={600}
                   autoFocus={true}
                   createText=""
                   onBlur={() => setCurriculumDataToAddTeacher(undefined)}
@@ -589,7 +589,7 @@ const CurriculumConstructor: React.FunctionComponent = () => {
                   blockName="учебного плана"
                   useDataGet={useCurriculumList}
                   setSelectedElement={addCurriculum}
-                  width={500}
+                  width={600}
                   createNewF={createNewCurriculum}
                   createText="+ Создать новый учебный план с введенным названием"
                 />

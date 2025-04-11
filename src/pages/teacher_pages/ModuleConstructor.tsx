@@ -336,7 +336,7 @@ const ModuleConstructor: React.FunctionComponent = () => {
             useDataGet={useModuleList}
             setSelectedElement={addModule}
             createNewF={createNewModule}
-            width={500}
+            width={600}
           />
         </div>
 
