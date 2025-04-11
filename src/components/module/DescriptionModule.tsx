@@ -58,11 +58,11 @@ const DescriptionModule: React.FunctionComponent<IDescriptionModuleProps> = ({
           <div className="moduleBlockMainText">
             {data &&
               data.map((elem) => (
-                <Link to={`/teacher/${elem.id}`}>
-                  <div className="textBlock" key={elem.id}>
+                <div className="textBlock" key={elem.id}>
+                  <Link to={`/teacher/${elem.id}`}>
                     {elem.last_name} {elem.first_name}
-                  </div>
-                </Link>
+                  </Link>
+                </div>
               ))}
             {!data?.length && <>Преподавателей нет</>}
           </div>

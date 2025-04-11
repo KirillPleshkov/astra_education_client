@@ -3,9 +3,12 @@
 .module {
   width: 70%;
   height: 100%;
+
   margin-left: auto;
   margin-right: auto;
-  margin-top: 20px;
+  margin-top: 10px;
+
+  margin-right: 50px;
 }
 
 /* Block */
@@ -13,22 +16,19 @@
 .moduleBlock {
   margin-top: 30px;
   margin-bottom: 30px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 50px;
 }
 
 .moduleBlockTitle {
-  background-color: #1469c8;
   padding-top: 4px;
   padding-bottom: 4px;
-  text-align: center;
-  font-size: 22px;
-  font-weight: 500;
-  color: white;
-}
 
-.moduleBlockMainText {
-  margin-top: 20px;
-  white-space: pre-wrap;
-  font-size: 17px;
+  font-weight: 400;
+  font-size: 36px;
+  line-height: 100%;
+  color: #000;
 }
 
 /* File */
@@ -36,8 +36,8 @@
 .file {
   margin-top: 15px;
   margin-left: 15px;
-  padding: 10px;
-  padding-bottom: 12px;
+  padding: 20px;
+  padding-bottom: 22px;
   background-color: #eee;
   border-radius: 15px;
   width: fit-content;
@@ -54,7 +54,7 @@
   text-align: center;
   margin-left: 15px;
   margin-top: 4px;
-  font-size: 16px;
+  font-size: 22px;
 }
 
 .fileDownload {
@@ -66,15 +66,24 @@
 /* DescriptionModule */
 
 .textBlock {
+  display: inline-block;
   margin-top: 15px;
   margin-left: 15px;
-  padding: 10px;
-  padding-bottom: 10px;
-  background-color: #eee;
-  border-radius: 15px;
-  width: fit-content;
-  display: inline-flex;
-  color: #000;
+  border-radius: 20px;
+  padding: 9px 14px;
+  border: 3px solid #5e5e5e;
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 136%;
+  color: #5e5e5e;
+  text-decoration: none;
+  width: max-content;
+}
+
+.textBlock a {
+  text-decoration: none;
+  color: #5e5e5e;
+  cursor: pointer;
 }
 
 /* Constructed Block */
