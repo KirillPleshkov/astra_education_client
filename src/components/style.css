@@ -17,7 +17,6 @@
   gap: 70px;
   align-items: center;
   padding-inline: 40px;
-  background-color: white;
 }
 
 .navElement {
@@ -100,32 +99,45 @@
 .layout {
   margin: 0;
   padding: 0;
-  width: 250px;
-  min-height: calc(100vh - 121px);
-  background-color: #1469c8;
-  list-style-type: none;
+  width: 600px;
+  min-height: calc(100vh - 280px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+
+  margin-top: 40px;
 }
 
 .layoutElement {
-  float: left;
-  width: 250px;
+  list-style-type: none;
 }
 
 .layoutElementLink {
-  display: block;
-  color: white;
-  text-align: center;
-  padding-top: 12px;
-  padding-bottom: 12px;
   text-decoration: none;
-}
 
+  width: 400px;
+  min-height: 45px;
+  background: #4568ff;
+  border-radius: 20px;
+  padding-block: 20px;
+  padding-inline: 40px;
+
+  font-weight: 300;
+  font-size: 32px;
+  line-height: 100%;
+  color: white;
+
+  display: flex;
+  align-items: center;
+}
+/* 
 .layoutElementLink:hover {
   background-color: #0a376b;
-}
+} */
 
-.layoutElementSelected {
-  background-color: #0a376b;
+.layoutElementSelected .layoutElementLink {
+  background: #283570;
 }
 
 /* navModal */
