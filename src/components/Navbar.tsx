@@ -1,6 +1,6 @@
 import * as React from "react";
 import "./style.css";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { useContext, useState } from "react";
 import { userContext } from "../contexts/UserContext";
 import ModalTeacherMenu from "./modal/ModalTeacherMenu";
@@ -12,6 +12,16 @@ const Navbar: React.FunctionComponent = () => {
   const navigate = useNavigate();
 
   const [isTeacherMenuOpen, setIsTeacherMenuOpen] = useState<boolean>(false);
+
+  const location = useLocation();
+
+  if (location.pathname == "/login") {
+    return (
+      <main className="content">
+        <Outlet />
+      </main>
+    );
+  }
 
   return (
     <>
