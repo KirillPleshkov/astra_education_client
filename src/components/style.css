@@ -132,16 +132,32 @@
 
 .navModal {
   position: fixed;
-  top: 45px;
-  left: 266px;
-  width: 176px;
+  top: 88px;
+  left: 650px;
   min-height: 6px;
   border: none;
-  background-color: #1469c8;
+  background: #211f20;
+  border-radius: 20px;
+  width: min-content;
 }
 
 .navModalWidth {
-  width: 176px;
+  padding-block: 20px;
+  width: 320px;
+  height: 60px;
+
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 100%;
+  color: white !important;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navModalWidth:hover {
+  background: #282527;
 }
 
 .modalUl {

@@ -28,31 +28,43 @@ const ModalTeacherMenu: React.FunctionComponent<IModalTeacherMenuProps> = ({
       }}
     >
       <ul className="modalUl" onClick={() => setIsOpen(false)}>
-        <li className="navElement navModalWidth">
-          <Link to={"/teacher_disciplines"} className="navElementLink">
+        <li className="navElement ">
+          <Link
+            to={"/teacher_disciplines"}
+            className="navElementLink navModalWidth"
+          >
             Мои дисциплины
           </Link>
         </li>
 
         {linguist_roles.some((e) => e[1] === "MODULE_CHANGE") && (
-          <li className="navElement navModalWidth">
-            <Link to={"/module_constructor"} className="navElementLink">
+          <li className="navElement">
+            <Link
+              to={"/module_constructor"}
+              className="navElementLink navModalWidth"
+            >
               Конструирование модулей
             </Link>
           </li>
         )}
 
         {linguist_roles.some((e) => e[1] === "DISCIPLINE_CHANGE") && (
-          <li className="navElement navModalWidth">
-            <Link to={"/discipline_constructor"} className="navElementLink">
+          <li className="navElement">
+            <Link
+              to={"/discipline_constructor"}
+              className="navElementLink navModalWidth"
+            >
               Конструирование дисциплин
             </Link>
           </li>
         )}
 
         {linguist_roles.some((e) => e[1] === "CURRICULUM_CHANGE") && (
-          <li className="navElement navModalWidth">
-            <Link to={"/curriculum_constructor"} className="navElementLink">
+          <li className="navElement">
+            <Link
+              to={"/curriculum_constructor"}
+              className="navElementLink navModalWidth"
+            >
               Конструирование учебных планов
             </Link>
           </li>
