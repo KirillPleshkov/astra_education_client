@@ -26,9 +26,11 @@ const TeacherProfilePage: React.FunctionComponent = () => {
         </div>
         <div className="profileInfo">
           <div>
-            <h2>Контактная информация</h2>
-            <label className="profileLabel">Электронная почта:</label>
-            <div className="profileText">{data?.email}</div>
+            <h2 className="profileTitle">Контактная информация</h2>
+            <label className="profileLabel">
+              Электронная почта:
+              <div className="profileText">{data?.email}</div>
+            </label>
           </div>
         </div>
       </div>

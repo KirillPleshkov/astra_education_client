@@ -286,29 +286,40 @@
 .profileContent {
   display: flex;
 }
+
 .profileImageContainer {
   width: 210px;
   padding: 80px;
 }
+
+.profileImageContainer img {
+  border-radius: 20px;
+}
+
+.profileTitle {
+  font-size: 32px;
+}
+
 .profileInfo {
+  margin-top: 20px;
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 30px;
+  width: 600px;
 }
 
 .profileLabel {
-  font-size: 13px;
-  color: #1469c8;
+  font-size: 28px;
+  font-weight: 500;
+  display: grid;
+  grid-template-columns: max-content max-content;
+  gap: 10px;
 }
 
 .profileText {
-  font-size: 20px;
-  display: block;
+  font-size: 26px;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
 }
 
 .profileLogoutButton {
