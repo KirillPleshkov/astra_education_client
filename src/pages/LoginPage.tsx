@@ -41,47 +41,64 @@ const LoginPage: React.FunctionComponent = () => {
 
   return (
     <div className="loginContent">
-      <form className="loginForm" onSubmit={submitHandler}>
-        <div className="loginName">Авторизация</div>
-
-        <div className="text-field text-field_floating-3">
-          <input
-            className="text-field__input"
-            type="email"
-            id="email"
-            name="email"
-            placeholder="alexander@itchief.ru"
-            ref={inputRefEmail}
-            onChange={clearErrorHandler}
-            autoComplete="email"
-          />
-          <label className="text-field__label" htmlFor="email">
-            Логин
-          </label>
+      <div className="loginModal">
+        <div className="leftSide">
+          <div className="leftSide--title">Astra Linux</div>
+          <div className="leftSide--cont">
+            <div className="leftSide--cont-reg">Регистрация</div>
+            <div className="leftSide--cont-text">
+              Для создания аккаунта необходимо пройти процедуру регистрации
+            </div>
+          </div>
+          <button className="leftSide--button">Зарегистрироваться</button>
         </div>
 
-        <div className="text-field text-field_floating-3">
-          <input
-            className="text-field__input"
-            type="password"
-            id="password"
-            name="password"
-            placeholder="alexander@itchief.ru"
-            ref={inputRefPassword}
-            onChange={clearErrorHandler}
-            autoComplete="password"
-          />
-          <label className="text-field__label" htmlFor="email">
-            Пароль
-          </label>
-        </div>
+        <form className="loginForm" onSubmit={submitHandler}>
+          <div className="loginName">Авторизация</div>
 
-        <div className="loginError">{error}</div>
+          <div className="loginForm-text">
+            Для входа необходимо ввести логин и пароль
+          </div>
 
-        <button type="submit" className="loginSubmitButton">
-          Войти
-        </button>
-      </form>
+          <div className="text-field text-field_floating-3">
+            <input
+              className="text-field__input"
+              type="email"
+              id="email"
+              name="email"
+              placeholder="alexander@itchief.ru"
+              ref={inputRefEmail}
+              onChange={clearErrorHandler}
+              autoComplete="email"
+            />
+            <label className="text-field__label" htmlFor="email">
+              Логин
+            </label>
+          </div>
+
+          <div className="text-field text-field_floating-3">
+            <input
+              className="text-field__input"
+              type="password"
+              id="password"
+              name="password"
+              placeholder="alexander@itchief.ru"
+              ref={inputRefPassword}
+              onChange={clearErrorHandler}
+              autoComplete="password"
+            />
+            <label className="text-field__label" htmlFor="email">
+              Пароль
+            </label>
+          </div>
+
+          <div className="loginError">{error}</div>
+
+          <button type="submit" className="loginSubmitButton">
+            Войти
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
