@@ -90,7 +90,7 @@
 
 .constructedModuleBlock1 {
   margin: auto;
-  width: 92%;
+  width: 1700px;
   height: 480px;
   margin-block: 20px;
   flex-shrink: 0;
@@ -170,11 +170,11 @@
 
 .constructedModuleBlockDraggableBackground {
   margin: auto;
-  max-width: 1020px;
+  width: 1700px;
   height: 480px;
   margin-block: 20px;
-  background-color: #eee;
-  border-radius: 10px;
+  background-color: white;
+  border-radius: 20px;
 }
 
 .constructedFile {

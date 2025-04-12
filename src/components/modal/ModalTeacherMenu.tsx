@@ -24,6 +24,7 @@ const ModalTeacherMenu: React.FunctionComponent<IModalTeacherMenuProps> = ({
       style={{
         overlay: {
           backgroundColor: "rgba(0, 0, 0, 0)",
+          zIndex: 100000,
         },
       }}
     >

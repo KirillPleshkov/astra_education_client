@@ -71,6 +71,7 @@ const DisciplineBlockElement: React.FunctionComponent<
         <button
           className="disciplineBlockModuleTrashButton"
           onClick={() => deleteElement(element.dndId)}
+          style={{ marginRight: "20px" }}
         >
           <img
             src={Trash}
@@ -79,7 +80,7 @@ const DisciplineBlockElement: React.FunctionComponent<
           />
         </button>
       ) : (
-        <div style={{ width: "30px" }}></div>
+        <div style={{ width: "53px" }}></div>
       )}
     </div>
   );
