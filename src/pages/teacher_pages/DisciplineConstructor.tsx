@@ -562,13 +562,13 @@ const DisciplineConstructor: React.FunctionComponent = () => {
                 <label className="searchConstructorText-field__label">
                   Введите название модуля
                 </label>
-                <div style={{ width: "600px" }}>
+                <div style={{ width: "500px" }}>
                   <SearchConstructor
                     key={1}
                     blockName="модуля"
                     useDataGet={useModuleList}
                     setSelectedElement={addElement}
-                    width={600}
+                    width={500}
                     onBlur={onBlurSearch}
                     autoFocus={true}
                     createText=""
@@ -582,13 +582,13 @@ const DisciplineConstructor: React.FunctionComponent = () => {
                 <label className="searchConstructorText-field__label">
                   Введите название продукта
                 </label>
-                <div style={{ width: "600px" }}>
+                <div style={{ width: "500px" }}>
                   <SearchConstructor
                     key={1}
                     blockName="продукта"
                     useDataGet={useProductList}
                     setSelectedElement={addElement}
-                    width={600}
+                    width={500}
                     onBlur={onBlurSearch}
                     autoFocus={true}
                     createNewF={createNewProduct}
@@ -603,13 +603,13 @@ const DisciplineConstructor: React.FunctionComponent = () => {
                 <label className="searchConstructorText-field__label">
                   Введите название навыка
                 </label>
-                <div style={{ width: "600px" }}>
+                <div style={{ width: "500px" }}>
                   <SearchConstructor
                     key={1}
                     blockName="навыка"
                     useDataGet={useSkillList}
                     setSelectedElement={addElement}
-                    width={600}
+                    width={500}
                     onBlur={onBlurSearch}
                     autoFocus={true}
                     createNewF={createNewSkill}
@@ -624,13 +624,13 @@ const DisciplineConstructor: React.FunctionComponent = () => {
             <label className="searchConstructorText-field__label">
               Введите название дисциплины
             </label>
-            <div style={{ width: "600px" }}>
+            <div style={{ width: "500px" }}>
               <SearchConstructor
                 key={2}
                 blockName="дисциплины"
                 useDataGet={useDisciplineList}
                 setSelectedElement={addDiscipline}
-                width={600}
+                width={500}
                 createNewF={createNewDiscipline}
                 createText="+ Создать новую дисциплину с введенным названием"
               />
@@ -639,15 +639,13 @@ const DisciplineConstructor: React.FunctionComponent = () => {
         )}
 
         <div style={{ marginLeft: "30px" }}>
-          <label className="searchConstructorText-field__label">
-            Режим отображения
-          </label>
+          <label className="searchConstructorText-field__label">Режим</label>
           <Combobox mode={mode} setMode={setMode} />
         </div>
 
         <div style={{ marginLeft: "30px" }}>
           <label className="searchConstructorText-field__label">
-            Копировать при перетаскивании
+            Копировать
           </label>
           <label className="toggler-wrapper style-21">
             <input
@@ -669,7 +667,7 @@ const DisciplineConstructor: React.FunctionComponent = () => {
                   setModalConfirmMode(Confirm.Remove);
                   setDisciplineIdToModal(disciplineIdToChangeTitle);
                 }}
-                className="DisciplineButton"
+                className="DisciplineButton DisciplineButtonRemove"
               >
                 Убрать дисциплину
               </button>
@@ -681,7 +679,7 @@ const DisciplineConstructor: React.FunctionComponent = () => {
                   setModalConfirmMode(Confirm.Delete);
                   setDisciplineIdToModal(disciplineIdToChangeTitle);
                 }}
-                className="DisciplineButton"
+                className="DisciplineButton DisciplineButtonRemove"
               >
                 Удалить дисциплину
               </button>

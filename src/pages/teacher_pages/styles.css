@@ -1,10 +1,14 @@
 .pageName {
-  margin-top: 45px;
-  background-color: #eee;
-  padding-top: 15px;
-  padding-bottom: 15px;
-  padding-left: 40px;
-  font-size: 22px;
+  height: 77px;
+  padding-top: 30px;
+  padding-inline: 60px;
+  border-bottom: 3px solid #a9a9a9;
+
+  font-weight: 400;
+  font-size: 54px;
+  line-height: 136%;
+
+  color: #000000;
 }
 
 /* MainConstructor */
@@ -139,8 +143,8 @@
   margin-top: 10px;
   margin-left: 4px;
   display: block;
-  width: 45px;
-  height: 25px;
+  width: 75px;
+  height: 35px;
   cursor: pointer;
   position: relative;
 }
@@ -175,7 +179,7 @@
   input[type="checkbox"]:checked
   + .toggler-slider
   .toggler-knob {
-  left: calc(100% - 19px - 3px);
+  left: calc(100% - 30px - 3px);
   background-image: url(../img/shut-down-line-on.svg);
 }
 
@@ -184,8 +188,8 @@
 }
 
 .toggler-wrapper.style-21 .toggler-knob {
-  width: calc(25px - 6px);
-  height: calc(25px - 6px);
+  width: calc(35px - 6px);
+  height: calc(35px - 6px);
   border-radius: 50%;
   left: 3px;
   top: 3px;
@@ -197,15 +201,29 @@
 
 .DisciplineButton {
   display: block;
-  color: white;
   text-align: center;
-  padding: 4px 6px;
   text-decoration: none;
   cursor: pointer;
-  background-color: #1469c8;
-  border-radius: 8px;
-  min-height: 38px;
-  border: 2px solid #5e697b4d;
+  border: none;
+
+  border-radius: 20px;
+  padding: 16px 25px;
+  background: #4568ff;
+
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 100%;
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.DisciplineButtonRemove {
+  border: 3px solid #4568ff;
+  background-color: inherit;
+  color: #000;
 }
 
 /* ModuleConstructor */

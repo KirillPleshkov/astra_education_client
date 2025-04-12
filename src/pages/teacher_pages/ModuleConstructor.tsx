@@ -336,14 +336,12 @@ const ModuleConstructor: React.FunctionComponent = () => {
             useDataGet={useModuleList}
             setSelectedElement={addModule}
             createNewF={createNewModule}
-            width={600}
+            width={500}
           />
         </div>
 
         <div style={{ marginLeft: "30px" }}>
-          <label className="searchConstructorText-field__label">
-            Режим отображения
-          </label>
+          <label className="searchConstructorText-field__label">Режим</label>
           <ModuleCombobox mode={mode} setMode={setMode} />
         </div>
 
@@ -354,9 +352,22 @@ const ModuleConstructor: React.FunctionComponent = () => {
                 setBlockIdToModal(blockIdToChangeTitle);
                 setModalConfirmMode(Confirm.Remove);
               }}
-              className="DisciplineButton"
+              className="DisciplineButton DisciplineButtonRemove"
             >
               Убрать блок
+            </button>
+          </div>
+        )}
+
+        {module && (
+          <div style={{ marginLeft: "30px", marginTop: "24px" }}>
+            <button
+              onClick={() => {
+                saveModule();
+              }}
+              className="DisciplineButton"
+            >
+              Сохранить модуль
             </button>
           </div>
         )}
@@ -368,21 +379,9 @@ const ModuleConstructor: React.FunctionComponent = () => {
                 setBlockIdToModal(1);
                 setModalConfirmMode(Confirm.Delete);
               }}
-              className="DisciplineButton"
+              className="DisciplineButton DisciplineButtonRemove"
             >
               Удалить модуль
-            </button>
-          </div>
-        )}
-        {module && (
-          <div style={{ marginLeft: "30px", marginTop: "24px" }}>
-            <button
-              onClick={() => {
-                saveModule();
-              }}
-              className="DisciplineButton"
-            >
-              Сохранить модуль
             </button>
           </div>
         )}

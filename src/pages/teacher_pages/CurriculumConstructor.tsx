@@ -539,7 +539,7 @@ const CurriculumConstructor: React.FunctionComponent = () => {
 
       <div className="disciplineAddBlock">
         <div>
-          <div style={{ width: "600px" }}>
+          <div style={{ width: "500px" }}>
             {curriculumDataToCreateDiscipline && (
               <>
                 <label className="searchConstructorText-field__label">
@@ -550,7 +550,7 @@ const CurriculumConstructor: React.FunctionComponent = () => {
                   blockName="дисциплины"
                   useDataGet={useDisciplineList}
                   setSelectedElement={addDiscipline}
-                  width={600}
+                  width={500}
                   autoFocus={true}
                   createText=""
                   onBlur={() => setCurriculumDataToCreateDiscipline(undefined)}
@@ -568,7 +568,7 @@ const CurriculumConstructor: React.FunctionComponent = () => {
                   blockName="преподавателя"
                   useDataGet={useTeacherList}
                   setSelectedElement={addTeacher}
-                  width={600}
+                  width={500}
                   autoFocus={true}
                   createText=""
                   onBlur={() => setCurriculumDataToAddTeacher(undefined)}
@@ -589,7 +589,7 @@ const CurriculumConstructor: React.FunctionComponent = () => {
                   blockName="учебного плана"
                   useDataGet={useCurriculumList}
                   setSelectedElement={addCurriculum}
-                  width={600}
+                  width={500}
                   createNewF={createNewCurriculum}
                   createText="+ Создать новый учебный план с введенным названием"
                 />
@@ -600,7 +600,7 @@ const CurriculumConstructor: React.FunctionComponent = () => {
 
         <div style={{ marginLeft: "30px" }}>
           <label className="searchConstructorText-field__label">
-            Копировать при перетаскивании
+            Копировать
           </label>
           <label className="toggler-wrapper style-21">
             <input
@@ -622,7 +622,7 @@ const CurriculumConstructor: React.FunctionComponent = () => {
                   setModalConfirmMode(Confirm.Remove);
                   setCurriculumIdToModal(curriculumIdToChangeTitle);
                 }}
-                className="DisciplineButton"
+                className="DisciplineButton DisciplineButtonRemove"
               >
                 Убрать учебный план
               </button>
@@ -634,7 +634,7 @@ const CurriculumConstructor: React.FunctionComponent = () => {
                   setModalConfirmMode(Confirm.Delete);
                   setCurriculumIdToModal(curriculumIdToChangeTitle);
                 }}
-                className="DisciplineButton"
+                className="DisciplineButton DisciplineButtonRemove"
               >
                 Удалить учебный план
               </button>
