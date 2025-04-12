@@ -27,11 +27,11 @@ const EducationalLevelCombobox: React.FunctionComponent<
         onBlur={() => {
           setTimeout(() => setIsFocus(false), 100);
         }}
-        style={{ width: 160 }}
+        style={{ width: 200 }}
         readOnly={true}
       />
       {isFocus && (
-        <ul className="comboboxList" style={{ width: 160 }}>
+        <ul className="comboboxList" style={{ width: 200 }}>
           {values &&
             values.map((e, index) => (
               <li className="comboboxDropDownElem" key={index}>

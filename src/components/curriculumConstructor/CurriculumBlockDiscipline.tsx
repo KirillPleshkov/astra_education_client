@@ -114,6 +114,7 @@ const CurriculumBlockDiscipline: React.FunctionComponent<
             <button
               className="disciplineTrashButton"
               onClick={() => deleteDiscipline(discipline.dndId)}
+              style={{ marginRight: "10px" }}
             >
               <img
                 src={Trash}
@@ -123,7 +124,7 @@ const CurriculumBlockDiscipline: React.FunctionComponent<
             </button>
           </>
         ) : (
-          <div style={{ width: "60px" }}></div>
+          <div style={{ width: "70px" }}></div>
         )}
       </div>
       {isOpen && (

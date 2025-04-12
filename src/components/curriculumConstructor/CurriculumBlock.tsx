@@ -106,7 +106,7 @@ const CurriculumBlock: React.FunctionComponent<ICurriculumBlockProps> = ({
                 }
               }}
               onChange={(e) => curriculumTitleChange(e.target.value)}
-              style={{ marginLeft: "20px" }}
+              style={{ width: "97%" }}
             />
           ) : (
             <>{curriculum.name}</>

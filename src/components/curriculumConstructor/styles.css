@@ -4,32 +4,35 @@
   margin: auto;
   margin-bottom: 30px;
   width: 95vw;
-  height: 500px;
-  border-radius: 10px;
-  border: 2px solid #5e697b4d;
-  background-color: #fff;
+  height: 550px;
+  border-radius: 20px;
+  background: #f0f0f0;
+
+  display: grid;
+  grid-template-rows: max-content 1fr;
 }
 
 .blockDraggable {
   margin: auto;
   margin-bottom: 30px;
   width: 95vw;
-  height: 500px;
+  height: 550px;
   border-radius: 10px;
-  background-color: #eee;
+  background-color: white;
 }
 
 .blockTitle {
   width: 100%;
   padding-top: 10px;
   padding-bottom: 10px;
-  background-color: #1469c8;
+  background: #4568ff;
+
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 20px;
   text-overflow: ellipsis;
   color: white;
 }
@@ -41,7 +44,7 @@
 .blockTitleText {
   width: 80%;
   text-align: center;
-  font-size: 22px;
+  font-size: 28px;
   font-weight: 500;
 }
 
@@ -68,13 +71,19 @@
 .blockDiscipline {
   display: block;
   margin: 5px;
-  width: 351px;
+  width: 441px;
   border-radius: 10px;
   border: 2px solid #5e697b4d;
   height: 418px;
   flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
+  border-radius: 20px;
+  border-radius: 20px;
+  border-width: 2px;
+  height: 97%;
+  background-color: white;
+
+  display: grid;
+  grid-template-rows: max-content 1fr max-content;
 }
 
 .blockDisciplineTitle {
@@ -82,9 +91,18 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  background-color: #5e697b4d;
-  padding: 2px;
-  border-radius: 8px;
+
+  min-height: 80;
+  border-width: 2px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  padding: 20px;
+
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 100%;
+
+  border-bottom: 2px solid #211f20;
 }
 
 .blockDisciplineList {
@@ -105,27 +123,36 @@
 }
 
 .blockDisciplineAddButton {
-  height: 30px;
-  border-radius: 8px;
-  background: #eee;
+  border-radius: 16px;
+  background: #4568ff;
+
   color: inherit;
   border: none;
   padding: 0;
   font: inherit;
   cursor: pointer;
   outline: inherit;
+
+  height: 55px;
+  border-width: 2px;
+
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 100%;
+  color: white;
 }
 
 /* CurriculumBlockDiscipline */
 
 .discipline {
-  width: 340px;
+  width: 420px;
+  min-height: 80px;
   margin: 10px auto 10px auto;
-  height: 40px;
-  background-color: #c0efff;
-  border: 2px solid #6c8186;
-  border-radius: 8px;
+  background-color: white;
+  border-radius: 20px;
   display: flex;
+  border: 1px solid #c7c7c7;
+  align-items: center;
   /* position: relative; */
 }
 
@@ -134,11 +161,11 @@
 }
 
 .disciplineDragging {
-  width: 340px;
+  width: 420px;
+  min-height: 80px;
   margin: 10px auto 10px auto;
-  height: 43px;
   background-color: #eee;
-  border-radius: 8px;
+  border-radius: 16px;
 }
 
 .disciplineTrashIcon {
@@ -166,15 +193,17 @@
 .disciplineText {
   padding-left: 30px;
   width: 100%;
-  text-align: center;
   font-size: 18px;
   font-weight: 500;
   word-break: break-word;
   overflow: hidden;
+
+  display: flex;
+  align-items: center;
 }
 
 .teachersModal {
-  margin-left: 4px;
+  margin-left: 50px;
   margin-top: -10px;
   width: 340px;
   height: 100px;
