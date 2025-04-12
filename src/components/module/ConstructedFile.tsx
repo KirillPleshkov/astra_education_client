@@ -56,7 +56,7 @@ const ConstructedFile: React.FunctionComponent<IConstructedFileProps> = ({
 
   if (isDragging)
     return (
-      <div className="constructedFile" ref={setNodeRef} style={style}>
+      <div className="constructedFileBackground" ref={setNodeRef} style={style}>
         <a></a>
       </div>
     );
@@ -89,7 +89,7 @@ const ConstructedFile: React.FunctionComponent<IConstructedFileProps> = ({
       {!isHideTrashButton && !isOverlay ? (
         <button
           className="disciplineBlockModuleTrashButton"
-          style={{ height: "24px", marginTop: 0 }}
+          style={{ height: "24px", marginTop: 4 }}
           onClick={() => deleteFile(file.id)}
         >
           <img
