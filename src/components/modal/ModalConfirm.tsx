@@ -32,9 +32,9 @@ const ModalConfirm: React.FunctionComponent<IModalConfirmProps> = ({
       >
         <div className="modalConfirmModal">
           <div className="modalConfirmModalText">{text}</div>
-          <div style={{ display: "flex" }}>
+          <div style={{ display: "flex", justifyContent: "space-around" }}>
             <button
-              className="modalConfirmModalButtonConfirm"
+              className="DisciplineButton modalConfirmModalButton"
               onClick={() => {
                 confirmFunc();
               }}
@@ -42,7 +42,7 @@ const ModalConfirm: React.FunctionComponent<IModalConfirmProps> = ({
               Да
             </button>
             <button
-              className="modalConfirmModalButtonExit"
+              className="DisciplineButton DisciplineButtonRemove modalConfirmModalButton"
               onClick={() => setIsOpen(undefined)}
             >
               Нет

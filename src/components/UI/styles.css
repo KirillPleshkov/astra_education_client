@@ -79,13 +79,15 @@
 /* InfoMessage */
 
 .infoMessageCard {
-  width: 300px;
-  min-height: 100px;
+  width: 400px;
+  min-height: 150px;
   position: fixed;
   right: 30px;
   bottom: 50px;
   border: 2px solid;
   border-radius: 10px;
+
+  font-size: 26px;
 }
 
 .infoMessageSuccess {

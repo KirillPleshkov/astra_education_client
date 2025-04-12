@@ -25,46 +25,36 @@
 
 .modalConfirmModal {
   transform: translate(-50%, -50%);
-  width: 350px;
-  height: 180px;
+  width: 820px;
+  height: 353px;
   top: 50%;
   left: 50%;
   background-color: #eee;
   border: 2px solid #7c7c7c;
   position: absolute;
-  border-radius: 5px;
+
+  border-radius: 20px;
+  border: 2px solid #000000;
 }
 
 .modalConfirmModalText {
   margin-top: 30px;
+  height: 220px;
   text-align: center;
-  font-size: 17px;
+
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 160%;
 }
 
-.modalConfirmModalButtonConfirm {
-  margin-top: 60px;
-  font-size: 17px;
-  width: 90px;
-  height: 40px;
-  background-color: #34c924;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-left: 30px;
-}
+.modalConfirmModalButton {
+  width: 300px;
+  height: 74px;
+  border-radius: 20px;
 
-.modalConfirmModalButtonExit {
-  font-size: 17px;
-  width: 90px;
-  height: 40px;
-  margin-top: 60px;
-
-  background-color: red;
-
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-left: 112px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* TeacherList */
