@@ -75,9 +75,10 @@ const TeacherDisciplinePage: React.FunctionComponent = () => {
                   </div>
 
                   <a
-                    href={`http://127.0.0.1:8000/discipline/pdf_download/${e.discipline.id}/`}
+                    href={`${import.meta.env.VITE_BACKEND_URL}discipline/pdf_download/${e.discipline.id}/`}
                     download
                     className="download-btn"
+                    target="_blank"
                   >
                     Скачать
                   </a>
