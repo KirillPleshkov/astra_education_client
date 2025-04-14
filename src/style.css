@@ -9,3 +9,9 @@ html {
   box-sizing: border-box;
   background: #f0f0f0;
 }
+
+textarea,
+textarea:active {
+  border: none;
+  outline: none;
+}

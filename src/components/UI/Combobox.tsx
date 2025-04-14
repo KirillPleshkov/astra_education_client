@@ -2,6 +2,8 @@ import * as React from "react";
 import "./styles.css";
 import { useState } from "react";
 
+import DropDownArr from "../../images/DropDownArr.svg";
+
 export enum Mode {
   Modules = "Модули",
   Skills = "Навыки",
@@ -21,7 +23,7 @@ const Combobox: React.FunctionComponent<IComboboxProps> = ({
   const [isFocus, setIsFocus] = useState<boolean>(false);
 
   return (
-    <>
+    <div style={{ position: "relative" }}>
       <input
         type="text"
         value={mode}
@@ -33,6 +35,9 @@ const Combobox: React.FunctionComponent<IComboboxProps> = ({
         style={{ width: 180 }}
         readOnly={true}
       />
+      <div className="arrowCont">
+        <img src={DropDownArr} />
+      </div>
 
       {isFocus && (
         <ul className="comboboxList" style={{ width: 180 }}>
@@ -73,7 +78,7 @@ const Combobox: React.FunctionComponent<IComboboxProps> = ({
           </li>
         </ul>
       )}
-    </>
+    </div>
   );
 };
 

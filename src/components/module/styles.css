@@ -148,6 +148,7 @@
   padding: 4px;
   margin: 1px;
   font-size: 24px;
+  border: none;
 }
 
 .constructedModuleBlockTextarea::-webkit-scrollbar {

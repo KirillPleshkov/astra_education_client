@@ -116,3 +116,14 @@
   padding-inline: 10px;
   padding-bottom: 15px;
 }
+
+.arrowCont {
+  position: absolute;
+  top: 20px;
+  left: 148px;
+}
+
+.arrowCont img {
+  width: 18px;
+  height: 18px;
+}

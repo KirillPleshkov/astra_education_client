@@ -111,6 +111,7 @@
   width: 100%;
   overflow: hidden;
   box-sizing: border-box;
+  border: none;
 }
 
 /* DisciplineConstructor */
