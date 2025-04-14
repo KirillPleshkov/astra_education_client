@@ -22,9 +22,9 @@
 }
 
 .blockTitle {
-  width: 100%;
   padding-top: 10px;
   padding-bottom: 10px;
+  padding-inline: 20px;
   background: #4568ff;
 
   display: flex;
@@ -35,6 +35,9 @@
   border-radius: 20px;
   text-overflow: ellipsis;
   color: white;
+
+  display: grid;
+  grid-template-columns: 1fr max-content;
 }
 
 .blockTitle:active {
@@ -42,7 +45,6 @@
 }
 
 .blockTitleText {
-  width: 80%;
   text-align: center;
   font-size: 28px;
   font-weight: 500;

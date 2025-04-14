@@ -48,7 +48,10 @@ const CurriculumPage: React.FunctionComponent = () => {
       {data.disciplines
         .filter((e) => e.semester === semester)
         .map((e, index) => (
-          <div className="curriculumDisciplineBlock" key={index}>
+          <div
+            className="curriculumDisciplineBlock curriculumDisciplineBlockHovered"
+            key={index}
+          >
             <Link
               to={{
                 pathname: `/discipline/${e.discipline.id}`,
